@@ -1,0 +1,55 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+
+# Database
+*.db
+*.sqlite3
+
+# Google OAuth tokens (auto-generated, never commit)
+token.json
+google_gmail_credentials.json
+google_credentials.json
+google_calendar_credentials.json
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Third-party reference repos
+OpenOutreach/
+Scrapegraph-ai/
+
+# Test artifacts (keep test files, ignore generated data)
+backend/tests/__pycache__/
