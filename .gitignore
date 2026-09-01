@@ -53,3 +53,4 @@ Scrapegraph-ai/
 
 # Test artifacts (keep test files, ignore generated data)
 backend/tests/__pycache__/
+backend/gmail_token.json
