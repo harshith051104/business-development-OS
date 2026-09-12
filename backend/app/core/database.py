@@ -79,8 +79,14 @@ def migrate_db_columns():
                     changed = True
                 if changed:
                     conn.commit()
+
+            res_disc = conn.execute(text("PRAGMA table_info(discovered_organizations)"))
+            disc_cols = [row[1] for row in res_disc.fetchall()]
+            if disc_cols and "search_history_id" not in disc_cols:
+                conn.execute(text("ALTER TABLE discovered_organizations ADD COLUMN search_history_id INTEGER;"))
+                conn.commit()
     except Exception as e:
-        logger.error("Schema migration (campaign_contacts) failed: %s", e)
+        logger.error("Schema migration failed: %s", e)
 
 
 migrate_db_columns()

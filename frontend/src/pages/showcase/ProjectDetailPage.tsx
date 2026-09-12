@@ -23,6 +23,7 @@ import {
   PlayCircle,
   HelpCircle,
   ShieldCheck,
+  Download,
 } from 'lucide-react'
 
 export const ProjectDetailPage: React.FC = () => {
@@ -352,13 +353,22 @@ export const ProjectDetailPage: React.FC = () => {
 
                     {project.presentation_url && (
                       <a
-                        href={project.presentation_url}
+                        href={
+                          project.presentation_url.startsWith('http')
+                            ? project.presentation_url
+                            : `http://127.0.0.1:8001${project.presentation_url}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-800 transition flex items-center justify-between text-xs text-slate-200 group"
+                        className="p-3 rounded-xl bg-violet-600/15 hover:bg-violet-600/25 border border-violet-500/40 transition flex items-center justify-between text-xs text-violet-200 group shadow-sm"
                       >
-                        <span>Download Executive Deck (PDF)</span>
-                        <FileText className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+                        <div className="flex items-center space-x-2">
+                          <FileText className="w-4 h-4 text-violet-400" />
+                          <span className="font-bold text-white">
+                            Executive Presentation Deck ({project.presentation_url.split('.').pop()?.toUpperCase() || 'DECK'})
+                          </span>
+                        </div>
+                        <Download className="w-3.5 h-3.5 text-violet-400 group-hover:scale-110 transition" />
                       </a>
                     )}
                   </div>

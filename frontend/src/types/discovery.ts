@@ -117,6 +117,16 @@ export interface DiscoveryHistoryItem {
   timestamp: string
 }
 
+export interface DiscoveryPromptParseOut {
+  keyword?: string | null
+  location?: string | null
+  organization_type?: string | null
+  product_description?: string | null
+  target_icp?: string | null
+  discovery_objective?: string | null
+  extracted_summary?: string | null
+}
+
 export interface DiscoveryStats {
   total_discovered: number
   total_added: number

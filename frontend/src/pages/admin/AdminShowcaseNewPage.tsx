@@ -14,6 +14,7 @@ import {
   Layers,
   Tag,
 } from 'lucide-react'
+import { PresentationDeckUpload } from '../../components/showcase/PresentationDeckUpload'
 
 export const AdminShowcaseNewPage: React.FC = () => {
   const navigate = useNavigate()
@@ -218,14 +219,10 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Presentation Deck / Whitepaper</label>
-                <input
-                  type="url"
+              <div>
+                <PresentationDeckUpload
                   value={presentationUrl}
-                  onChange={(e) => setPresentationUrl(e.target.value)}
-                  placeholder="https://docs.company.com/pitch.pdf"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  onChange={setPresentationUrl}
                 />
               </div>
             </div>

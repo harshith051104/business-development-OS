@@ -421,6 +421,23 @@ class CampaignService:
             db.add(new_opp)
             opp_created = True
 
+        # 6. Auto-schedule meeting if meeting intent / request detected in reply
+        scheduled_meeting = None
+        try:
+            from app.services.meeting_scheduler import detect_and_schedule_meeting_from_reply
+            scheduled_meeting = detect_and_schedule_meeting_from_reply(
+                db=db,
+                contact_id=contact.id,
+                organization_id=contact.organization_id,
+                reply_subject=reply_subject or "",
+                reply_body=reply_snippet or "",
+                user_id=user_id,
+            )
+            if scheduled_meeting:
+                logger.info(f"Auto-scheduled meeting {scheduled_meeting.id} for contact {contact.id} ({scheduled_meeting.title})")
+        except Exception as e:
+            logger.warning(f"Failed to auto-detect/schedule meeting from reply: {e}")
+
         db.commit()
 
         return {
@@ -430,6 +447,8 @@ class CampaignService:
             "sequence_paused": True,
             "followup_created": True,
             "opportunity_created": opp_created,
+            "meeting_created": bool(scheduled_meeting),
+            "meeting_id": scheduled_meeting.id if scheduled_meeting else None,
         }
 
     @classmethod

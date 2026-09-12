@@ -238,6 +238,15 @@ app.include_router(config_router)
 app.include_router(gmail_router)
 app.include_router(campaigns_router)
 
+# Mount uploads directory for showcase pitch decks, documents, and media
+import os
+from fastapi.staticfiles import StaticFiles
+
+uploads_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads"))
+os.makedirs(os.path.join(uploads_path, "presentations"), exist_ok=True)
+app.mount("/api/uploads", StaticFiles(directory=uploads_path), name="api_uploads")
+app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
+
 
 @app.get("/", tags=["Root"])
 def root():
