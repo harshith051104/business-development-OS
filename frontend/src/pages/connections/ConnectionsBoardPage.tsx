@@ -47,6 +47,26 @@ export const ConnectionsBoardPage: React.FC = () => {
   const [targetStage, setTargetStage] = useState<string>('')
   const [moveNote, setMoveNote] = useState<string>('')
   const [isMoving, setIsMoving] = useState<boolean>(false)
+  const [isSyncing, setIsSyncing] = useState<boolean>(false)
+
+  const handleAutoSync = async () => {
+    setIsSyncing(true)
+    try {
+      const res = await connectionsService.autoSync()
+      setNotification({
+        message: res.message || `Pipeline synchronized. ${res.updated_count} organization(s) progressed.`,
+        type: 'success',
+      })
+      await fetchPipeline()
+    } catch (err: any) {
+      setNotification({
+        message: err.message || 'Failed to auto-sync pipeline.',
+        type: 'error',
+      })
+    } finally {
+      setIsSyncing(false)
+    }
+  }
 
   const fetchPipeline = useCallback(async () => {
     setLoading(true)
@@ -263,6 +283,17 @@ export const ConnectionsBoardPage: React.FC = () => {
             <option value="Medium">Medium Priority</option>
             <option value="Low">Low Priority</option>
           </select>
+
+          <button
+            type="button"
+            onClick={handleAutoSync}
+            disabled={isSyncing || loading}
+            className="px-3.5 py-1.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/40 text-violet-300 hover:text-white text-xs font-semibold transition flex items-center space-x-1.5 shadow-sm disabled:opacity-50 shrink-0"
+            title="Scan outreach emails, replies, meetings, and opportunities to auto-progress pipeline stages"
+          >
+            <RotateCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-violet-400' : ''}`} />
+            <span>{isSyncing ? 'Syncing...' : 'Auto-Sync Funnel'}</span>
+          </button>
         </div>
       </header>
 

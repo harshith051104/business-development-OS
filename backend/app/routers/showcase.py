@@ -1,8 +1,10 @@
 import math
+import os
 import re
+import uuid
 from datetime import datetime, timezone
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func, cast, String, Text
 
@@ -292,3 +294,96 @@ def delete_showcase_project(
     db.commit()
 
     return {"status": "success", "message": f"Project '{project.name}' deleted successfully."}
+
+
+ALLOWED_PRESENTATION_EXTENSIONS = {".pdf", ".ppt", ".pptx"}
+MAX_PRESENTATION_SIZE = 50 * 1024 * 1024  # 50MB
+
+
+@router.post("/showcase/{id}/upload-presentation", response_model=ProjectDetailOut)
+async def upload_project_presentation(
+    id: int,
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Uploads a presentation deck (.pdf, .ppt, .pptx) and attaches it to the showcase project."""
+    project = db.query(Project).filter(Project.id == id, Project.is_deleted.is_(False)).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID {id} not found.",
+        )
+
+    filename = file.filename or "presentation.pdf"
+    _, ext = os.path.splitext(filename.lower())
+    if ext not in ALLOWED_PRESENTATION_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid presentation format '{ext}'. Supported formats: .pdf, .ppt, .pptx",
+        )
+
+    content = await file.read()
+    if len(content) > MAX_PRESENTATION_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Presentation file exceeds maximum allowable size (50MB).",
+        )
+
+    uploads_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads", "presentations"))
+    os.makedirs(uploads_dir, exist_ok=True)
+
+    sanitized_name = re.sub(r"[^a-zA-Z0-9_.-]", "_", filename)
+    unique_filename = f"{uuid.uuid4().hex[:12]}_{sanitized_name}"
+    file_path = os.path.join(uploads_dir, unique_filename)
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    project.presentation_url = f"/api/uploads/presentations/{unique_filename}"
+    project.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(project)
+
+    return _format_project_detail_out(project)
+
+
+@router.post("/showcase/upload-presentation-file")
+async def upload_standalone_presentation_file(
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_business_development),
+):
+    """Uploads a presentation deck before project creation and returns the hosted URL."""
+    filename = file.filename or "presentation.pdf"
+    _, ext = os.path.splitext(filename.lower())
+    if ext not in ALLOWED_PRESENTATION_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid presentation format '{ext}'. Supported formats: .pdf, .ppt, .pptx",
+        )
+
+    content = await file.read()
+    if len(content) > MAX_PRESENTATION_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Presentation file exceeds maximum allowable size (50MB).",
+        )
+
+    uploads_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads", "presentations"))
+    os.makedirs(uploads_dir, exist_ok=True)
+
+    sanitized_name = re.sub(r"[^a-zA-Z0-9_.-]", "_", filename)
+    unique_filename = f"{uuid.uuid4().hex[:12]}_{sanitized_name}"
+    file_path = os.path.join(uploads_dir, unique_filename)
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    return {
+        "status": "success",
+        "filename": filename,
+        "presentation_url": f"/api/uploads/presentations/{unique_filename}",
+        "file_type": ext.lstrip(".").upper(),
+        "file_size": len(content),
+    }
+

@@ -7,6 +7,7 @@ import type {
   DiscoveryStats,
   DiscoveryHistoryItem,
   ProviderList,
+  DiscoveryPromptParseOut,
 } from '../../types/discovery'
 import DiscoveryCard from '../../components/discovery/DiscoveryCard'
 import CsvImportModal from '../../components/discovery/CsvImportModal'
@@ -105,6 +106,18 @@ export const DiscoveryPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [isCsvModalOpen, setIsCsvModalOpen] = useState<boolean>(false)
 
+  // Single Prompt Natural Language Discovery State
+  const [singlePrompt, setSinglePrompt] = useState<string>('')
+  const [isParsingPrompt, setIsParsingPrompt] = useState<boolean>(false)
+  const [showAdvancedParams, setShowAdvancedParams] = useState<boolean>(false)
+  const [lastParsedInfo, setLastParsedInfo] = useState<DiscoveryPromptParseOut | null>(null)
+
+  // Search History Results Modal State
+  const [selectedHistory, setSelectedHistory] = useState<DiscoveryHistoryItem | null>(null)
+  const [historyResults, setHistoryResults] = useState<DiscoveredOrganization[]>([])
+  const [historyResultsLoading, setHistoryResultsLoading] = useState<boolean>(false)
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false)
+
   // Add to ELLY modal state
   const [addingOrg, setAddingOrg] = useState<DiscoveredOrganization | null>(null)
   const [addPriority, setAddPriority] = useState<string>('High')
@@ -126,6 +139,63 @@ export const DiscoveryPage: React.FC = () => {
       return () => clearTimeout(t)
     }
   }, [toastMessage])
+
+  // Single Prompt Discovery Handler
+  const handlePromptDiscovery = async (customPrompt?: string) => {
+    const promptToUse = (customPrompt || singlePrompt).trim()
+    if (!promptToUse) return
+    setIsParsingPrompt(true)
+    setError(null)
+    try {
+      const parsed = await discoveryService.parsePrompt(promptToUse)
+      setLastParsedInfo(parsed)
+      if (parsed.keyword) setKeyword(parsed.keyword)
+      if (parsed.location) setLocation(parsed.location)
+      if (parsed.organization_type) setSelectedType(parsed.organization_type)
+      if (parsed.product_description) setProductDescription(parsed.product_description)
+      if (parsed.target_icp) setTargetIcp(parsed.target_icp)
+      if (parsed.discovery_objective) setDiscoveryObjective(parsed.discovery_objective)
+
+      setLoading(true)
+      const res = await discoveryService.search({
+        keyword: parsed.keyword || undefined,
+        location: parsed.location || undefined,
+        organization_type: (parsed.organization_type && parsed.organization_type !== 'All') ? parsed.organization_type : undefined,
+        product_description: parsed.product_description || undefined,
+        target_icp: parsed.target_icp || undefined,
+        discovery_objective: parsed.discovery_objective || undefined,
+        provider: selectedProvider,
+        page: 1,
+        page_size: pageSize,
+      })
+      setItems(res.items)
+      setTotalItems(res.total)
+      setTotalPages(res.total_pages)
+      setPage(1)
+      setToastMessage(`LLM understood query! Discovered ${res.total} organization(s).`)
+      discoveryService.getStats().then(setStats)
+    } catch (err: any) {
+      setError(err.detail || err.message || 'Failed to parse prompt and discover leads.')
+    } finally {
+      setIsParsingPrompt(false)
+      setLoading(false)
+    }
+  }
+
+  // Load history item results
+  const handleViewHistoryResults = async (h: DiscoveryHistoryItem) => {
+    setSelectedHistory(h)
+    setIsHistoryModalOpen(true)
+    setHistoryResultsLoading(true)
+    try {
+      const res = await discoveryService.getHistoryResults(h.id, { page: 1, page_size: 50 })
+      setHistoryResults(res.items)
+    } catch (err: any) {
+      alert(err.message || 'Failed to load past discovery results.')
+    } finally {
+      setHistoryResultsLoading(false)
+    }
+  }
 
   // Execute search / discovery
   const executeSearch = useCallback(async () => {
@@ -361,86 +431,191 @@ export const DiscoveryPage: React.FC = () => {
           </button>
         </div>
 
-        {/* ── OpenOutreach 3-tier Discovery Form ── */}
+        {/* ── Single-Prompt Natural Language Lead Discovery & Context ── */}
         {activeTab === 'search' && (
           <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800/90 shadow-xl space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800/80 pb-3 gap-2">
               <div className="flex items-center space-x-2">
-                <Target className="w-4 h-4 text-violet-400" />
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-                  Discovery Parameters & Context
-                </h2>
+                <div className="p-1.5 rounded-lg bg-violet-600/20 text-violet-400">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                    AI Lead Discovery Assistant
+                  </h2>
+                  <p className="text-[11px] text-slate-400">
+                    Just describe who you want to reach in plain English — the LLM extracts parameters and discovers leads automatically
+                  </p>
+                </div>
               </div>
-              <span className="text-[11px] text-slate-400">
-                AI evaluates these criteria to generate explainable fit reasoning
-              </span>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedParams((prev) => !prev)}
+                className="text-xs text-violet-400 hover:text-violet-300 font-medium flex items-center space-x-1 self-start sm:self-auto"
+              >
+                <span>{showAdvancedParams ? 'Hide Details' : 'Detailed Parameters'}</span>
+                <span>{showAdvancedParams ? '▲' : '▼'}</span>
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* 1. Product Description */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-                  <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-400 text-[10px] flex items-center justify-center font-mono">
-                    1
-                  </span>
-                  <span>What does your project provide?</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={productDescription}
-                  onChange={(e) => setProductDescription(e.target.value)}
-                  placeholder="e.g. AI-powered platform that improves digital workflows..."
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
-                />
-              </div>
-
-              {/* 2. Target ICP */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-                  <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-400 text-[10px] flex items-center justify-center font-mono">
-                    2
-                  </span>
-                  <span>Who are you looking for? (ICP)</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={targetIcp}
-                  onChange={(e) => setTargetIcp(e.target.value)}
-                  placeholder="e.g. Enterprise companies in India interested in digital transformation..."
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
-                />
-              </div>
-
-              {/* 3. Discovery Objective */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-                  <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-400 text-[10px] flex items-center justify-center font-mono">
-                    3
-                  </span>
-                  <span>What is the discovery objective?</span>
-                </label>
-                <select
-                  value={discoveryObjective}
-                  onChange={(e) => setDiscoveryObjective(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition mb-2"
+            {/* Single Prompt Input Bar */}
+            <div className="space-y-3">
+              <div className="relative flex flex-col sm:flex-row items-stretch gap-2">
+                <div className="relative flex-1">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-violet-400">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    value={singlePrompt}
+                    onChange={(e) => setSinglePrompt(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !isParsingPrompt && !loading) {
+                        handlePromptDiscovery()
+                      }
+                    }}
+                    placeholder="e.g. Find enterprise hospitals and diagnostic chains in Hyderabad and Bangalore for digital health partnerships..."
+                    className="w-full bg-[#1A1040] border border-violet-500/40 focus:border-violet-400 rounded-xl pl-10 pr-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-violet-500 shadow-inner transition"
+                  />
+                </div>
+                <button
+                  type="button"
+                  disabled={!singlePrompt.trim() || isParsingPrompt || loading}
+                  onClick={() => handlePromptDiscovery()}
+                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-600/30 transition flex items-center justify-center space-x-2 disabled:opacity-50 shrink-0"
                 >
-                  {PARTNERSHIP_OBJECTIVES.map((obj) => (
-                    <option key={obj} value={`Find organizations for ${obj.toLowerCase()}`}>
-                      {obj}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  value={discoveryObjective}
-                  onChange={(e) => setDiscoveryObjective(e.target.value)}
-                  placeholder="Or enter custom objective..."
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
-                />
+                  {isParsingPrompt || loading ? (
+                    <>
+                      <RotateCw className="w-4 h-4 animate-spin" />
+                      <span>Discovering...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      <span>Discover Leads</span>
+                    </>
+                  )}
+                </button>
               </div>
+
+              {/* Quick Prompt Ideas */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mr-1">
+                  Try prompt:
+                </span>
+                {[
+                  'Enterprise healthcare & hospitals in Hyderabad',
+                  'High-growth Fintech SaaS in Singapore and India',
+                  'AI & machine learning startups in Bangalore',
+                  'Supply chain & logistics leaders in Mumbai',
+                ].map((idea) => (
+                  <button
+                    key={idea}
+                    type="button"
+                    onClick={() => {
+                      setSinglePrompt(idea)
+                      handlePromptDiscovery(idea)
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-[#1A1040] hover:bg-violet-900/40 text-[11px] text-slate-300 hover:text-white border border-slate-800 transition"
+                  >
+                    {idea}
+                  </button>
+                ))}
+              </div>
+
+              {/* LLM Inferred Context Badges */}
+              {lastParsedInfo && (
+                <div className="p-3 rounded-xl bg-violet-950/30 border border-violet-500/20 text-xs space-y-1.5 animate-in fade-in">
+                  <div className="text-[11px] font-bold text-violet-300 flex items-center space-x-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-violet-400" />
+                    <span>LLM Inferred Search Context:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[11px]">
+                    {lastParsedInfo.keyword && (
+                      <span className="px-2 py-0.5 rounded-md bg-[#110B2E] border border-violet-500/30 text-slate-200">
+                        🎯 <strong className="text-violet-300">Keyword:</strong> {lastParsedInfo.keyword}
+                      </span>
+                    )}
+                    {lastParsedInfo.location && (
+                      <span className="px-2 py-0.5 rounded-md bg-[#110B2E] border border-violet-500/30 text-slate-200">
+                        📍 <strong className="text-violet-300">Location:</strong> {lastParsedInfo.location}
+                      </span>
+                    )}
+                    {lastParsedInfo.organization_type && (
+                      <span className="px-2 py-0.5 rounded-md bg-[#110B2E] border border-violet-500/30 text-slate-200">
+                        🏢 <strong className="text-violet-300">Type:</strong> {lastParsedInfo.organization_type}
+                      </span>
+                    )}
+                    {lastParsedInfo.discovery_objective && (
+                      <span className="px-2 py-0.5 rounded-md bg-[#110B2E] border border-violet-500/30 text-slate-200">
+                        💡 <strong className="text-violet-300">Objective:</strong> {lastParsedInfo.discovery_objective}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Secondary Search Filters Row */}
+            {/* Optional Collapsible Advanced Parameters */}
+            {showAdvancedParams && (
+              <div className="pt-4 border-t border-slate-800/80 space-y-4 animate-in fade-in">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* 1. Product Description */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                      <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-400 text-[10px] flex items-center justify-center font-mono">
+                        1
+                      </span>
+                      <span>What does your project provide?</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={productDescription}
+                      onChange={(e) => setProductDescription(e.target.value)}
+                      placeholder="e.g. AI platform that improves digital workflows..."
+                      className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                    />
+                  </div>
+
+                  {/* 2. Target ICP */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                      <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-400 text-[10px] flex items-center justify-center font-mono">
+                        2
+                      </span>
+                      <span>Target ICP</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={targetIcp}
+                      onChange={(e) => setTargetIcp(e.target.value)}
+                      placeholder="e.g. Enterprise companies interested in digital transformation..."
+                      className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                    />
+                  </div>
+
+                  {/* 3. Discovery Objective */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                      <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-400 text-[10px] flex items-center justify-center font-mono">
+                        3
+                      </span>
+                      <span>Discovery Objective</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={discoveryObjective}
+                      onChange={(e) => setDiscoveryObjective(e.target.value)}
+                      placeholder="Objective..."
+                      className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Secondary Search Filters Row (with Data Source properly placed) */}
             <div className="pt-3 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
               <div className="space-y-1">
                 <label className="text-[11px] font-semibold text-slate-400">Keyword / Name</label>
@@ -464,7 +639,7 @@ export const DiscoveryPage: React.FC = () => {
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Hyderabad, USA, London, Singapore"
+                    placeholder="e.g. Hyderabad, Singapore"
                     className="w-full bg-[#1A1040] border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
                   />
                 </div>
@@ -485,6 +660,25 @@ export const DiscoveryPage: React.FC = () => {
                 </select>
               </div>
 
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-400">Data Source</label>
+                <select
+                  value={selectedProvider}
+                  onChange={(e) => setSelectedProvider(e.target.value)}
+                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                >
+                  {providers?.organization_providers?.map((p) => (
+                    <option key={p.name} value={p.name}>
+                      {p.name}
+                    </option>
+                  )) || (
+                    <option value="Multi-Source Discovery (Recommended)">
+                      Multi-Source Discovery (Recommended)
+                    </option>
+                  )}
+                </select>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => {
@@ -497,9 +691,9 @@ export const DiscoveryPage: React.FC = () => {
                   {loading ? (
                     <RotateCw className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Filter className="w-3.5 h-3.5" />
                   )}
-                  <span>Start Discovery</span>
+                  <span>Filter Leads</span>
                 </button>
               </div>
             </div>
@@ -514,14 +708,14 @@ export const DiscoveryPage: React.FC = () => {
                 ? `Discovered Leads (${totalItems})`
                 : activeTab === 'saved'
                 ? `Saved Leads (${totalItems})`
-                : `Discovery History`}
+                : `Discovery History & Results`}
             </h3>
             <p className="text-xs text-slate-400">
               {activeTab === 'search'
                 ? 'Review AI qualification and discover executive decision-makers before adding to CRM'
                 : activeTab === 'saved'
                 ? 'Bookmarked leads awaiting BD outreach preparation'
-                : 'Recent B2B discovery search queries and prompt executions'}
+                : 'Click on any search run or data source to review the full list of discovered leads'}
             </p>
           </div>
         </div>
@@ -545,37 +739,23 @@ export const DiscoveryPage: React.FC = () => {
             </button>
           </div>
         ) : activeTab === 'history' ? (
-          /* History View */
+          /* Search & Objective History View with Results List Trigger */
           <div className="bg-[#110B2E] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
             <div className="divide-y divide-slate-800/80">
               {historyItems.length === 0 ? (
                 <div className="p-12 text-center text-xs text-slate-500 italic">
-                  No discovery search history recorded yet.
+                  No discovery search history recorded yet. Run a search to populate history.
                 </div>
               ) : (
                 historyItems.map((h) => (
-                  <div key={h.id} className="p-4 hover:bg-[#1A1040] transition flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div className="space-y-1">
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-400">Data Source</label>
-                <select
-                  value={selectedProvider}
-                  onChange={(e) => setSelectedProvider(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
-                >
-                  {providers?.organization_providers?.map((p) => (
-                    <option key={p.name} value={p.name}>
-                      {p.name}
-                    </option>
-                  )) || (
-                    <option value="Multi-Source Discovery (Recommended)">Multi-Source Discovery (Recommended)</option>
-                  )}
-                </select>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                        <span className="text-xs font-bold text-white">
-                          {h.query_keyword || 'All Organizations'}
+                  <div
+                    key={h.id}
+                    className="p-5 hover:bg-[#1A1040]/70 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-bold text-white">
+                          {h.query_keyword || 'All Target Organizations'}
                         </span>
                         {h.organization_type && (
                           <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300 font-mono">
@@ -583,18 +763,35 @@ export const DiscoveryPage: React.FC = () => {
                           </span>
                         )}
                         {h.location && (
-                          <span className="text-[11px] text-slate-400">· {h.location}</span>
+                          <span className="text-xs text-slate-400">· 📍 {h.location}</span>
+                        )}
+                        {h.provider_used && (
+                          <span className="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 text-[10px] font-mono border border-violet-500/20">
+                            Source: {h.provider_used}
+                          </span>
                         )}
                       </div>
                       {h.discovery_objective && (
-                        <p className="text-xs text-slate-400 font-mono line-clamp-1">
-                          Goal: {h.discovery_objective}
+                        <p className="text-xs text-slate-400 line-clamp-1">
+                          <strong className="text-slate-300">Goal:</strong> {h.discovery_objective}
                         </p>
                       )}
+                      <div className="text-[11px] text-slate-500">
+                        Executed on {new Date(h.timestamp).toLocaleString()}
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-4 text-xs text-slate-400">
-                      <span className="font-mono text-violet-300">{h.results_count} results</span>
-                      <span>{new Date(h.timestamp).toLocaleDateString()}</span>
+
+                    <div className="flex items-center space-x-3 shrink-0">
+                      <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-semibold">
+                        {h.results_count} Discovered Leads
+                      </span>
+                      <button
+                        onClick={() => handleViewHistoryResults(h)}
+                        className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-violet-600/20"
+                      >
+                        <span>View Results</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))
@@ -776,6 +973,87 @@ export const DiscoveryPage: React.FC = () => {
               >
                 {isAdding ? 'Adding...' : 'Confirm & Add to ELLY'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Search & Objective History Results Modal ── */}
+      {isHistoryModalOpen && selectedHistory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-800/80 flex items-center justify-between bg-[#160E3B]">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-base font-bold text-white">
+                    {selectedHistory.query_keyword || 'All Target Organizations'}
+                  </h3>
+                  {selectedHistory.organization_type && (
+                    <span className="px-2 py-0.5 rounded-md bg-violet-600/30 text-violet-300 text-xs font-mono">
+                      {selectedHistory.organization_type}
+                    </span>
+                  )}
+                  {selectedHistory.location && (
+                    <span className="text-xs text-slate-300">· 📍 {selectedHistory.location}</span>
+                  )}
+                </div>
+                {selectedHistory.discovery_objective && (
+                  <p className="text-xs text-slate-400">
+                    <strong className="text-slate-300">Objective:</strong> {selectedHistory.discovery_objective}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono border border-emerald-500/20">
+                  {historyResults.length} Leads
+                </span>
+                <button
+                  onClick={() => {
+                    setIsHistoryModalOpen(false)
+                    setSelectedHistory(null)
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto flex-1 space-y-4">
+              {historyResultsLoading ? (
+                <div className="py-20 text-center space-y-3">
+                  <RotateCw className="w-8 h-8 animate-spin text-violet-400 mx-auto" />
+                  <p className="text-xs text-slate-400">Loading discovered leads from this search run...</p>
+                </div>
+              ) : historyResults.length === 0 ? (
+                <div className="py-16 text-center space-y-2">
+                  <Compass className="w-10 h-10 text-slate-600 mx-auto" />
+                  <h4 className="text-sm font-bold text-white">No Lead Records Linked</h4>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                    This search completed with {selectedHistory.results_count} hits.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {historyResults.map((item) => (
+                    <DiscoveryCard
+                      key={item.id}
+                      item={item}
+                      onSave={handleSave}
+                      onSkip={handleSkip}
+                      onAdd={handleOpenAdd}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800/80 bg-[#160E3B] flex items-center justify-between text-xs text-slate-400">
+              <span>Data Source: {selectedHistory.provider_used || 'Multi-Source Discovery'}</span>
+              <span>Executed on {new Date(selectedHistory.timestamp).toLocaleString()}</span>
             </div>
           </div>
         </div>

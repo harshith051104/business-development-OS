@@ -77,6 +77,7 @@ class DiscoveredOrganizationOut(BaseModel):
     is_existing_duplicate: bool = False
     existing_org_id: Optional[int] = None
     existing_org_name: Optional[str] = None
+    search_history_id: Optional[int] = None
 
     # Discovered decision-makers
     contacts: List[DiscoveredContactOut] = []
@@ -193,3 +194,17 @@ class CsvImportResultOut(BaseModel):
     imported_ids: List[int] = []
     skipped_count: int
     errors: List[str] = []
+
+
+class DiscoveryPromptParseIn(BaseModel):
+    prompt: str
+
+
+class DiscoveryPromptParseOut(BaseModel):
+    keyword: Optional[str] = None
+    location: Optional[str] = None
+    organization_type: Optional[str] = None
+    product_description: Optional[str] = None
+    target_icp: Optional[str] = None
+    discovery_objective: Optional[str] = None
+    extracted_summary: Optional[str] = None

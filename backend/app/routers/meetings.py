@@ -209,6 +209,56 @@ def list_meetings(
     )
 
 
+@router.get("/meetings/active-upcoming")
+def get_active_upcoming_meetings(
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns meetings that are currently active (in progress) or scheduled within the next 30 minutes,
+    enabling automatic alerts and auto-entry into Google Meet, Microsoft Teams, Zoom, etc.
+    """
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(minutes=60)
+    window_end = now + timedelta(minutes=30)
+
+    query = (
+        db.query(Meeting)
+        .join(Organization, Meeting.organization_id == Organization.id)
+        .outerjoin(Contact, Meeting.primary_contact_id == Contact.id)
+        .filter(
+            Meeting.is_deleted.is_(False),
+            Meeting.status == MeetingStatus.SCHEDULED.value,
+            Meeting.scheduled_at >= window_start,
+            Meeting.scheduled_at <= window_end,
+        )
+        .order_by(Meeting.scheduled_at.asc())
+    )
+    if current_user.role != "ADMIN":
+        query = query.filter(or_(Meeting.owner_id == current_user.id, Meeting.owner_id.is_(None)))
+
+    meetings = query.options(joinedload(Meeting.organization), joinedload(Meeting.primary_contact)).all()
+    results = []
+    for m in meetings:
+        meeting_end = m.scheduled_at + timedelta(minutes=m.duration_minutes)
+        is_active = m.scheduled_at <= now <= meeting_end
+        time_to_start_seconds = int((m.scheduled_at - now).total_seconds())
+        results.append({
+            "id": m.id,
+            "title": m.title,
+            "organization_name": m.organization.name if m.organization else None,
+            "primary_contact_name": m.primary_contact.full_name if m.primary_contact else None,
+            "scheduled_at": m.scheduled_at.isoformat(),
+            "duration_minutes": m.duration_minutes,
+            "location": m.location,
+            "meeting_url": m.meeting_url,
+            "is_active": is_active,
+            "time_to_start_seconds": time_to_start_seconds,
+            "auto_enter_eligible": is_active or (-120 <= time_to_start_seconds <= 60),
+        })
+    return {"meetings": results, "server_time": now.isoformat()}
+
+
 @router.get("/meetings/{id}", response_model=MeetingDetailOut)
 def get_meeting(
     id: int,

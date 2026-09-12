@@ -25,4 +25,11 @@ export const connectionsService = {
       note,
     })
   },
+
+  autoSync: async (): Promise<{ status: string; updated_count: number; message: string }> => {
+    return api.post<{ status: string; updated_count: number; message: string }>(
+      '/api/business-development/connections/auto-sync',
+      {}
+    )
+  },
 }

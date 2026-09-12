@@ -8,6 +8,7 @@ import type {
   ProviderList,
   DiscoveryAddPayload,
   DiscoveryHistoryItem,
+  DiscoveryPromptParseOut,
   DiscoveryStats,
   CsvImportPreview,
   CsvImportRowValidation,
@@ -89,6 +90,17 @@ export const discoveryService = {
 
   getHistory: async (limit: number = 10): Promise<DiscoveryHistoryItem[]> => {
     return api.get<DiscoveryHistoryItem[]>('/api/business-development/discover/history', { limit })
+  },
+
+  getHistoryResults: async (
+    historyId: number,
+    params: { page?: number; page_size?: number } = {}
+  ): Promise<PaginatedDiscovery> => {
+    return api.get<PaginatedDiscovery>(`/api/business-development/discover/history/${historyId}/results`, params)
+  },
+
+  parsePrompt: async (prompt: string): Promise<DiscoveryPromptParseOut> => {
+    return api.post<DiscoveryPromptParseOut>('/api/business-development/discover/parse-prompt', { prompt })
   },
 
   getStats: async (): Promise<DiscoveryStats> => {

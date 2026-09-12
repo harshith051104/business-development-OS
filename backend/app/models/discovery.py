@@ -50,6 +50,9 @@ class DiscoveredOrganization(Base):
     # Deduplication link if matching organization is detected in ELLY CRM
     matched_existing_org_id = Column(Integer, ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True)
 
+    # Search history reference for tracking discovery runs
+    search_history_id = Column(Integer, ForeignKey("discovery_search_history.id", ondelete="SET NULL"), nullable=True, index=True)
+
     # Added link once converted into ELLY CRM
     organization_id = Column(Integer, ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True)
     discovered_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
@@ -58,6 +61,7 @@ class DiscoveredOrganization(Base):
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relationships
+    search_history = relationship("DiscoverySearchHistory", foreign_keys=[search_history_id])
     organization = relationship("Organization", foreign_keys=[organization_id], backref="discovery_source")
     matched_existing_org = relationship("Organization", foreign_keys=[matched_existing_org_id])
     discovered_by = relationship("User", foreign_keys=[discovered_by_id])

@@ -51,6 +51,7 @@ import AdminShowcaseEditPage from './pages/admin/AdminShowcaseEditPage'
 import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage'
 import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 import { CopilotDrawer } from './components/copilot/CopilotDrawer'
+import { ActiveMeetingLauncher } from './components/meetings/ActiveMeetingLauncher'
 import { DemosView } from './pages/DemosView'
 import { ProposalsView } from './pages/ProposalsView'
 import { NegotiationsView } from './pages/NegotiationsView'
@@ -586,6 +587,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/business-development" replace />} />
       </Routes>
       <CopilotDrawer />
+      <ActiveMeetingLauncher />
     </AuthProvider>
   )
 }

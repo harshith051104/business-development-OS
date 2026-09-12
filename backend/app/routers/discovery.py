@@ -43,8 +43,11 @@ from app.schemas.discovery import (
     CsvImportPreviewOut,
     CsvImportExecuteIn,
     CsvImportResultOut,
+    DiscoveryPromptParseIn,
+    DiscoveryPromptParseOut,
 )
 from app.schemas.organization import OrganizationDetailOut
+from app.services.discovery.prompt_parser import parse_discovery_prompt
 from app.services.discovery_providers import discovery_registry
 from app.services.discovery_engine import (
     check_organization_duplicate,
@@ -125,6 +128,7 @@ def _enrich_org_out(db: Session, disc_org: DiscoveredOrganization) -> Discovered
         is_existing_duplicate=is_dup,
         existing_org_id=existing_id,
         existing_org_name=existing_name,
+        search_history_id=disc_org.search_history_id,
         contacts=contacts_out,
         created_at=disc_org.created_at,
         updated_at=disc_org.updated_at,
@@ -190,6 +194,68 @@ def get_search_history(
             )
         )
     return out
+
+
+@router.get("/history/{history_id}/results", response_model=PaginatedDiscoveryOut)
+def get_search_history_results(
+    history_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    """Retrieves the discovered organizations from a specific search history run."""
+    h = db.query(DiscoverySearchHistory).filter(DiscoverySearchHistory.id == history_id).first()
+    if not h:
+        raise HTTPException(status_code=404, detail="Search history entry not found.")
+
+    query = db.query(DiscoveredOrganization).filter(
+        DiscoveredOrganization.search_history_id == history_id
+    )
+    total = query.count()
+
+    # Fallback for historical searches without search_history_id
+    if total == 0:
+        query = db.query(DiscoveredOrganization)
+        if h.query_keyword:
+            kw = f"%{h.query_keyword.strip()}%"
+            query = query.filter(
+                DiscoveredOrganization.name.ilike(kw)
+                | DiscoveredOrganization.description.ilike(kw)
+            )
+        if h.organization_type and h.organization_type != "All":
+            query = query.filter(DiscoveredOrganization.organization_type == h.organization_type)
+        if h.location:
+            loc = f"%{h.location.strip()}%"
+            query = query.filter(
+                DiscoveredOrganization.city.ilike(loc)
+                | DiscoveredOrganization.state.ilike(loc)
+                | DiscoveredOrganization.country.ilike(loc)
+            )
+        total = query.count()
+
+    offset = (page - 1) * page_size
+    items = query.order_by(desc(DiscoveredOrganization.potential_fit_score), desc(DiscoveredOrganization.created_at)).offset(offset).limit(page_size).all()
+
+    out_items = [_enrich_org_out(db, org) for org in items]
+    return PaginatedDiscoveryOut(
+        items=out_items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=math.ceil(total / page_size) if total > 0 else 1,
+    )
+
+
+@router.post("/parse-prompt", response_model=DiscoveryPromptParseOut)
+def parse_prompt_endpoint(
+    payload: DiscoveryPromptParseIn,
+    current_user: User = Depends(require_business_development),
+):
+    """Parses a single natural language lead discovery prompt into structured search parameters."""
+    parsed = parse_discovery_prompt(payload.prompt)
+    return DiscoveryPromptParseOut(**parsed)
+
 
 
 @router.get("/stats", response_model=DiscoveryStatsOut)
@@ -508,6 +574,21 @@ def search_discoveries(
                 except Exception:
                     pass
 
+    # Log search history early so discovered organizations can link to it
+    history_entry = DiscoverySearchHistory(
+        user_id=current_user.id,
+        query_keyword=payload.keyword,
+        location=payload.location,
+        organization_type=payload.organization_type,
+        product_description=payload.product_description,
+        target_icp=payload.target_icp,
+        discovery_objective=payload.discovery_objective,
+        provider_used=provider.provider_name if provider else "multi-source",
+        results_count=total_count,
+    )
+    db.add(history_entry)
+    db.flush()
+
     out_items: List[DiscoveredOrganizationOut] = []
     for res in provider_results:
         clean_name = res["name"].strip()
@@ -545,6 +626,7 @@ def search_discoveries(
                 potential_fit_score=qual_score,
                 qualification_reason=qual_reason,
                 discovered_by_id=current_user.id,
+                search_history_id=history_entry.id,
             )
             db.add(new_record)
             db.flush()
@@ -573,21 +655,10 @@ def search_discoveries(
             existing_record.product_description = payload.product_description or existing_record.product_description
             existing_record.target_icp = payload.target_icp or existing_record.target_icp
             existing_record.discovery_objective = payload.discovery_objective or existing_record.discovery_objective
+            existing_record.search_history_id = history_entry.id
             out_items.append(_enrich_org_out(db, existing_record))
 
-    # Log search history
-    history_entry = DiscoverySearchHistory(
-        user_id=current_user.id,
-        query_keyword=payload.keyword,
-        location=payload.location,
-        organization_type=payload.organization_type,
-        product_description=payload.product_description,
-        target_icp=payload.target_icp,
-        discovery_objective=payload.discovery_objective,
-        provider_used=provider.provider_name if provider else "multi-source",
-        results_count=total_count,
-    )
-    db.add(history_entry)
+    history_entry.results_count = total_count
     db.commit()
 
     total_pages = math.ceil(total_count / payload.page_size) if payload.page_size else 1
