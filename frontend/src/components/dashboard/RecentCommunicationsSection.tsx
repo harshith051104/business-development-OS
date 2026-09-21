@@ -6,7 +6,13 @@ import CommunicationChannelBadge from '../communications/CommunicationChannelBad
 import CommunicationDirectionBadge from '../communications/CommunicationDirectionBadge'
 import { MessageSquare, ArrowRight, Plus, Building2, User, RotateCw } from 'lucide-react'
 
-export const RecentCommunicationsSection: React.FC = () => {
+interface RecentCommunicationsSectionProps {
+  hideContainer?: boolean
+}
+
+export const RecentCommunicationsSection: React.FC<RecentCommunicationsSectionProps> = ({
+  hideContainer = false,
+}) => {
   const [communications, setCommunications] = useState<Communication[]>([])
   const [loading, setLoading] = useState<boolean>(true)
 
@@ -17,6 +23,64 @@ export const RecentCommunicationsSection: React.FC = () => {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false))
   }, [])
+
+  const content = loading ? (
+    <div className="py-8 text-center">
+      <RotateCw className="w-5 h-5 animate-spin text-violet-400 mx-auto" />
+    </div>
+  ) : communications.length === 0 ? (
+    <div className="py-8 text-center text-xs text-slate-500 italic">
+      No communication logged yet.
+    </div>
+  ) : (
+    <div className="grid grid-cols-1 gap-2">
+      {communications.map((comm) => (
+        <Link
+          key={comm.id}
+          to={`/business-development/communications/${comm.id}`}
+          className="p-3 rounded-xl bg-[#1A1040]/90 border border-slate-800/80 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 group"
+        >
+          <div className="space-y-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] font-mono font-bold text-violet-300">
+                {new Date(comm.communication_date).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
+              <CommunicationChannelBadge channel={comm.channel} size="sm" />
+              <CommunicationDirectionBadge direction={comm.direction} size="sm" />
+            </div>
+            <div className="text-xs font-semibold text-white group-hover:text-violet-300 transition truncate">
+              {comm.subject}
+            </div>
+            <div className="flex items-center space-x-2 text-[11px] text-slate-400">
+              {comm.organization_name && (
+                <span className="flex items-center space-x-1 truncate">
+                  <Building2 className="w-3 h-3 text-slate-500 shrink-0" />
+                  <span className="truncate">{comm.organization_name}</span>
+                </span>
+              )}
+              {comm.contact_name && (
+                <span className="flex items-center space-x-1 text-teal-400 truncate">
+                  <User className="w-3 h-3 text-teal-500 shrink-0" />
+                  <span className="truncate">{comm.contact_name}</span>
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="text-[11px] text-slate-500 shrink-0 self-end sm:self-center font-mono">
+            {comm.created_by || 'BD Team'}
+          </div>
+        </Link>
+      ))}
+    </div>
+  )
+
+  if (hideContainer) {
+    return content
+  }
 
   return (
     <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
@@ -53,59 +117,7 @@ export const RecentCommunicationsSection: React.FC = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="py-8 text-center">
-          <RotateCw className="w-5 h-5 animate-spin text-violet-400 mx-auto" />
-        </div>
-      ) : communications.length === 0 ? (
-        <div className="py-8 text-center text-xs text-slate-500 italic">
-          No communication logged yet.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-2.5">
-          {communications.map((comm) => (
-            <Link
-              key={comm.id}
-              to={`/business-development/communications/${comm.id}`}
-              className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800/80 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 group"
-            >
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] font-mono font-bold text-violet-300">
-                    {new Date(comm.communication_date).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </span>
-                  <CommunicationChannelBadge channel={comm.channel} size="sm" />
-                  <CommunicationDirectionBadge direction={comm.direction} size="sm" />
-                </div>
-                <div className="text-xs font-bold text-white group-hover:text-violet-300 transition">
-                  {comm.subject}
-                </div>
-                <div className="flex items-center space-x-3 text-[11px] text-slate-400">
-                  {comm.organization_name && (
-                    <span className="flex items-center space-x-1">
-                      <Building2 className="w-3 h-3 text-slate-500" />
-                      <span>{comm.organization_name}</span>
-                    </span>
-                  )}
-                  {comm.contact_name && (
-                    <span className="flex items-center space-x-1 text-teal-400">
-                      <User className="w-3 h-3 text-teal-500" />
-                      <span>{comm.contact_name}</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="text-[11px] text-slate-400 shrink-0 self-end sm:self-center">
-                {comm.created_by || 'BD Team'}
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+      {content}
     </div>
   )
 }

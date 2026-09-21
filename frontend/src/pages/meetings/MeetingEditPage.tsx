@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { meetingsService } from '../../services/meetings'
 import type { Meeting } from '../../types/meeting'
 import Navbar from '../../components/layout/Navbar'
+import { extractLocalDateAndTime, formatLocalDateTimeToUtcIso } from '../../utils/date'
 import {
   ArrowLeft,
   Calendar,
@@ -68,15 +69,9 @@ export const MeetingEditPage: React.FC = () => {
         setDecisions(data.decisions || '')
         setNextActions(data.next_actions || '')
 
-        const dt = new Date(data.scheduled_at)
-        const year = dt.getFullYear()
-        const month = String(dt.getMonth() + 1).padStart(2, '0')
-        const day = String(dt.getDate()).padStart(2, '0')
-        setMeetingDate(`${year}-${month}-${day}`)
-
-        const hours = String(dt.getHours()).padStart(2, '0')
-        const mins = String(dt.getMinutes()).padStart(2, '0')
-        setMeetingTime(`${hours}:${mins}`)
+        const { date, time } = extractLocalDateAndTime(data.scheduled_at)
+        setMeetingDate(date)
+        setMeetingTime(time)
       } catch (err: any) {
         setError(err.detail || err.message || 'Failed to load meeting.')
       } finally {
@@ -99,7 +94,7 @@ export const MeetingEditPage: React.FC = () => {
     try {
       const scheduledDateTime =
         meetingDate && meetingTime
-          ? new Date(`${meetingDate}T${meetingTime}:00`).toISOString()
+          ? formatLocalDateTimeToUtcIso(meetingDate, meetingTime)
           : undefined
 
       await meetingsService.updateMeeting(id, {

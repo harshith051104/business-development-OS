@@ -190,11 +190,11 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
           >
             {item.name}
           </Link>
-          {(item.city || item.state || item.country) && (
-            <div className="flex items-center space-x-1 text-xs text-slate-400 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-              <span className="truncate">
-                {[item.city, item.state, item.country].filter(Boolean).join(', ')}
+          {(item.address || item.city || item.state || item.country) && (
+            <div className="flex items-start space-x-1.5 text-xs text-slate-400 mt-1" title={item.address || undefined}>
+              <MapPin className="w-3.5 h-3.5 text-violet-400 shrink-0 mt-0.5" />
+              <span className="line-clamp-2 leading-tight">
+                {item.address || [item.city, item.state, item.country].filter(Boolean).join(', ')}
               </span>
             </div>
           )}

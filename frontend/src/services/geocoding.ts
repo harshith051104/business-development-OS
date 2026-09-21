@@ -8,9 +8,12 @@ export interface MapData {
   organization_type: string
   city: string
   country: string
+  address?: string
   status: string
   priority: string
   website: string
+  location_precision?: string | null
+  location_source?: string | null
 }
 
 export interface GeocodeResult {

@@ -64,6 +64,8 @@ class Organization(Base):
     address = Column(Text, nullable=True)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    location_precision = Column(String(20), nullable=True, default=None)  # EXACT, APPROXIMATE, None
+    location_source = Column(String(50), nullable=True, default=None)    # nominatim, google, manual, city_fallback
     industry = Column(String(100), nullable=True, default="Unknown")
     size = Column(String(50), nullable=True, default="200-1000")
     status = Column(String(50), nullable=False, default=ConnectionStatus.POTENTIAL.value)

@@ -109,11 +109,12 @@ export const CopilotDrawer: React.FC = () => {
         {
           sender: 'assistant',
           content:
-            "👋 **Hello! I'm ELLY**, your Universal Business Development AI Copilot.\n\nI'm connected to all 15 modules across your portal. Ask me for **360° dossiers**, **meeting prep**, **pipeline analytics**, **decision makers**, or to **advance deal stages**.",
+            "👋 **Hello! I'm ELLY**, your Autonomous Business Development AI Agent powered by Groq, Gemini & NVIDIA NIM.\n\nI can proactively research prospects, draft outreach emails, recommend showcase pitch decks, schedule meetings, and surface high-priority follow-ups with safe 1-click approvals.",
           suggested_followups: [
             'What needs my attention today?',
-            'Tell me about our pipeline',
-            'What meetings do I have scheduled?',
+            'Recommend showcase deck for active leads',
+            'Auto-generate follow-up actions',
+            'Draft outreach email for our top prospect',
           ],
         },
       ])
@@ -260,12 +261,13 @@ export const CopilotDrawer: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-sm text-slate-100 tracking-wide">ELLY Universal Copilot</h3>
-                  <span className="px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase bg-violet-500/20 text-violet-300 rounded border border-violet-500/30">
-                    Live
+                  <h3 className="font-bold text-sm text-slate-100 tracking-wide">ELLY Autonomous BD Agent</h3>
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold tracking-wider bg-emerald-500/15 text-emerald-300 rounded border border-emerald-500/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Groq • Gemini • NIM
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">Universal BD Assistant & Intelligence</p>
+                <p className="text-[11px] text-slate-400">Autonomous Business Development & Execution</p>
               </div>
             </div>
 
@@ -494,7 +496,7 @@ export const CopilotDrawer: React.FC = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask ELLY anything about your BD pipeline..."
+                placeholder="Ask ELLY to research, draft email, recommend decks, schedule meetings..."
                 className="flex-1 bg-[#1A1040]/90 text-slate-100 placeholder-slate-500 px-3.5 py-2 rounded-xl text-xs border border-violet-800/40 focus:outline-none focus:border-violet-500/80 focus:ring-1 focus:ring-violet-500/40"
                 disabled={loading}
               />

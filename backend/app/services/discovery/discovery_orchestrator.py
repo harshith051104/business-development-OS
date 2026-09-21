@@ -71,6 +71,8 @@ class DiscoveryOrchestrator:
         for org in normalized:
             is_valid, reason, clean_org = organization_validator.validate(org)
             if is_valid:
+                clean_org["contacts"] = org.get("contacts", [])
+                clean_org["employee_count"] = org.get("employee_count", "")
                 validated.append(clean_org)
             else:
                 rejected_count += 1
@@ -113,9 +115,15 @@ class DiscoveryOrchestrator:
                 discovery_objective=discovery_objective,
             )
             org["qualification"] = qual.model_dump()
-            org["potential_fit"] = qual.tier
-            org["potential_fit_score"] = qual.score
-            org["qualification_reason"] = "; ".join(qual.positive_signals[:3])
+            ai_score = org.get("potential_fit_score", 0)
+            if ai_score >= 80:
+                org["potential_fit"] = "High"
+                org["potential_fit_score"] = max(ai_score, qual.score)
+            else:
+                org["potential_fit"] = qual.tier
+                org["potential_fit_score"] = qual.score
+            if not org.get("qualification_reason"):
+                org["qualification_reason"] = "; ".join(qual.positive_signals[:3])
 
         # 6. Sort by fit score
         deduplicated.sort(key=lambda x: x.get("potential_fit_score", 0), reverse=True)
@@ -241,8 +249,8 @@ class DiscoveryOrchestrator:
             except Exception as e:
                 logger.warning(f"Provider {provider} failed: {e}")
         else:
-            # Try providers in order, stop when we have enough results
-            for provider_name in ["Tavily Web Search", "Serper Google Search", "Curated Directory"]:
+            # Try providers in order: AI Agent Lead Researcher (Apollo-Grade) -> Curated Directory -> Tavily -> Serper
+            for provider_name in ["AI Agent Lead Researcher (Apollo-Grade)", "Curated Directory", "Tavily Web Search", "Serper Google Search"]:
                 try:
                     p = discovery_registry.get_org_provider(provider_name)
                     results, _ = p.search_organizations(
@@ -281,6 +289,8 @@ class DiscoveryOrchestrator:
             "source_url": result.get("source_url", ""),
             "potential_fit_score": result.get("potential_fit_score", 50),
             "qualification_reason": result.get("qualification_reason", ""),
+            "contacts": result.get("contacts", []),
+            "employee_count": result.get("employee_count", ""),
         }
 
     def _enrich_from_research(self, org: Dict[str, Any], research: Dict[str, Any]):

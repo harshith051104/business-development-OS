@@ -17,9 +17,13 @@ import {
 
 interface DailyPrioritiesWidgetProps {
   onNavigate?: (tab: string, entityId?: number) => void;
+  hideContainer?: boolean;
 }
 
-export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({ onNavigate }) => {
+export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({
+  onNavigate,
+  hideContainer = false,
+}) => {
   const [data, setData] = useState<DailyPrioritiesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +78,73 @@ export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({ on
         return <CheckCircle2 className="w-4 h-4 text-teal-400" />;
     }
   };
+
+  if (hideContainer) {
+    return (
+      <div className="space-y-3">
+        {/* Focus Action Banner */}
+        <div className="bg-teal-950/30 border border-teal-500/30 rounded-xl p-3 flex items-start gap-2.5 text-xs text-slate-200">
+          <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse mt-1 shrink-0" />
+          <div className="min-w-0">
+            <span className="font-semibold text-teal-300 mr-1.5">Next Move:</span>
+            <span className="text-slate-300">{data.what_should_i_do_next}</span>
+          </div>
+        </div>
+
+        {/* Priority Items List */}
+        <div className="space-y-2">
+          {data.all_priority_items.map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-[#1A1040]/90 hover:bg-[#1A1040] border border-slate-800/80 hover:border-slate-700 rounded-xl p-3 transition duration-200 flex flex-col justify-between group"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center space-x-1.5">
+                    <div className="p-1 rounded-md bg-slate-900 border border-slate-800">
+                      {getCategoryIcon(item.category)}
+                    </div>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                      {item.target_type}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                    item.priority === 'High' 
+                      ? 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                      : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                  }`}>
+                    {item.priority}
+                  </span>
+                </div>
+
+                <h4 className="text-xs font-semibold text-white group-hover:text-teal-300 transition-colors truncate">
+                  {item.title}
+                </h4>
+                <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+                  {item.reason_why}
+                </p>
+              </div>
+
+              <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between">
+                <span className="text-[11px] text-teal-400 font-medium truncate max-w-[220px]">
+                  {item.recommended_action}
+                </span>
+                {onNavigate && (
+                  <button
+                    onClick={() => onNavigate(item.target_type === 'organization' ? 'organizations' : (item.target_type === 'opportunity' ? 'opportunities' : item.target_type), item.target_id)}
+                    className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition"
+                    title="Open record"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 border border-teal-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden mb-8">

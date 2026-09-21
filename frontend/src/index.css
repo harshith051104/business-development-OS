@@ -109,3 +109,48 @@
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 }
+
+/* Leaflet Dark Mode Customizations */
+.leaflet-container {
+  background-color: #0B0520 !important;
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #110B2E !important;
+  color: #F0ECFF !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: inherit !important;
+}
+
+.leaflet-popup-tip {
+  background: #110B2E !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+}
+
+.leaflet-popup-close-button {
+  color: #A8A3C0 !important;
+  top: 10px !important;
+  right: 12px !important;
+  font-size: 18px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #FFFFFF !important;
+}
+
+/* OpenStreetMap Free & Open Source Dark Tile Filter */
+.osm-dark-tiles .leaflet-tile-pane {
+  filter: brightness(0.7) invert(1) contrast(2.2) hue-rotate(200deg) saturate(0.3) brightness(0.85);
+}
+
+.osm-standard-tiles .leaflet-tile-pane {
+  filter: none;
+}

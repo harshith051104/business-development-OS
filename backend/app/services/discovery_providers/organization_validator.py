@@ -56,7 +56,10 @@ ARTICLE_NAME_PATTERNS = re.compile(
     r"(?:everything|all)\s+you\s+(?:need|want|should)\s|"
     r"industry\s+(?:analysis|report|overview|insights|trends)\b|"
     r"market\s+(?:report|analysis|research|size|forecast|trends)\b|"
-    r"(?:white\s+paper|case\s+study|ebook|webinar|podcast)\b"
+    r"(?:white\s+paper|case\s+study|ebook|webinar|podcast)\b|"
+    r"(?:directory|archives?|catalog|member|roundup|database)\s*$|"
+    r"\b(?:wave|spin\s*out|first\s+to\s+spin|expanding\s+the|expansion\s+wave)\b|"
+    r"\bin\s+[A-Z][a-z]+,\s+[A-Z][a-z]+"
     r")",
     re.IGNORECASE,
 )
@@ -85,6 +88,10 @@ JUNK_DOMAINS = {
     "archive.org", "web.archive.org",
     "google.com", "bing.com", "yahoo.com", "duckduckgo.com",
     "apple.com", "microsoft.com", "amazonaws.com",
+    "nus.edu.sg", "fintechweekly.com", "fintechnews.sg", "tracxn.com",
+    "usfintech.co", "australianfintech.com.au", "big-picture.com",
+    "getlatka.com", "latka.com", "pitchbook.com", "dealroom.co",
+    "techinasia.com", "e27.co", "finextra.com", "pymnts.com",
 }
 
 # URL path patterns that indicate non-org content
@@ -98,6 +105,7 @@ JUNK_URL_PATHS = re.compile(
     r"/promo/|/coupon/|/discount/|/deal/|/offers?/|"
     r"/review/|/reviews/|/rating/|/ratings/|"
     r"/compare/|/comparison/|/vs/|/versus/|"
+    r"/visit/|/demo/|/marketplace/|"
     r"/login|/signin|/signup|/register|/auth|"
     r"/cart|/checkout|/payment|/buy|/purchase|"
     r"/tag/|/tags/|/author/|/authors/|"
@@ -213,6 +221,11 @@ class OrganizationValidator:
         if ARTICLE_NAME_PATTERNS.search(name):
             return False, f"article_title: {name}"
 
+        # Check headline/marketing taglines (e.g. "Agentic AI, Digital Transformation & Software Development")
+        if ("," in name or "&" in name) and len(name.split()) >= 5:
+            if not ORG_SUFFIXES.search(name):
+                return False, f"headline_tagline: {name}"
+
         # Check if it's just special characters
         alpha_num = re.sub(r"[^a-zA-Z0-9]", "", name)
         if len(alpha_num) < 2:
@@ -249,6 +262,10 @@ class OrganizationValidator:
         for junk in JUNK_DOMAINS:
             if domain == junk or domain.endswith("." + junk):
                 return False, f"junk_domain: {domain}"
+
+        # Check academic/gov domains (not corporate commercial orgs)
+        if re.search(r"\.(?:edu|ac|gov)(?:\.[a-z]{2,3})?$", domain):
+            return False, f"academic_or_gov_domain: {domain}"
 
         # Check junk URL paths
         if parsed.path and JUNK_URL_PATHS.search(parsed.path):

@@ -57,6 +57,8 @@ async def geocode_organization(
 
     org.latitude = result["latitude"]
     org.longitude = result["longitude"]
+    org.location_precision = "EXACT"
+    org.location_source = "nominatim"
     if not org.country and result.get("country"):
         org.country = result["country"]
     if not org.state and result.get("state"):
@@ -93,6 +95,8 @@ async def geocode_all_organizations(
         if result:
             org.latitude = result["latitude"]
             org.longitude = result["longitude"]
+            org.location_precision = "EXACT"
+            org.location_source = "nominatim"
             if not org.country and result.get("country"):
                 org.country = result["country"]
             if not org.city and result.get("city"):
@@ -126,9 +130,12 @@ async def get_map_data(
             "organization_type": org.organization_type,
             "city": org.city,
             "country": org.country,
+            "address": org.address,
             "status": org.status,
             "priority": org.priority,
             "website": org.website,
+            "location_precision": org.location_precision,
+            "location_source": org.location_source,
         }
         for org in orgs
     ]

@@ -308,10 +308,10 @@ export const DiscoveryDetailPage: React.FC = () => {
                     )}
                   </div>
                   <h2 className="text-2xl font-bold text-white tracking-tight">{item.name}</h2>
-                  {(item.city || item.state || item.country) && (
-                    <div className="flex items-center space-x-1.5 text-xs text-slate-400">
-                      <MapPin className="w-4 h-4 text-violet-400 shrink-0" />
-                      <span>{[item.address, item.city, item.state, item.country].filter(Boolean).join(', ')}</span>
+                  {(item.address || item.city || item.state || item.country) && (
+                    <div className="flex items-start space-x-1.5 text-xs text-slate-400">
+                      <MapPin className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
+                      <span>{item.address || [item.city, item.state, item.country].filter(Boolean).join(', ')}</span>
                     </div>
                   )}
                 </div>

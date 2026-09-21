@@ -35,31 +35,43 @@ BACKOFF_MULTIPLIER = 2.0
 # Transient HTTP status codes that warrant retry
 RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 
-# -- Provider definitions --
-
 PROVIDERS = [
     {
         "name": "groq",
         "base_url": "https://api.groq.com/openai/v1",
         "model": "openai/gpt-oss-120b",
+        "fallback_model": "openai/gpt-oss-20b",
         "priority": 1,
         "role": "primary fast copilot",
     },
     {
         "name": "nvidia",
         "base_url": "https://integrate.api.nvidia.com/v1",
-        "model": "nvidia/llama-3.3-nemotron-super-49b-v1",
+        "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "fallback_model": "meta/llama-3.2-11b-vision-instruct",
         "priority": 2,
         "role": "agent/tool-calling fallback",
     },
     {
         "name": "gemini",
         "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
-        "model": "gemini-2.5-flash",
+        "model": "gemini-3.8-flash",
+        "fallback_model": "gemini-2.5-flash",
         "priority": 3,
-        "role": "complex/multimodal fallback",
+        "role": "deep research & large context",
     },
 ]
+
+TASK_ROUTING_PREFERENCE = {
+    "chat": ["groq", "gemini", "nvidia"],
+    "simple_tool": ["groq", "nvidia", "gemini"],
+    "complex_tool": ["gemini", "nvidia", "groq"],
+    "workflow": ["gemini", "nvidia", "groq"],
+    "tool_call": ["groq", "nvidia", "gemini"],
+    "research": ["gemini", "nvidia", "groq"],
+    "document": ["gemini", "nvidia", "groq"],
+    "extraction": ["nvidia", "gemini", "groq"],
+}
 
 
 # -- Data classes --
@@ -128,6 +140,17 @@ class LLMRouter:
     def _get_api_key(self, provider_name: str) -> str:
         if provider_name in self._api_keys and self._api_keys[provider_name]:
             return self._api_keys[provider_name]
+        try:
+            from app.core.config import settings
+            settings_map = {
+                "groq": getattr(settings, "GROQ_API_KEY", ""),
+                "nvidia": getattr(settings, "NVIDIA_NIM_API_KEY", ""),
+                "gemini": getattr(settings, "GEMINI_API_KEY", ""),
+            }
+            if settings_map.get(provider_name):
+                return settings_map[provider_name]
+        except Exception:
+            pass
         env_map = {
             "groq": "GROQ_API_KEY",
             "nvidia": "NVIDIA_NIM_API_KEY",
@@ -135,6 +158,9 @@ class LLMRouter:
         }
         env_name = env_map.get(provider_name, f"{provider_name.upper()}_API_KEY")
         return os.environ.get(env_name, "")
+
+    def _is_retryable(self, error: LLMProviderError) -> bool:
+        return error.status in RETRYABLE_STATUS_CODES
 
     def _call_provider(
         self,
@@ -146,91 +172,99 @@ class LLMRouter:
     ) -> LLMResponse:
         api_key = self._get_api_key(provider["name"])
         if not api_key:
-            raise LLMProviderError(provider["name"], 0, "No API key configured")
+            raise LLMProviderError(provider["name"], 401, "No API key configured")
 
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         }
 
-        payload: dict[str, Any] = {
-            "model": provider["model"],
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens,
-        }
-        if tools:
-            payload["tools"] = tools
-            payload["tool_choice"] = "auto"
+        model_name = provider["model"]
 
-        start = time.monotonic()
-        try:
-            resp = self._client.post(
+        def _do_post(model: str):
+            payload: dict[str, Any] = {
+                "model": model,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            if tools:
+                payload["tools"] = tools
+                payload["tool_choice"] = "auto"
+
+            return self._client.post(
                 f"{provider['base_url']}/chat/completions",
                 headers=headers,
                 json=payload,
             )
-        except httpx.TimeoutException:
-            raise LLMProviderError(provider["name"], 408, "Request timed out")
-        except httpx.RequestError as e:
-            raise LLMProviderError(provider["name"], 0, f"Network error: {e}")
+
+        start = time.monotonic()
+        try:
+            resp = _do_post(model_name)
+            # If 404 or 410 (model deprecated/retired) and fallback_model exists, try fallback
+            if resp.status_code in (404, 410) and provider.get("fallback_model"):
+                logger.warning(
+                    "Model %s returned HTTP %d for %s. Trying fallback model %s",
+                    model_name, resp.status_code, provider["name"], provider["fallback_model"],
+                )
+                model_name = provider["fallback_model"]
+                resp = _do_post(model_name)
+        except httpx.TimeoutException as te:
+            raise LLMProviderError(provider["name"], 504, f"Request timeout: {te}")
+        except httpx.RequestError as re:
+            raise LLMProviderError(provider["name"], 503, f"Network error: {re}")
 
         latency_ms = (time.monotonic() - start) * 1000
 
-        if resp.status_code == 429:
-            raise LLMProviderError(provider["name"], 429, "Rate limited")
-        if resp.status_code == 401:
-            raise LLMProviderError(provider["name"], 401, "Invalid API key")
-        if resp.status_code == 402:
-            raise LLMProviderError(provider["name"], 402, "Out of credits")
-        if resp.status_code >= 400:
-            detail = resp.text[:500]
-            raise LLMProviderError(provider["name"], resp.status_code, detail)
+        if resp.status_code != 200:
+            raise LLMProviderError(
+                provider["name"],
+                resp.status_code,
+                resp.text[:300],
+            )
 
         data = resp.json()
         choice = data.get("choices", [{}])[0]
-        message = choice.get("message", {})
-        usage = data.get("usage", {})
+        msg = choice.get("message", {})
 
-        self._usage_log.append(LLMUsage(
-            provider=provider["name"],
-            model=provider["model"],
-            prompt_tokens=usage.get("prompt_tokens", 0),
-            completion_tokens=usage.get("completion_tokens", 0),
-            total_tokens=usage.get("total_tokens", 0),
-            latency_ms=latency_ms,
-        ))
-
+        # Parse tool calls if any
         tool_calls = []
-        for tc in message.get("tool_calls", []):
-            func = tc.get("function", {})
-            args_str = func.get("arguments", "{}")
+        for tc in msg.get("tool_calls", []):
+            fn = tc.get("function", {})
             try:
-                args = json.loads(args_str) if isinstance(args_str, str) else args_str
-            except json.JSONDecodeError:
-                args = {}
+                args = json.loads(fn.get("arguments", "{}"))
+            except (json.JSONDecodeError, TypeError):
+                args = {"raw": fn.get("arguments", "")}
             tool_calls.append(LLMToolCall(
                 id=tc.get("id", ""),
-                name=func.get("name", ""),
+                name=fn.get("name", ""),
                 arguments=args,
             ))
 
+        usage_data = data.get("usage", {})
+        usage = LLMUsage(
+            provider=provider["name"],
+            model=model_name,
+            prompt_tokens=usage_data.get("prompt_tokens", 0),
+            completion_tokens=usage_data.get("completion_tokens", 0),
+            total_tokens=usage_data.get("total_tokens", 0),
+            latency_ms=round(latency_ms, 1),
+        )
+        self._usage_log.append(usage)
+
         return LLMResponse(
-            content=message.get("content"),
+            content=msg.get("content"),
             tool_calls=tool_calls,
             provider=provider["name"],
-            model=provider["model"],
+            model=model_name,
             usage={
-                "prompt_tokens": usage.get("prompt_tokens", 0),
-                "completion_tokens": usage.get("completion_tokens", 0),
-                "total_tokens": usage.get("total_tokens", 0),
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+                "total_tokens": usage.total_tokens,
+                "latency_ms": usage.latency_ms,
             },
-            finish_reason=choice.get("finish_reason", ""),
+            finish_reason=choice.get("finish_reason", "stop"),
         )
-
-    def _is_retryable(self, error: LLMProviderError) -> bool:
-        """Check if an error is transient and worth retrying."""
-        return error.status in RETRYABLE_STATUS_CODES
 
     def chat(
         self,
@@ -238,16 +272,17 @@ class LLMRouter:
         tools: list[dict] | None = None,
         temperature: float = 0.3,
         max_tokens: int = 4096,
+        task_type: Optional[str] = None,
     ) -> LLMResponse:
-        """
-        Try providers in priority order with per-provider retry + backoff.
-        Full context preserved across fallbacks -- same messages, same tools.
-        """
-        sorted_providers = sorted(self._providers, key=lambda p: p["priority"])
+        providers = list(self._providers)
+        if task_type and task_type in TASK_ROUTING_PREFERENCE:
+            pref = TASK_ROUTING_PREFERENCE[task_type]
+            providers.sort(key=lambda p: pref.index(p["name"]) if p["name"] in pref else 99)
+
         errors: list[LLMProviderError] = []
 
-        for provider in sorted_providers:
-            last_error = None
+        for provider in providers:
+            last_error: Optional[LLMProviderError] = None
             for attempt in range(MAX_RETRIES_PER_PROVIDER):
                 try:
                     response = self._call_provider(
@@ -295,6 +330,7 @@ class LLMRouter:
         tool_executor: callable,
         max_rounds: int = 5,
         temperature: float = 0.3,
+        task_type: Optional[str] = "tool_call",
     ) -> LLMResponse:
         """
         Multi-round tool-calling loop.
@@ -304,7 +340,7 @@ class LLMRouter:
         current_messages = list(messages)
 
         for round_num in range(max_rounds):
-            response = self.chat(current_messages, tools, temperature)
+            response = self.chat(current_messages, tools, temperature, task_type=task_type)
 
             if not response.tool_calls:
                 return response

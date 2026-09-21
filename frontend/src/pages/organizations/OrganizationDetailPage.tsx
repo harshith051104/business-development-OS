@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
+import { parseMeetingDate } from '../../utils/date'
 import StatusBadge from '../../components/organizations/StatusBadge'
 import PriorityBadge from '../../components/organizations/PriorityBadge'
 import StatusChangeModal from '../../components/organizations/StatusChangeModal'
@@ -549,8 +550,8 @@ export const OrganizationDetailPage: React.FC = () => {
                             </div>
                             <div className="text-xs text-slate-400 flex items-center gap-3">
                               <span className="font-mono text-slate-300">
-                                {new Date(m.scheduled_at).toLocaleDateString()} at{' '}
-                                {new Date(m.scheduled_at).toLocaleTimeString([], {
+                                {parseMeetingDate(m.scheduled_at).toLocaleDateString()} at{' '}
+                                {parseMeetingDate(m.scheduled_at).toLocaleTimeString([], {
                                   hour: '2-digit',
                                   minute: '2-digit',
                                 })}

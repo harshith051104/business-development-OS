@@ -179,9 +179,39 @@ def discover_decision_makers(
         except Exception as e:
             logger.debug("BetterContact enrichment failed for %s: %s", organization_name, e)
 
+    # Step 5: Infer corporate email pattern if missing
+    for c in contacts:
+        if not c.get("email") and website and c.get("name"):
+            inferred = infer_corporate_email(c["name"], website)
+            if inferred:
+                c["email"] = inferred
+                c["email_status"] = "predicted"
+                c["verification_state"] = "predicted_corporate_pattern"
+
     # Sort by decision-maker score
     contacts.sort(key=lambda x: x.get("decision_maker_score", 0), reverse=True)
     return contacts[:limit]
+
+
+def infer_corporate_email(full_name: str, website: str) -> Optional[str]:
+    """Infers standard B2B corporate email format from executive name and domain."""
+    if not full_name or not website:
+        return None
+    try:
+        from urllib.parse import urlparse
+        import re
+        domain = urlparse(website).netloc.lower().replace("www.", "")
+        if not domain or "." not in domain:
+            return None
+        parts = [p.lower() for p in re.findall(r"[a-zA-Z]+", full_name)]
+        if not parts:
+            return None
+        if len(parts) == 1:
+            return f"{parts[0]}@{domain}"
+        first, last = parts[0], parts[-1]
+        return f"{first}.{last}@{domain}"
+    except Exception:
+        return None
 
 
 def _calc_dm_score(title: str) -> int:

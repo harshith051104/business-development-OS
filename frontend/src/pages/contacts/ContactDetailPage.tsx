@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
+import { parseMeetingDate } from '../../utils/date'
 import ContactStatusBadge from '../../components/contacts/ContactStatusBadge'
 import DecisionMakerBadge from '../../components/contacts/DecisionMakerBadge'
 import PrimaryContactBadge from '../../components/contacts/PrimaryContactBadge'
@@ -499,8 +500,8 @@ export const ContactDetailPage: React.FC = () => {
                             </div>
                             <div className="text-xs text-slate-400 flex items-center gap-3 font-mono">
                               <span>
-                                {new Date(m.scheduled_at).toLocaleDateString()} at{' '}
-                                {new Date(m.scheduled_at).toLocaleTimeString([], {
+                                {parseMeetingDate(m.scheduled_at).toLocaleDateString()} at{' '}
+                                {parseMeetingDate(m.scheduled_at).toLocaleTimeString([], {
                                   hour: '2-digit',
                                   minute: '2-digit',
                                 })}

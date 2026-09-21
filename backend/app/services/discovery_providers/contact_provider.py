@@ -136,6 +136,40 @@ NOT_A_PERSON_WORDS = {
     "essential", "strategies", "midwest", "mountain", "rocky", "business",
     "relationship", "strategic", "advisory", "services", "group", "division",
     "department", "unit", "office", "branch", "region", "district",
+    # Page elements / navigation (benchmark noise)
+    "us", "team", "contact", "about", "overview", "leadership", "executive",
+    "management", "board", "directory", "list", "careers", "events",
+    "news", "press", "coverage", "podcast", "episode", "blog", "article",
+    "publication", "whitepaper", "webinar", "case", "study", "success",
+    "testimonials", "reviews", "awards", "partners", "partnerships",
+    "solutions", "products", "platforms", "industries", "resources",
+    "support", "login", "sign", "register", "subscribe", "download",
+    "pricing", "demo", "trial", "free", "request", "quote", "plans",
+    # Navigation link words
+    "home", "menu", "search", "settings", "help", "faq", "terms",
+    "privacy", "policy", "legal", "copyright", "trademark", "permissions",
+    # Non-name patterns
+    "copyright", "reserved", "rights", "conditions", "disclaimers",
+    "accessibility", "sitemap", "rss", "feeds", "social", "follow",
+    "share", "like", "comment", "reply", "forward", "print", "email",
+    "subscribe", "unsubscribe", "preferences", "account", "profile",
+    "settings", "preferences", "dashboard", "notifications", "alerts",
+    # Company suffixes that appear as "names"
+    "healthcare", "hospital", "foundation", "institute", "academy",
+    "university", "college", "school", "center", "centre", "clinic",
+    "laboratory", "institute", "foundation", "trust", "society",
+    "association", "federation", "council", "committee", "commission",
+    "authority", "agency", "bureau", "department", "ministry",
+    # Country/state words that appear as names
+    "united", "states", "house", "america", "india", "china", "japan",
+    "germany", "france", "brazil", "canada", "australia", "korea",
+    "singapore", "dubai", "abu", "dhabi", "hong", "kong",
+    # Product/platform words
+    "dotnet", "aspire", "azure", "aws", "gcp", "salesforce", "oracle",
+    "sap", "workday", "servicenow", "splunk", "datadog", "snowflake",
+    # Action/speech words
+    "talks", "speaks", "presents", "hosts", "leads", "joins", "meets",
+    "discusses", "announces", "launches", "introduces", "unveils",
 }
 
 

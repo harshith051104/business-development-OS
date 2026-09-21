@@ -72,17 +72,43 @@ try:
         result = conn.execute(text("PRAGMA table_info(organizations)"))
         existing_cols = [row[1] for row in result.fetchall()]
         changed = False
-        if existing_cols and "owner_id" not in existing_cols:
-            conn.execute(text("ALTER TABLE organizations ADD COLUMN owner_id INTEGER"))
-            changed = True
-        if existing_cols and "latitude" not in existing_cols:
-            conn.execute(text("ALTER TABLE organizations ADD COLUMN latitude REAL"))
-            changed = True
-        if existing_cols and "longitude" not in existing_cols:
-            conn.execute(text("ALTER TABLE organizations ADD COLUMN longitude REAL"))
-            changed = True
+        org_cols_needed = [
+            ("owner_id", "INTEGER"),
+            ("latitude", "REAL"),
+            ("longitude", "REAL"),
+            ("location_precision", "VARCHAR(50)"),
+            ("location_source", "VARCHAR(50)"),
+            ("country", "VARCHAR(100)"),
+            ("industry", "VARCHAR(100)"),
+            ("size", "VARCHAR(50)"),
+            ("is_deleted", "BOOLEAN DEFAULT 0"),
+        ]
+        for col_name, col_type in org_cols_needed:
+            if existing_cols and col_name not in existing_cols:
+                conn.execute(text(f"ALTER TABLE organizations ADD COLUMN {col_name} {col_type}"))
+                changed = True
         if changed:
             conn.commit()
+
+        # Check contacts columns
+        c_result = conn.execute(text("PRAGMA table_info(contacts)"))
+        c_cols = [row[1] for row in c_result.fetchall()]
+        if c_cols:
+            c_changed = False
+            for col_name, col_type in [
+                ("owner_id", "INTEGER"),
+                ("preferred_channel", "VARCHAR(50) DEFAULT 'Email'"),
+                ("do_not_contact", "BOOLEAN DEFAULT 0"),
+                ("first_contacted_at", "DATETIME"),
+                ("last_contacted_at", "DATETIME"),
+                ("next_followup_at", "DATETIME"),
+                ("is_deleted", "BOOLEAN DEFAULT 0"),
+            ]:
+                if col_name not in c_cols:
+                    conn.execute(text(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_type}"))
+                    c_changed = True
+            if c_changed:
+                conn.commit()
 
         # Check discovered_organizations columns
         disc_result = conn.execute(text("PRAGMA table_info(discovered_organizations)"))
@@ -143,9 +169,21 @@ app = FastAPI(
 # Security Headers Middleware
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except Exception as exc:
+            logger.error("Unhandled exception reaching middleware on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
+            response = JSONResponse(
+                status_code=500,
+                content={"detail": "Internal server error.", "path": request.url.path},
+            )
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
+        if request.url.path.startswith("/api/uploads") or request.url.path.startswith("/uploads"):
+            # Allow uploaded presentation decks and media to be rendered inside our frontend viewer
+            response.headers["X-Frame-Options"] = "SAMEORIGIN"
+            response.headers["Content-Security-Policy"] = "frame-ancestors 'self' http://localhost:* http://127.0.0.1:*"
+        else:
+            response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
@@ -246,6 +284,15 @@ uploads_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__fi
 os.makedirs(os.path.join(uploads_path, "presentations"), exist_ok=True)
 app.mount("/api/uploads", StaticFiles(directory=uploads_path), name="api_uploads")
 app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error.", "path": request.url.path},
+    )
 
 
 @app.get("/", tags=["Root"])

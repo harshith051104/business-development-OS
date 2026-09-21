@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "visual-check",
+  "evidenceKind": "automated-browser",
+  "status": "fail",
+  "visualReview": "pending",
+  "artifact": {
+    "path": "C:\\Users\\sriha\\My work\\business-outreach\\elly-architecture.html",
+    "sha256": "19013d078e982bed8aaee8cf8c60e4d8e422921c57ac513ec9130f4a512ef996",
+    "bytes": 716710
+  },
+  "state": {
+    "detail": "read",
+    "motion": "still"
+  },
+  "chrome": {
+    "status": "available",
+    "executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/visual-check-runtime",
+      "severity": "error",
+      "message": "visual-check could not complete its Chrome inspection.",
+      "subject": {
+        "artifact": "C:\\Users\\sriha\\My work\\business-outreach\\elly-architecture.html"
+      },
+      "evidence": {
+        "reason": "Error: Viewer chrome layout did not reach stable dimensions.\n    at sample (file:///C:/Users/sriha/My%20work/business-outreach/elly-architecture.html?theme=light:10926:22)"
+      },
+      "supportedFixes": [
+        "resolve the reported Chrome inspection error, then rerun visual-check"
+      ]
+    }
+  ],
+  "containment": {
+    "status": "fail",
+    "viewports": []
+  },
+  "readability": {
+    "status": "fail",
+    "minimumProjectedNodeTextPx": 6,
+    "viewports": []
+  },
+  "viewerChrome": {
+    "status": "fail",
+    "viewports": []
+  },
+  "captures": {
+    "status": "fail",
+    "screenshots": [],
+    "contactSheet": null
+  },
+  "sidecars": {
+    "receipt": "elly-architecture.visual-check.json",
+    "contactSheet": "elly-architecture.visual-check.html"
+  },
+  "error": "Error: Viewer chrome layout did not reach stable dimensions.\n    at sample (file:///C:/Users/sriha/My%20work/business-outreach/elly-architecture.html?theme=light:10926:22)"
+}

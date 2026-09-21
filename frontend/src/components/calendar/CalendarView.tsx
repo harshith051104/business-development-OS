@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { calendarService } from '../../services/calendar'
 import type { CalendarEvent } from '../../services/calendar'
+import { parseMeetingDate } from '../../utils/date'
 
 const STATUS_COLORS: Record<string, string> = {
   Scheduled: 'bg-blue-500',
@@ -23,7 +24,7 @@ interface CalendarViewProps {
 }
 
 function toLocalDate(isoStr: string): Date {
-  const d = new Date(isoStr)
+  const d = parseMeetingDate(isoStr)
   return new Date(d.getFullYear(), d.getMonth(), d.getDate())
 }
 
@@ -204,8 +205,8 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-white font-medium">{event.title}</div>
                     <div className="text-xs text-slate-400 mt-0.5">
-                      {new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      {event.end && ` – ${new Date(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                      {parseMeetingDate(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {event.end && ` – ${parseMeetingDate(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
                     </div>
                     {event.organization_name && (
                       <div className="text-xs text-violet-400 mt-0.5">{event.organization_name}</div>
@@ -249,7 +250,7 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-white truncate">{event.title}</div>
                   <div className="text-xs text-slate-400">
-                    {new Date(event.start).toLocaleDateString()} at {new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {parseMeetingDate(event.start).toLocaleDateString()} at {parseMeetingDate(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     {' • '}{event.organization_name || 'No org'}
                   </div>
                 </div>

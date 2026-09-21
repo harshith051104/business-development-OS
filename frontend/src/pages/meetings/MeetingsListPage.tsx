@@ -6,6 +6,7 @@ import MeetingStatusBadge from '../../components/meetings/MeetingStatusBadge'
 import CompleteMeetingModal from '../../components/meetings/CompleteMeetingModal'
 import CalendarView from '../../components/calendar/CalendarView'
 import Navbar from '../../components/layout/Navbar'
+import { parseMeetingDate } from '../../utils/date'
 import {
   Calendar,
   CalendarPlus,
@@ -273,7 +274,7 @@ export const MeetingsListPage: React.FC = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               {meetings.map((m) => {
-                const meetingDate = new Date(m.scheduled_at)
+                const meetingDate = parseMeetingDate(m.scheduled_at)
                 return (
                   <div
                     key={m.id}
