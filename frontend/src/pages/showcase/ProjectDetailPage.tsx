@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import { showcaseService } from '../../services/showcase'
@@ -24,7 +24,11 @@ import {
   HelpCircle,
   ShieldCheck,
   Download,
+  UploadCloud,
+  Link as LinkIcon,
+  X,
 } from 'lucide-react'
+import { isGoogleSlidesUrl } from '../../components/showcase/PresentationDeckUpload'
 
 export const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -33,6 +37,11 @@ export const ProjectDetailPage: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [uploadingDeck, setUploadingDeck] = useState<boolean>(false)
+  const [showGslidesModal, setShowGslidesModal] = useState<boolean>(false)
+  const [gslidesInput, setGslidesInput] = useState<string>('')
+  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const fetchProject = useCallback(async () => {
     if (!id) return
@@ -47,6 +56,43 @@ export const ProjectDetailPage: React.FC = () => {
       setLoading(false)
     }
   }, [id])
+
+  const handleDeckUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !project) return
+    setUploadingDeck(true)
+    try {
+      await showcaseService.uploadPresentation(project.id, file)
+      setToastMessage({ type: 'success', text: `Uploaded "${file.name}" deck successfully!` })
+      await fetchProject()
+      setTimeout(() => setToastMessage(null), 5000)
+    } catch (err: any) {
+      setToastMessage({ type: 'error', text: err?.detail || err?.message || 'Failed to upload presentation deck.' })
+      setTimeout(() => setToastMessage(null), 6000)
+    } finally {
+      setUploadingDeck(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleAttachGslides = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!project || !gslidesInput.trim()) return
+    setUploadingDeck(true)
+    try {
+      await showcaseService.updateProject(project.id, { presentation_url: gslidesInput.trim() })
+      setToastMessage({ type: 'success', text: 'Google Slides presentation attached successfully!' })
+      setShowGslidesModal(false)
+      setGslidesInput('')
+      await fetchProject()
+      setTimeout(() => setToastMessage(null), 5000)
+    } catch (err: any) {
+      setToastMessage({ type: 'error', text: err?.detail || err?.message || 'Failed to attach Google Slides.' })
+      setTimeout(() => setToastMessage(null), 6000)
+    } finally {
+      setUploadingDeck(false)
+    }
+  }
 
   useEffect(() => {
     fetchProject()
@@ -123,6 +169,28 @@ export const ProjectDetailPage: React.FC = () => {
                     <Presentation className="w-4 h-4" />
                     <span>Start Presentation</span>
                   </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingDeck}
+                    className="flex items-center space-x-2 py-2.5 px-4 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-bold transition shadow-sm hover:scale-[1.02] disabled:opacity-50 cursor-pointer"
+                  >
+                    <UploadCloud className={`w-4 h-4 ${uploadingDeck ? 'animate-bounce text-violet-400' : 'text-violet-400'}`} />
+                    <span>{uploadingDeck ? 'Uploading...' : project.presentation_url ? 'Replace Deck' : 'Upload Deck'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGslidesInput(isGoogleSlidesUrl(project.presentation_url) ? (project.presentation_url || '') : '')
+                      setShowGslidesModal(true)
+                    }}
+                    className="flex items-center space-x-1.5 py-2.5 px-3.5 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-semibold transition shadow-sm hover:scale-[1.02]"
+                  >
+                    <LinkIcon className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{isGoogleSlidesUrl(project.presentation_url) ? 'Change Google Slides' : 'Google Slides Link'}</span>
+                  </button>
 
                   {project.demo_url && (
                     <a
@@ -300,21 +368,70 @@ export const ProjectDetailPage: React.FC = () => {
               <div className="space-y-8">
                 {/* Presentation Card */}
                 <div className="bg-gradient-to-br from-violet-900/40 via-[#110B2E] to-indigo-950/40 border border-violet-500/30 rounded-3xl p-6 shadow-xl space-y-4">
-                  <div className="flex items-center space-x-2 text-violet-300">
-                    <Presentation className="w-5 h-5" />
-                    <h3 className="text-sm font-bold uppercase tracking-wider">BD Presentation</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2 text-violet-300">
+                      <Presentation className="w-5 h-5" />
+                      <h3 className="text-sm font-bold uppercase tracking-wider">BD Presentation</h3>
+                    </div>
+                    {project.presentation_url ? (
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                        isGoogleSlidesUrl(project.presentation_url)
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                      }`}>
+                        {isGoogleSlidesUrl(project.presentation_url) ? 'Google Slides Attached' : 'Deck Attached'}
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                        No Deck Attached
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     Launch a clean, distraction-free widescreen presentation deck to showcase this
                     product during executive stakeholder meetings.
                   </p>
-                  <Link
-                    to={`/business-development/showcase/${project.id}/presentation`}
-                    className="w-full py-3 px-4 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs transition shadow-lg shadow-violet-600/30 flex items-center justify-center space-x-2"
-                  >
-                    <Presentation className="w-4 h-4" />
-                    <span>Launch Presentation Deck</span>
-                  </Link>
+                  <div className="space-y-2">
+                    <Link
+                      to={`/business-development/showcase/${project.id}/presentation`}
+                      className="w-full py-3 px-4 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs transition shadow-lg shadow-violet-600/30 flex items-center justify-center space-x-2"
+                    >
+                      <Presentation className="w-4 h-4" />
+                      <span>Launch Presentation Deck</span>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingDeck}
+                      className="w-full py-2 px-4 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-bold transition flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
+                    >
+                      <UploadCloud className="w-4 h-4 text-violet-400" />
+                      <span>
+                        {uploadingDeck
+                          ? 'Uploading Deck...'
+                          : project.presentation_url && !isGoogleSlidesUrl(project.presentation_url)
+                          ? 'Replace File (.pdf, .ppt, .pptx)'
+                          : 'Upload File (.pdf, .ppt, .pptx)'}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGslidesInput(isGoogleSlidesUrl(project.presentation_url) ? (project.presentation_url || '') : '')
+                        setShowGslidesModal(true)
+                      }}
+                      className="w-full py-2 px-4 rounded-2xl bg-[#1A1040] hover:bg-amber-950/30 border border-amber-500/40 text-amber-200 text-xs font-bold transition flex items-center justify-center space-x-2 cursor-pointer"
+                    >
+                      <LinkIcon className="w-3.5 h-3.5 text-amber-400" />
+                      <span>
+                        {isGoogleSlidesUrl(project.presentation_url)
+                          ? 'Change Google Slides Link'
+                          : 'Attach Google Slides Link'}
+                      </span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Approved Links Card */}
@@ -406,6 +523,83 @@ export const ProjectDetailPage: React.FC = () => {
           </>
         )}
       </main>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div
+          className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#110B2E] border ${
+            toastMessage.type === 'success'
+              ? 'border-emerald-500/40 text-emerald-300'
+              : 'border-rose-500/40 text-rose-300'
+          } shadow-2xl flex items-center space-x-2.5 animate-in slide-in-from-bottom duration-200`}
+        >
+          {toastMessage.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          )}
+          <span className="text-xs font-semibold">{toastMessage.text}</span>
+        </div>
+      )}
+
+      {/* Hidden File Input for Deck Upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.ppt,.pptx"
+        onChange={handleDeckUpload}
+        className="hidden"
+      />
+
+      {/* Attach Google Slides Modal */}
+      {showGslidesModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#110B2E] border border-violet-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-white">Attach Google Slides Sharing Link</h3>
+              <button
+                onClick={() => setShowGslidesModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Paste your Google Slides sharing link (e.g.{' '}
+              <code className="text-violet-300 font-mono text-[11px]">
+                https://docs.google.com/presentation/d/.../edit?usp=sharing
+              </code>
+              ).
+            </p>
+            <form onSubmit={handleAttachGslides} className="space-y-4">
+              <input
+                type="url"
+                required
+                value={gslidesInput}
+                onChange={(e) => setGslidesInput(e.target.value)}
+                placeholder="https://docs.google.com/presentation/d/..."
+                className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+              />
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGslidesModal(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={uploadingDeck}
+                  className="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition shadow-md shadow-violet-600/30 disabled:opacity-50"
+                >
+                  {uploadingDeck ? 'Attaching...' : 'Attach & Save'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

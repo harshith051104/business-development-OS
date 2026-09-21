@@ -49,16 +49,20 @@ def _meeting_to_event(meeting: Meeting, db: Session = None) -> CalendarEvent:
         contacts = db.query(Contact).filter(Contact.id.in_(meeting.contact_ids)).all()
         contact_names = [f"{c.first_name} {c.last_name}" for c in contacts]
 
+    start_time = ""
     end_time = None
-    if meeting.scheduled_at and meeting.duration_minutes:
-        from datetime import timedelta
-        end_dt = meeting.scheduled_at + timedelta(minutes=meeting.duration_minutes)
-        end_time = end_dt.isoformat()
+    if meeting.scheduled_at:
+        dt = meeting.scheduled_at if meeting.scheduled_at.tzinfo else meeting.scheduled_at.replace(tzinfo=timezone.utc)
+        start_time = dt.isoformat()
+        if meeting.duration_minutes:
+            from datetime import timedelta
+            end_dt = dt + timedelta(minutes=meeting.duration_minutes)
+            end_time = end_dt.isoformat()
 
     return CalendarEvent(
         id=meeting.id,
         title=meeting.title or f"Meeting with {org_name or 'Organization'}",
-        start=meeting.scheduled_at.isoformat() if meeting.scheduled_at else "",
+        start=start_time,
         end=end_time,
         description=meeting.description or meeting.agenda or "",
         location=meeting.location or "",

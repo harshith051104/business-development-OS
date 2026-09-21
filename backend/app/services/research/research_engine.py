@@ -2,6 +2,7 @@
 Deep website research engine using ScrapeGraphAI.
 Given an organization URL, extracts structured business intelligence.
 """
+import json
 import logging
 import time
 from typing import Dict, Any, Optional, List
@@ -173,7 +174,7 @@ def _build_config() -> Optional[dict]:
         return None
     return {
         "llm": {
-            "model": "google_genai/gemma-4-31b-it",
+            "model": "google_genai/gemini-3.8-flash",
             "api_key": api_key,
             "model_tokens": 100000,
             "temperature": 0,
@@ -181,6 +182,26 @@ def _build_config() -> Optional[dict]:
         "verbose": False,
         "headless": True,
     }
+
+
+def _fetch_with_httpx(url: str, timeout: int = 15) -> Optional[str]:
+    """Fallback to direct HTTP text extraction when browser cannot launch or fails."""
+    try:
+        import httpx
+        import re
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        resp = httpx.get(url, headers=headers, timeout=timeout, follow_redirects=True)
+        if resp.status_code == 200 and resp.text:
+            text = re.sub(r'<script[^>]*>[\s\S]*?</script>', ' ', resp.text, flags=re.I)
+            text = re.sub(r'<style[^>]*>[\s\S]*?</style>', ' ', text, flags=re.I)
+            text = re.sub(r'<[^>]+>', ' ', text)
+            text = re.sub(r'\s+', ' ', text).strip()
+            return text if len(text) > 50 else None
+    except Exception as e:
+        logger.debug("HTTP fallback failed for %s: %s", url, e)
+    return None
 
 
 def _try_stagehand_fallback(url: str) -> Optional[Dict[str, Any]]:
@@ -191,10 +212,13 @@ def _try_stagehand_fallback(url: str) -> Optional[Dict[str, Any]]:
     """
     try:
         from app.services.research.stagehand_fallback import fetch_rendered_content
-        from app.services.copilot.llm_router import chat_completion
+        from app.services.copilot.llm_router import LLMRouter
 
         logger.info("Stagehand fallback: fetching %s", url)
         content = fetch_rendered_content(url, timeout=30)
+        if not content:
+            logger.info("Stagehand browser unavailable — trying direct HTTP text fallback for %s", url)
+            content = _fetch_with_httpx(url, timeout=15)
         if not content:
             return None
 
@@ -220,17 +244,18 @@ def _try_stagehand_fallback(url: str) -> Optional[Dict[str, Any]]:
             f"Website content:\n{content}"
         )
 
-        response = chat_completion(
+        router = LLMRouter()
+        response = router.chat(
             messages=[{"role": "user", "content": analysis_prompt}],
             temperature=0,
             max_tokens=2000,
         )
+        response = response.content if response else None
 
         if not response:
             return None
 
         # Parse LLM response as JSON
-        import json
         text = response.strip()
         # Strip markdown code fences if present
         if text.startswith("```"):

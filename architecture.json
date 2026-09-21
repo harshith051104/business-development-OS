@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ELLY Business Development OS",
+    "subtitle": "Complete system architecture — every agent, service, and data flow",
+    "output": "elly-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "browser", "type": "external", "label": "User Browser", "sublabel": "React SPA", "pos": [40, 250], "size": [120, 56] },
+    { "id": "middleware", "type": "backend", "label": "Middleware", "sublabel": "Security / Rate / CORS", "pos": [200, 250], "size": [140, 56] },
+    { "id": "auth", "type": "backend", "label": "Auth + RBAC", "sublabel": "JWT HMAC-SHA256", "pos": [380, 250], "size": [130, 56] },
+    { "id": "db", "type": "database", "label": "Database", "sublabel": "22 models, SQLite/PG", "pos": [1060, 250], "size": [140, 56] },
+
+    { "id": "discovery", "type": "backend", "label": "Discovery Pipeline", "sublabel": "7-stage orchestrator", "pos": [380, 80], "size": [160, 56] },
+    { "id": "research", "type": "backend", "label": "Research Engine", "sublabel": "ScrapeGraph + Stagehand", "pos": [860, 80], "size": [170, 56] },
+
+    { "id": "copilot", "type": "backend", "label": "AI Copilot", "sublabel": "NLP + 30 tools", "pos": [380, 420], "size": [150, 56] },
+    { "id": "llm", "type": "backend", "label": "LLM Router", "sublabel": "Groq→NVIDIA→Gemini", "pos": [580, 420], "size": [160, 56] },
+
+    { "id": "campaign", "type": "backend", "label": "Campaign Engine", "sublabel": "Multi-step sequences", "pos": [860, 420], "size": [160, 56] },
+
+    { "id": "gmail", "type": "external", "label": "Gmail API", "sublabel": "OAuth2 email", "pos": [1060, 420], "size": [120, 56] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Backend Services", "wraps": ["middleware", "auth", "discovery", "research", "copilot", "llm", "campaign"] }
+  ],
+  "connections": [
+    { "id": "c1", "from": "browser", "to": "middleware", "label": "HTTPS", "variant": "emphasis", "labelAt": [120, 246] },
+    { "id": "c2", "from": "middleware", "to": "auth", "label": "JWT", "labelAt": [340, 246] },
+    { "id": "c3", "from": "auth", "to": "db", "label": "RBAC", "labelAt": [720, 246] },
+    { "id": "c4", "from": "discovery", "to": "research", "label": "research", "labelAt": [710, 76] },
+    { "id": "c5", "from": "discovery", "to": "db", "label": "store", "labelAt": [920, 170] },
+    { "id": "c6", "from": "copilot", "to": "llm", "label": "inference", "labelAt": [530, 490] },
+    { "id": "c7", "from": "copilot", "to": "db", "label": "query", "labelAt": [700, 490] },
+    { "id": "c8", "from": "campaign", "to": "gmail", "label": "send", "variant": "dashed", "labelAt": [980, 416] },
+    { "id": "c9", "from": "campaign", "to": "db", "label": "log", "labelAt": [1000, 416] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Frontend (React + Vite + TS)", "items": ["53+ pages: Dashboard, Discovery, Campaigns, Copilot", "Dark mode, real-time Copilot drawer", "Kanban pipeline, Map view, Analytics", "30+ API client services"] },
+    { "dot": "emerald", "title": "API Gateway (FastAPI)", "items": ["SecurityHeadersMiddleware (CSP, XSS)", "GmailRateLimitMiddleware (20 req/hr)", "RateLimitMiddleware (120 req/min)", "Custom HMAC-SHA256 JWT auth", "RBAC: ADMIN, BD, HEALTHCARE, USER"] },
+    { "dot": "violet", "title": "Discovery Pipeline (7 stages)", "items": ["1. Multi-source search (AI Agent + Directory + Tavily + Serper)", "2. Result normalization", "3. Organization validation (quality gate)", "4. Evidence-based deduplication", "5. Deep research (ScrapeGraph + Stagehand Chrome)", "6. 7-factor weighted qualification (0-100)", "7. Sort by fit score + project matching"] },
+    { "dot": "orange", "title": "Discovery Providers (fallback chain)", "items": ["AI Agent Lead Researcher (Apollo-grade, LLM + live web)", "Curated Healthcare Directory (20 verified orgs)", "Tavily Web Search API", "Serper Google Search API", "Auto-fallback on empty/failure"] },
+    { "dot": "amber", "title": "AI Copilot (NLP + 30 tools)", "items": ["Tier 1: 25+ regex patterns (instant response)", "Tier 2: LLM function-calling (Groq GPT-OSS 120B)", "Guardrails: clinical data refusal, autonomous send refusal", "Write actions: human confirmation + 10min TTL", "Pronoun resolution from frontend context"] },
+    { "dot": "rose", "title": "Campaign Engine (multi-step outreach)", "items": ["Context aggregation (org + contact + research + projects)", "AI personalization (hook, problem, value prop, CTA)", "Placeholder resolution + HTML conversion", "Quality scoring (0-100)", "Gmail OAuth2 send + reply detection", "Auto-create Opportunity on reply"] },
+    { "dot": "violet", "title": "Integrations", "items": ["Gmail OAuth2 (HMAC-signed state, Fernet token encryption)", "Google Calendar (event sync, timezone handling)", "Google Maps / Nominatim (geocoding)", "Google Sheets (lead export via service account)", "Stagehand (Chrome CDP for JS-heavy sites)"] },
+    { "dot": "slate", "title": "Database (22 SQLAlchemy models)", "items": ["User, Organization (10-stage funnel), Contact, Activity", "Campaign, CampaignStep, CampaignContact", "Opportunity, Meeting, FollowUp, BDTask", "DiscoveredOrg, DiscoveredContact, ResearchRecord", "OutreachDraft, Partnership, Customer, Demo", "Proposal, Negotiation, AuditLog, SystemSetting"] }
+  ]
+}

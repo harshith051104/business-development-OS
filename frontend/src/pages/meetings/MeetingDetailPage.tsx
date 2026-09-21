@@ -10,6 +10,7 @@ import Navbar from '../../components/layout/Navbar'
 import AddFollowUpModal from '../../components/followups/AddFollowUpModal'
 import FollowUpPriorityBadge from '../../components/followups/FollowUpPriorityBadge'
 import FollowUpStatusBadge from '../../components/followups/FollowUpStatusBadge'
+import { parseMeetingDate } from '../../utils/date'
 import {
   Calendar,
   Building2,
@@ -120,7 +121,7 @@ export const MeetingDetailPage: React.FC = () => {
     )
   }
 
-  const meetingDate = new Date(meeting.scheduled_at)
+  const meetingDate = parseMeetingDate(meeting.scheduled_at)
 
   return (
     <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">

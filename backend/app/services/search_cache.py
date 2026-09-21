@@ -51,6 +51,13 @@ def get_cached_results(
     return None
 
 
+def clear_cache():
+    global _cache
+    _cache.clear()
+    logger.info("Search cache cleared.")
+
+_cache.clear()
+
 def set_cached_results(
     keyword: Optional[str],
     location: Optional[str],

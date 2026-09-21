@@ -6,6 +6,7 @@ import { contactsService } from '../../services/contacts'
 import type { Organization } from '../../types/organization'
 import type { Contact } from '../../types/contact'
 import Navbar from '../../components/layout/Navbar'
+import { formatLocalDateTimeToUtcIso } from '../../utils/date'
 import {
   CalendarPlus,
   ArrowLeft,
@@ -133,7 +134,7 @@ export const MeetingNewPage: React.FC = () => {
     setIsSubmitting(true)
     setError(null)
     try {
-      const scheduledDateTime = new Date(`${meetingDate}T${meetingTime}:00`).toISOString()
+      const scheduledDateTime = formatLocalDateTimeToUtcIso(meetingDate, meetingTime)
       const newMeeting = await meetingsService.createMeeting({
         organization_id: Number(selectedOrgId),
         primary_contact_id: selectedContactIds.length > 0 ? selectedContactIds[0] : undefined,

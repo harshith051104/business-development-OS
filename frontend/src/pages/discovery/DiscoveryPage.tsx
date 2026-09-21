@@ -835,7 +835,14 @@ export const DiscoveryPage: React.FC = () => {
             )}
 
             {viewMode === 'map' ? (
-              <OrgMap showFilters={false} height="500px" />
+              <OrgMap
+                showFilters={true}
+                height="620px"
+                items={items}
+                onAdd={handleOpenAdd}
+                onSave={handleSave}
+                onSkip={handleSkip}
+              />
             ) : (
               <>
                 {items.length === 0 ? (

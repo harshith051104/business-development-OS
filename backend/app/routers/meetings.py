@@ -28,6 +28,14 @@ from app.schemas.meeting import (
 router = APIRouter(prefix="/api/business-development", tags=["Meetings"])
 
 
+def _ensure_utc(dt: Optional[datetime]) -> Optional[datetime]:
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
 def _format_meeting_out(meeting: Meeting) -> MeetingOut:
     return MeetingOut(
         id=meeting.id,
@@ -40,13 +48,13 @@ def _format_meeting_out(meeting: Meeting) -> MeetingOut:
         contact_ids=meeting.contact_ids or [],
         title=meeting.title,
         meeting_type=meeting.meeting_type,
-        scheduled_at=meeting.scheduled_at,
+        scheduled_at=_ensure_utc(meeting.scheduled_at),
         duration_minutes=meeting.duration_minutes,
         location=meeting.location,
         meeting_url=meeting.meeting_url,
         status=meeting.status,
-        created_at=meeting.created_at,
-        updated_at=meeting.updated_at,
+        created_at=_ensure_utc(meeting.created_at),
+        updated_at=_ensure_utc(meeting.updated_at),
     )
 
 
@@ -94,7 +102,7 @@ def _format_meeting_detail_out(meeting: Meeting, db: Session) -> MeetingDetailOu
         title=meeting.title,
         meeting_type=meeting.meeting_type,
         description=meeting.description,
-        scheduled_at=meeting.scheduled_at,
+        scheduled_at=_ensure_utc(meeting.scheduled_at),
         duration_minutes=meeting.duration_minutes,
         location=meeting.location,
         meeting_url=meeting.meeting_url,
@@ -105,8 +113,8 @@ def _format_meeting_detail_out(meeting: Meeting, db: Session) -> MeetingDetailOu
         next_actions=meeting.next_actions,
         cancellation_reason=meeting.cancellation_reason,
         attendees=attendee_infos,
-        created_at=meeting.created_at,
-        updated_at=meeting.updated_at,
+        created_at=_ensure_utc(meeting.created_at),
+        updated_at=_ensure_utc(meeting.updated_at),
     )
 
 
@@ -219,8 +227,9 @@ def get_active_upcoming_meetings(
     enabling automatic alerts and auto-entry into Google Meet, Microsoft Teams, Zoom, etc.
     """
     now = datetime.now(timezone.utc)
-    window_start = now - timedelta(minutes=60)
-    window_end = now + timedelta(minutes=30)
+    now_naive = now.replace(tzinfo=None)
+    window_start = now_naive - timedelta(minutes=60)
+    window_end = now_naive + timedelta(minutes=30)
 
     query = (
         db.query(Meeting)
@@ -240,15 +249,16 @@ def get_active_upcoming_meetings(
     meetings = query.options(joinedload(Meeting.organization), joinedload(Meeting.primary_contact)).all()
     results = []
     for m in meetings:
-        meeting_end = m.scheduled_at + timedelta(minutes=m.duration_minutes)
-        is_active = m.scheduled_at <= now <= meeting_end
-        time_to_start_seconds = int((m.scheduled_at - now).total_seconds())
+        sched = _ensure_utc(m.scheduled_at)
+        meeting_end = sched + timedelta(minutes=m.duration_minutes)
+        is_active = sched <= now <= meeting_end
+        time_to_start_seconds = int((sched - now).total_seconds())
         results.append({
             "id": m.id,
             "title": m.title,
             "organization_name": m.organization.name if m.organization else None,
             "primary_contact_name": m.primary_contact.full_name if m.primary_contact else None,
-            "scheduled_at": m.scheduled_at.isoformat(),
+            "scheduled_at": sched.isoformat(),
             "duration_minutes": m.duration_minutes,
             "location": m.location,
             "meeting_url": m.meeting_url,

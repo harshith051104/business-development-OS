@@ -677,6 +677,8 @@ def get_organization_map_data(
             "country": o.country,
             "status": o.status,
             "priority": o.priority,
+            "location_precision": o.location_precision,
+            "location_source": o.location_source,
         }
         for o in orgs
     ]
@@ -1880,6 +1882,306 @@ def get_campaign_roi_tool(db: Session, campaign_id: int) -> Dict[str, Any]:
     """Get the full commercial ROI funnel and conversion statistics for a campaign."""
     from app.services.campaign_service import CampaignService
     return CampaignService.get_campaign_roi_funnel(db, campaign_id)
+
+
+# ─────────────────────────────────────────────────────────────
+# 23. AUTONOMOUS BD AGENT EXECUTION TOOLS
+# ─────────────────────────────────────────────────────────────
+
+def recommend_showcase_deck(
+    db: Session,
+    organization_id: int,
+    user: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """
+    Examine an organization's industry and requirements, and recommend the best
+    showcase project deck or presentation to share.
+    """
+    from app.models.organization import Organization
+    from app.models.project import Project
+
+    org = db.query(Organization).filter(
+        Organization.id == organization_id,
+        Organization.is_deleted == False,
+    ).first()
+    if not org:
+        return {"error": f"Organization with ID {organization_id} not found."}
+
+    projects = db.query(Project).filter(
+        Project.is_deleted == False,
+    ).all()
+
+    if not projects:
+        return {
+            "organization_name": org.name,
+            "recommended_deck": None,
+            "message": "No showcase projects or presentations currently registered in the database."
+        }
+
+    # Score relevance
+    scored_projects = []
+    org_text = f"{org.name} {org.organization_type or ''} {org.description or ''}".lower()
+
+    for p in projects:
+        score = 0
+        p_category = (p.category or "").lower()
+        p_desc = f"{p.name} {p.short_description or ''} {p.description or ''}".lower()
+
+        # Category match
+        if p_category in org_text or any(word in p_desc for word in org_text.split() if len(word) > 4):
+            score += 3
+        if p.presentation_url:
+            score += 2
+        if p.demo_url:
+            score += 1
+        if p.is_featured:
+            score += 1
+
+        scored_projects.append((score, p))
+
+    scored_projects.sort(key=lambda x: x[0], reverse=True)
+    best_match = scored_projects[0][1]
+
+    pitch_summary = (
+        f"Recommended for {org.name} ({org.organization_type or 'Partner'}): "
+        f"'{best_match.name}' directly addresses workflows in {best_match.category}. "
+        f"Key value: {best_match.short_description}"
+    )
+
+    return {
+        "organization_id": org.id,
+        "organization_name": org.name,
+        "recommended_project": {
+            "id": best_match.id,
+            "name": best_match.name,
+            "category": best_match.category,
+            "short_description": best_match.short_description,
+            "demo_url": best_match.demo_url,
+            "presentation_url": best_match.presentation_url,
+            "has_presentation": bool(best_match.presentation_url),
+        },
+        "pitch_summary": pitch_summary,
+        "other_candidates": [
+            {
+                "id": p.id,
+                "name": p.name,
+                "category": p.category,
+                "presentation_url": p.presentation_url,
+            }
+            for _, p in scored_projects[1:4]
+        ],
+    }
+
+
+def draft_outreach_email(
+    db: Session,
+    organization_id: int,
+    contact_id: Optional[int] = None,
+    template_type: str = "introduction",
+    pitch_angle: Optional[str] = None,
+    user: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """
+    Generate a tailored cold or follow-up outreach email draft using organization
+    intelligence, contact details, and relevant showcase project assets.
+    """
+    from app.models.organization import Organization
+    from app.models.contact import Contact
+
+    org = db.query(Organization).filter(
+        Organization.id == organization_id,
+        Organization.is_deleted == False,
+    ).first()
+    if not org:
+        return {"error": f"Organization {organization_id} not found."}
+
+    # Resolve contact
+    contact = None
+    if contact_id:
+        contact = db.query(Contact).filter(
+            Contact.id == contact_id,
+            Contact.organization_id == organization_id,
+            Contact.is_deleted == False,
+        ).first()
+
+    if not contact:
+        # Pick decision maker or first contact
+        contacts = db.query(Contact).filter(
+            Contact.organization_id == organization_id,
+            Contact.is_deleted == False,
+        ).order_by(desc(Contact.is_decision_maker)).all()
+        if contacts:
+            contact = contacts[0]
+
+    recipient_name = contact.full_name if contact else f"{org.name} Leadership"
+    first_name = recipient_name.split()[0]
+    recipient_email = contact.email if (contact and contact.email) else ""
+    recipient_role = contact.designation if contact else "Decision Maker"
+
+    # Find recommended deck
+    deck_rec = recommend_showcase_deck(db, organization_id)
+    project_name = "our Technology Intelligence Platform"
+    deck_url = ""
+    if deck_rec.get("recommended_project"):
+        proj = deck_rec["recommended_project"]
+        project_name = proj["name"]
+        deck_url = proj.get("presentation_url") or proj.get("demo_url") or ""
+
+    if template_type.lower() in ("follow_up", "followup"):
+        subject = f"Following up: Strategic partnership between {org.name} & Electra"
+        deck_mention = f"\nI've also attached our deck overview for {project_name}: {deck_url}" if deck_url else ""
+        body = (
+            f"Hi {first_name},\n\n"
+            f"Following up on our earlier communications regarding {org.name}'s ongoing initiatives.\n\n"
+            f"{pitch_angle or f'We wanted to share how {project_name} can streamline operational outcomes for your team.'}"
+            f"{deck_mention}\n\n"
+            f"Would you be open for a brief 15-minute sync later this week to discuss?\n\n"
+            f"Best regards,\n"
+            f"{getattr(user, 'full_name', 'Business Development Team') if user else 'Business Development Team'}\n"
+            f"Electra"
+        )
+    else:
+        subject = f"Collaboration with {org.name} | {project_name}"
+        deck_mention = f"\nYou can explore our presentation deck here: {deck_url}" if deck_url else ""
+        body = (
+            f"Hi {first_name},\n\n"
+            f"I came across {org.name}'s impressive footprint in {org.city or org.country or 'the industry'} and wanted to reach out directly.\n\n"
+            f"At Electra, we specialize in high-impact solutions including {project_name}. "
+            f"{pitch_angle or 'We partner with leading organizations to accelerate digital intelligence and drive commercial expansion.'}"
+            f"{deck_mention}\n\n"
+            f"Are you available for a quick introductory conversation next Tuesday or Wednesday?\n\n"
+            f"Warm regards,\n"
+            f"{getattr(user, 'full_name', 'Business Development Team') if user else 'Business Development Team'}\n"
+            f"Electra"
+        )
+
+    return {
+        "organization_id": org.id,
+        "organization_name": org.name,
+        "contact_id": contact.id if contact else None,
+        "contact_name": recipient_name,
+        "contact_email": recipient_email,
+        "contact_role": recipient_role,
+        "subject": subject,
+        "body": body,
+        "recommended_deck_url": deck_url,
+        "template_type": template_type,
+        "requires_confirmation": True,
+        "action_type": "send_email",
+    }
+
+
+def schedule_meeting_tool(
+    db: Session,
+    organization_id: int,
+    title: str,
+    scheduled_at: str,
+    duration_minutes: int = 30,
+    meeting_type: str = "Introduction",
+    meeting_url: Optional[str] = None,
+    notes: Optional[str] = None,
+    user: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """
+    Prepare a scheduled meeting with an organization. Returns structured payload
+    for human confirmation before creating the meeting record.
+    """
+    from app.models.organization import Organization
+    from app.models.contact import Contact
+
+    org = db.query(Organization).filter(
+        Organization.id == organization_id,
+        Organization.is_deleted == False,
+    ).first()
+    if not org:
+        return {"error": f"Organization with ID {organization_id} not found."}
+
+    contacts = db.query(Contact).filter(
+        Contact.organization_id == organization_id,
+        Contact.is_deleted == False,
+    ).all()
+    primary_contact = contacts[0] if contacts else None
+
+    return {
+        "organization_id": org.id,
+        "organization_name": org.name,
+        "title": title or f"Meeting with {org.name}",
+        "scheduled_at": scheduled_at,
+        "duration_minutes": duration_minutes,
+        "meeting_type": meeting_type,
+        "meeting_url": meeting_url or "",
+        "notes": notes or f"Scheduled via ELLY Copilot for {org.name}",
+        "primary_contact_id": primary_contact.id if primary_contact else None,
+        "primary_contact_name": primary_contact.full_name if primary_contact else None,
+        "requires_confirmation": True,
+        "action_type": "schedule_meeting",
+    }
+
+
+def auto_generate_followups(
+    db: Session,
+    organization_id: Optional[int] = None,
+    limit: int = 5,
+    user: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """
+    Scan for opportunities and organizations with stale momentum, and suggest
+    concrete follow-up actions and outreach templates.
+    """
+    from app.models.organization import Organization, ConnectionStatus
+    from app.models.opportunity import Opportunity
+    from app.models.followup import FollowUp, FollowUpStatus
+
+    now = datetime.now(timezone.utc)
+    seven_days_ago = now - timedelta(days=7)
+
+    items = []
+
+    # Check overdue followups
+    overdue_q = db.query(FollowUp).filter(
+        FollowUp.status == FollowUpStatus.PENDING.value,
+        FollowUp.is_deleted == False,
+    )
+    if organization_id:
+        overdue_q = overdue_q.filter(FollowUp.organization_id == organization_id)
+    
+    for f in overdue_q.limit(limit).all():
+        org = db.query(Organization).filter(Organization.id == f.organization_id).first()
+        items.append({
+            "type": "overdue_followup",
+            "priority": "HIGH",
+            "organization_id": f.organization_id,
+            "organization_name": org.name if org else "Unknown",
+            "title": f"Complete pending follow-up: {f.title}",
+            "reason": f"Follow-up due at {f.due_at} is pending action.",
+            "recommended_action": f"Draft outreach email or log touchpoint with {org.name if org else 'prospect'}.",
+        })
+
+    # Check stale contacted organizations
+    if len(items) < limit:
+        stale_orgs_q = db.query(Organization).filter(
+            Organization.is_deleted == False,
+            Organization.status == ConnectionStatus.CONTACTED.value,
+        )
+        if organization_id:
+            stale_orgs_q = stale_orgs_q.filter(Organization.id == organization_id)
+        
+        for org in stale_orgs_q.limit(limit - len(items)).all():
+            items.append({
+                "type": "stale_lead",
+                "priority": "MEDIUM",
+                "organization_id": org.id,
+                "organization_name": org.name,
+                "title": f"Follow up with {org.name} (Contacted)",
+                "reason": f"Organization is in 'Contacted' stage. Re-engage to move towards Connected.",
+                "recommended_action": f"Send follow-up email sharing relevant showcase deck.",
+            })
+
+    return {
+        "count": len(items),
+        "follow_up_recommendations": items,
+    }
+
 
 
 

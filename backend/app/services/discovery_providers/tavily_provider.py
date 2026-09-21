@@ -23,7 +23,15 @@ SKIP_PATTERNS = re.compile(
     r"\d+\s+(?:cybersecurity|software|companies|tech|healthcare|finance)\s+companies|"
     r"(?:to\s+know|in\s+(?:the\s+)?(?:uk|us|usa|india|australia|germany|canada))|"
     r"industry\s+analysis|industry\s+report|market\s+report|"
-    r"(?:leading|top|best)\s+(?:outsourced|uk|us|indian))",
+    r"(?:leading|top|best)\s+(?:outsourced|uk|us|indian)|"
+    r"(?:india|global|world|market)\s+(?:saas|fintech|health|digital|tech|startup)\s+(?:landscape|report|report|overview|insights|analysis|study)|"
+    r"(?:shaping|transforming|evolving|driving|accelerating)\s+(?:india|the\s+future)|"
+    r"(?:india|global)\s+(?:stack|revolution|revolutionizing|leads|leading)\s+(?:in|access|the)|"
+    r"(?:\d+\s+)?(?:best|top|leading)\s+(?:saas|fintech|healthcare|tech)\s+(?:companies|startups|platforms|solutions)|"
+    r"(?:why|how)\s+(?:india|the\s+us|global)\s+(?:leads|dominates|is)|"
+    r"(?:is\s+)?(?:revolutionizing|disrupting|transforming)\s+(?:access|the)|"
+    r"(?:shows?|is)\s+.*(?:best|top|leading)\s+(?:investment|approach|strategy|practice)|"
+    r"(?:saas|fintech|health|digital)\s+(?:landscape|ecosystem|market|sector|industry)\s+(?:in|for|of))",
     re.IGNORECASE,
 )
 
@@ -149,17 +157,42 @@ def _detect_org_type(title: str, content: str) -> str:
     return "Organization"
 
 
-def _extract_location(content: str, location_hint: Optional[str] = None) -> Dict[str, str]:
-    """Extract country, state, city from content."""
+def _extract_location(content: str, location_hint: Optional[str] = None, url: Optional[str] = None) -> Dict[str, str]:
+    """Extract country, state, city from content. Country inferred from domain, not search query."""
     result = {"country": None, "state": None, "city": None}
     for pat in LOCATION_PATTERNS:
         m = pat.search(content)
         if m:
             result["city"] = m.group(1).strip()
             break
-    if location_hint:
+
+    # Infer country from website domain (more reliable than search query)
+    if url:
+        domain = url.lower().replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0]
+        TLD_COUNTRY = {
+            ".in": "India", ".co.uk": "United Kingdom", ".uk": "United Kingdom",
+            ".com.au": "Australia", ".com.sg": "Singapore", ".co.jp": "Japan",
+            ".de": "Germany", ".fr": "France", ".ca": "Canada", ".br": "Brazil",
+            ".za": "South Africa", ".ae": "UAE", ".sa": "Saudi Arabia",
+            ".nl": "Netherlands", ".se": "Sweden", ".no": "Norway", ".dk": "Denmark",
+            ".fi": "Finland", ".ie": "Ireland", ".nz": "New Zealand",
+            ".com.mx": "Mexico", ".co.za": "South Africa", ".co.in": "India",
+        }
+        for tld, country in TLD_COUNTRY.items():
+            if domain.endswith(tld):
+                result["country"] = country
+                break
+        # .com/.org/.net — no country inference (could be anywhere)
+        if not result["country"] and domain.endswith((".com", ".org", ".net", ".io", ".ai")):
+            # Check for country-code subdomains
+            if domain.startswith("in."):
+                result["country"] = "India"
+            elif domain.startswith("uk."):
+                result["country"] = "United Kingdom"
+
+    # Only use location_hint if it's a country AND we couldn't infer from domain
+    if not result["country"] and location_hint:
         loc = location_hint.strip()
-        # Check if it's a country or city
         countries = ["usa", "us", "united states", "uk", "united kingdom", "india",
                       "canada", "australia", "germany", "france", "japan", "singapore",
                       "uae", "saudi arabia", "brazil", "south korea", "china",
@@ -244,7 +277,7 @@ class TavilySearchProvider(BaseOrganizationDiscoveryProvider):
         org_type = _detect_org_type(title, content)
         if org_type == "Organization":
             org_type = _detect_org_type(url, content)
-        loc = _extract_location(content, location_hint)
+        loc = _extract_location(content, location_hint, url=url)
 
         # Extract contacts from content
         emails = EMAIL_RE.findall(content)

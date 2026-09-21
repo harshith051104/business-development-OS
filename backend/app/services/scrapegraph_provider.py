@@ -22,7 +22,7 @@ def _get_config() -> dict:
 
     _graph_config = {
         "llm": {
-            "model": "google_genai/gemma-4-31b-it",
+            "model": "google_genai/gemini-3.8-flash",
             "api_key": api_key,
             "model_tokens": 100000,
             "temperature": 0,

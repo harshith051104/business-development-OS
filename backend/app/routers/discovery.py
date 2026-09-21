@@ -645,6 +645,7 @@ def search_discoveries(
                 db.add(research_rec)
 
             out_items.append(_enrich_org_out(db, new_record))
+            target_org = new_record
         else:
             if qual_tier:
                 existing_record.potential_fit = qual_tier
@@ -657,6 +658,35 @@ def search_discoveries(
             existing_record.discovery_objective = payload.discovery_objective or existing_record.discovery_objective
             existing_record.search_history_id = history_entry.id
             out_items.append(_enrich_org_out(db, existing_record))
+            target_org = existing_record
+
+        # Persist discovered executive decision-makers if provided
+        if res.get("contacts") and target_org:
+            for c in res["contacts"]:
+                c_name = (c.get("full_name") or c.get("name") or "").strip()
+                if not c_name:
+                    continue
+                c_exists = db.query(DiscoveredContact).filter(
+                    DiscoveredContact.discovered_org_id == target_org.id,
+                    DiscoveredContact.full_name == c_name,
+                ).first()
+                if not c_exists:
+                    new_contact = DiscoveredContact(
+                        discovered_org_id=target_org.id,
+                        full_name=c_name,
+                        job_title=c.get("job_title") or c.get("role") or "Executive",
+                        seniority_level=c.get("seniority_level") or "Executive",
+                        department=c.get("department") or "Executive",
+                        email=c.get("email"),
+                        email_status=c.get("email_status") or "predicted",
+                        phone=c.get("phone"),
+                        linkedin_url=c.get("linkedin_url"),
+                        fit_level=c.get("fit_level") or "High",
+                        fit_reason=c.get("fit_reason") or "Key executive decision-maker",
+                        status=DiscoveryStatus.DISCOVERED.value,
+                    )
+                    db.add(new_contact)
+            db.flush()
 
     history_entry.results_count = total_count
     db.commit()

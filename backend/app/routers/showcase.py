@@ -2,6 +2,9 @@ import math
 import os
 import re
 import uuid
+import zipfile
+import subprocess
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
@@ -386,4 +389,207 @@ async def upload_standalone_presentation_file(
         "file_type": ext.lstrip(".").upper(),
         "file_size": len(content),
     }
+
+
+def _convert_pptx_to_pdf(file_path: str) -> Optional[str]:
+    """Convert PPTX/PPT to exact high-fidelity PDF using PowerPoint automation."""
+    if not os.path.exists(file_path):
+        return None
+    
+    base, ext = os.path.splitext(file_path)
+    if ext.lower() not in {".pptx", ".ppt"}:
+        return None
+        
+    pdf_path = f"{base}.pdf"
+    if os.path.exists(pdf_path) and os.path.getsize(pdf_path) > 0:
+        return pdf_path
+
+    script_path = os.path.abspath(
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "scripts", "convert_pptx_to_pdf.ps1")
+    )
+    if not os.path.exists(script_path):
+        return None
+
+    try:
+        cmd = [
+            "powershell",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            script_path,
+            "-InputPath",
+            os.path.abspath(file_path),
+            "-OutputPath",
+            os.path.abspath(pdf_path),
+        ]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=40)
+        if os.path.exists(pdf_path) and os.path.getsize(pdf_path) > 0:
+            return pdf_path
+    except Exception:
+        pass
+
+    return None
+
+
+def _parse_pptx_slides(file_path: str, uploads_dir: str) -> List[dict]:
+    """Parse a PowerPoint .pptx presentation and extract structured slide contents and images."""
+    if not os.path.exists(file_path):
+        return []
+
+    unique_prefix = os.path.basename(file_path).split(".")[0]
+    extracted_dir = os.path.join(uploads_dir, "extracted", unique_prefix)
+    os.makedirs(extracted_dir, exist_ok=True)
+    web_prefix = f"/api/uploads/presentations/extracted/{unique_prefix}"
+
+    try:
+        with zipfile.ZipFile(file_path, "r") as z:
+            # Extract slide images/media
+            media_files = [n for n in z.namelist() if n.startswith("ppt/media/")]
+            for mf in media_files:
+                out_mf = os.path.join(extracted_dir, os.path.basename(mf))
+                if not os.path.exists(out_mf):
+                    with open(out_mf, "wb") as f:
+                        f.write(z.read(mf))
+
+            slide_files = sorted(
+                [n for n in z.namelist() if re.match(r"ppt/slides/slide\d+\.xml", n)],
+                key=lambda x: int(re.search(r"\d+", x).group())
+            )
+
+            ns = {
+                "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+                "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
+            }
+
+            slides = []
+            for idx, sf in enumerate(slide_files, 1):
+                tree = ET.fromstring(z.read(sf))
+
+                # Image relationships for this slide
+                rels_file = f"ppt/slides/_rels/{os.path.basename(sf)}.rels"
+                slide_images = []
+                if rels_file in z.namelist():
+                    rels_tree = ET.fromstring(z.read(rels_file))
+                    for rel in rels_tree.iter("{http://schemas.openxmlformats.org/package/2006/relationships}Relationship"):
+                        target = rel.attrib.get("Target", "")
+                        if "media/" in target:
+                            img_name = os.path.basename(target)
+                            slide_images.append(f"{web_prefix}/{img_name}")
+
+                # Text shapes
+                blocks = []
+                title = None
+                for sp in tree.findall(".//p:sp", ns):
+                    txBody = sp.find(".//p:txBody", ns)
+                    if txBody is None:
+                        continue
+                    lines = []
+                    for p in txBody.findall(".//a:p", ns):
+                        t = "".join([elem.text for elem in p.findall(".//a:t", ns) if elem.text])
+                        if t.strip():
+                            lines.append(t.strip())
+                    if lines:
+                        if title is None:
+                            title = lines[0]
+                            if len(lines) > 1:
+                                blocks.append({"type": "paragraph", "lines": lines[1:]})
+                        else:
+                            blocks.append({"type": "paragraph", "lines": lines})
+
+                # Tables
+                tables = []
+                for tbl in tree.findall(".//a:tbl", ns):
+                    rows = []
+                    for tr in tbl.findall(".//a:tr", ns):
+                        row = []
+                        for tc in tr.findall(".//a:tc", ns):
+                            cell_text = "".join([elem.text for elem in tc.findall(".//a:t", ns) if elem.text]).strip()
+                            row.append(cell_text)
+                        if any(row):
+                            rows.append(row)
+                    if rows:
+                        tables.append(rows)
+
+                slides.append({
+                    "slide_number": idx,
+                    "title": title or f"Slide {idx}",
+                    "blocks": blocks,
+                    "tables": tables,
+                    "images": slide_images,
+                })
+            return slides
+    except Exception as e:
+        return []
+
+
+@router.get("/showcase/{id}/slides")
+def get_project_presentation_slides(
+    id: int,
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Retrieve structured presentation slide content for the project deck."""
+    project = db.query(Project).filter(Project.id == id, Project.is_deleted.is_(False)).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID {id} not found.",
+        )
+
+    if not project.presentation_url:
+        return {
+            "has_presentation": False,
+            "file_type": None,
+            "filename": None,
+            "presentation_url": None,
+            "slide_count": 0,
+            "slides": [],
+        }
+
+    raw_url = project.presentation_url
+    filename = os.path.basename(raw_url)
+    _, ext = os.path.splitext(filename.lower())
+
+    uploads_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads", "presentations"))
+    file_path = os.path.join(uploads_dir, filename)
+
+    exact_pdf_url = None
+    if ext == ".pdf":
+        exact_pdf_url = raw_url
+        return {
+            "has_presentation": True,
+            "file_type": "pdf",
+            "filename": filename,
+            "presentation_url": raw_url,
+            "exact_pdf_url": exact_pdf_url,
+            "slide_count": 1,
+            "slides": [],
+        }
+    elif ext in {".pptx", ".ppt"}:
+        converted_pdf = _convert_pptx_to_pdf(file_path)
+        if converted_pdf:
+            pdf_filename = os.path.basename(converted_pdf)
+            exact_pdf_url = f"/api/uploads/presentations/{pdf_filename}"
+
+        slides = _parse_pptx_slides(file_path, uploads_dir) if ext == ".pptx" else []
+        return {
+            "has_presentation": True,
+            "file_type": ext.lstrip("."),
+            "filename": filename,
+            "presentation_url": raw_url,
+            "exact_pdf_url": exact_pdf_url,
+            "slide_count": len(slides),
+            "slides": slides,
+        }
+    else:
+        return {
+            "has_presentation": True,
+            "file_type": ext.lstrip("."),
+            "filename": filename,
+            "presentation_url": raw_url,
+            "exact_pdf_url": None,
+            "slide_count": 0,
+            "slides": [],
+        }
+
 

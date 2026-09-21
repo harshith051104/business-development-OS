@@ -6,10 +6,19 @@ No Browserbase, no paid proxies. Local Chrome via CDP only.
 """
 import asyncio
 import logging
+import sys
 import time
+import re
 from typing import Optional
 
 logger = logging.getLogger(__name__)
+
+# Ensure Windows supports subprocesses for Playwright/browser
+if sys.platform == "win32":
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    except Exception:
+        pass
 
 # Lazy singleton: browser launched on first use, reused across requests
 _browser = None
@@ -28,8 +37,8 @@ async def _get_browser():
         _browser = await local_browser.launch(headless=True)
         logger.info("Stagehand: local Chrome browser launched")
         return _browser
-    except Exception as e:
-        logger.warning("Stagehand: failed to launch browser: %s", e)
+    except (Exception, NotImplementedError) as e:
+        logger.warning("Stagehand: failed to launch browser (%s) — falling back to HTTP fetch", e)
         _browser = None
         return None
 

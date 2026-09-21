@@ -12,6 +12,7 @@ import {
 
 interface FollowUpsSectionProps {
   followups: GroupedFollowUps
+  hideContainer?: boolean
 }
 
 const FollowUpCard: React.FC<{ item: CategorizedFollowUpItem; badgeStyle: string }> = ({
@@ -43,11 +44,84 @@ const FollowUpCard: React.FC<{ item: CategorizedFollowUpItem; badgeStyle: string
   </div>
 )
 
-export const FollowUpsSection: React.FC<FollowUpsSectionProps> = ({ followups }) => {
+export const FollowUpsSection: React.FC<FollowUpsSectionProps> = ({
+  followups,
+  hideContainer = false,
+}) => {
   const totalFollowups =
     (followups.overdue?.length || 0) +
     (followups.today?.length || 0) +
     (followups.upcoming?.length || 0)
+
+  const content = totalFollowups === 0 ? (
+    <div className="py-8 text-center text-slate-500 text-xs flex flex-col items-center justify-center space-y-2">
+      <CheckCircle2 className="w-7 h-7 text-slate-600 stroke-[1.5]" />
+      <p>No follow-ups currently due.</p>
+    </div>
+  ) : (
+    <div className="space-y-4">
+      {/* Overdue Section */}
+      {(followups.overdue?.length || 0) > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center space-x-1.5 text-xs font-bold text-red-400 uppercase tracking-wider px-1">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>Overdue ({followups.overdue?.length || 0})</span>
+          </div>
+          <div className="space-y-2">
+            {followups.overdue.map((item) => (
+              <FollowUpCard
+                key={item.id}
+                item={item}
+                badgeStyle="bg-red-500/10 text-red-300 border-red-500/20"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Today Section */}
+      {(followups.today?.length || 0) > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center space-x-1.5 text-xs font-bold text-amber-400 uppercase tracking-wider px-1">
+            <Clock className="w-3.5 h-3.5" />
+            <span>Due Today ({followups.today?.length || 0})</span>
+          </div>
+          <div className="space-y-2">
+            {followups.today.map((item) => (
+              <FollowUpCard
+                key={item.id}
+                item={item}
+                badgeStyle="bg-amber-500/10 text-amber-300 border-amber-500/20"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Section */}
+      {(followups.upcoming?.length || 0) > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center space-x-1.5 text-xs font-bold text-violet-400 uppercase tracking-wider px-1">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>Upcoming ({followups.upcoming?.length || 0})</span>
+          </div>
+          <div className="space-y-2">
+            {followups.upcoming.map((item) => (
+              <FollowUpCard
+                key={item.id}
+                item={item}
+                badgeStyle="bg-violet-500/10 text-violet-300 border-violet-500/20"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  if (hideContainer) {
+    return content
+  }
 
   return (
     <div className="bg-[#110B2E] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
@@ -66,77 +140,7 @@ export const FollowUpsSection: React.FC<FollowUpsSectionProps> = ({ followups })
         </span>
       </div>
 
-      {totalFollowups === 0 ? (
-        <div className="py-8 text-center text-slate-500 text-xs flex flex-col items-center justify-center space-y-2">
-          <CheckCircle2 className="w-8 h-8 text-slate-600 stroke-[1.5]" />
-          <p>No follow-ups currently due.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Overdue Column */}
-          <div className="space-y-2.5">
-            <div className="flex items-center space-x-1.5 text-xs font-bold text-red-400 uppercase tracking-wider px-1">
-              <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Overdue ({followups.overdue?.length || 0})</span>
-            </div>
-            {followups.overdue?.length === 0 ? (
-              <p className="text-xs text-slate-500 italic p-3 bg-[#1A1040]/40 rounded-xl border border-slate-800">
-                No overdue items
-              </p>
-            ) : (
-              followups.overdue.map((item) => (
-                <FollowUpCard
-                  key={item.id}
-                  item={item}
-                  badgeStyle="bg-red-500/10 text-red-300 border-red-500/20"
-                />
-              ))
-            )}
-          </div>
-
-          {/* Today Column */}
-          <div className="space-y-2.5">
-            <div className="flex items-center space-x-1.5 text-xs font-bold text-amber-400 uppercase tracking-wider px-1">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Today ({followups.today?.length || 0})</span>
-            </div>
-            {followups.today?.length === 0 ? (
-              <p className="text-xs text-slate-500 italic p-3 bg-[#1A1040]/40 rounded-xl border border-slate-800">
-                No follow-ups for today
-              </p>
-            ) : (
-              followups.today.map((item) => (
-                <FollowUpCard
-                  key={item.id}
-                  item={item}
-                  badgeStyle="bg-amber-500/10 text-amber-300 border-amber-500/20"
-                />
-              ))
-            )}
-          </div>
-
-          {/* Upcoming Column */}
-          <div className="space-y-2.5">
-            <div className="flex items-center space-x-1.5 text-xs font-bold text-violet-400 uppercase tracking-wider px-1">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Upcoming ({followups.upcoming?.length || 0})</span>
-            </div>
-            {followups.upcoming?.length === 0 ? (
-              <p className="text-xs text-slate-500 italic p-3 bg-[#1A1040]/40 rounded-xl border border-slate-800">
-                No upcoming follow-ups
-              </p>
-            ) : (
-              followups.upcoming.map((item) => (
-                <FollowUpCard
-                  key={item.id}
-                  item={item}
-                  badgeStyle="bg-violet-500/10 text-violet-300 border-violet-500/20"
-                />
-              ))
-            )}
-          </div>
-        </div>
-      )}
+      {content}
     </div>
   )
 }

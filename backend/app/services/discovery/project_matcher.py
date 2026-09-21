@@ -47,7 +47,7 @@ def match_projects(
 
 def _build_research_text(research_data: Dict[str, Any]) -> str:
     parts = []
-    for field in ["what_they_do", "digital_transformation", "ai_adoption", "telemedicine", "automation"]:
+    for field in ["what_they_do", "industry", "organization_type", "digital_transformation", "ai_adoption", "telemedicine", "automation"]:
         val = research_data.get(field)
         if val:
             parts.append(str(val))
@@ -66,22 +66,24 @@ def _score_project_match(project: Project, research_text: str, research_data: Di
     features = [f.lower() for f in (project.key_features or [])]
     proj_text = f"{project.name} {project.short_description} {project.description or ''} {' '.join(tags)} {' '.join(features)}".lower()
 
-    # Category match
+    # Category & Sector match
     category = (project.category or "").lower()
     if "healthcare" in category and any(t in research_text for t in ["hospital", "healthcare", "medical", "clinical", "patient"]):
+        score += 30
+    if ("saas" in category or "software" in category) and any(t in research_text for t in ["saas", "software", "platform", "cloud", "api"]):
+        score += 30
+    if ("fintech" in category or "financial" in category) and any(t in research_text for t in ["fintech", "financial", "banking", "payments", "finance"]):
+        score += 30
+    if ("telecom" in category or "telco" in category or "enterprise" in category) and any(t in research_text for t in ["telecom", "telecommunications", "broadband", "5g", "network", "enterprise"]):
+        score += 30
+    if ("manufacturing" in category or "industrial" in category) and any(t in research_text for t in ["manufacturing", "industrial", "production", "supply chain", "engineering"]):
+        score += 30
+    if "ai" in category and any(t in research_text for t in ["ai", "artificial intelligence", "machine learning", "intelligence", "operations"]):
         score += 25
-    if "saas" in category or "software" in category and any(t in research_text for t in ["saas", "software", "platform", "cloud"]):
-        score += 22
-    if "fintech" in category or "financial" in category and any(t in research_text for t in ["fintech", "financial", "banking", "payments"]):
-        score += 22
-    if "ai" in category and any(t in research_text for t in ["ai", "artificial intelligence", "machine learning", "intelligence"]):
-        score += 20
-    if "manufacturing" in category and any(t in research_text for t in ["manufacturing", "industrial", "production", "supply chain"]):
-        score += 18
     if "automation" in category and any(t in research_text for t in ["automation", "automated", "workflow"]):
-        score += 15
+        score += 20
     if "data" in category and any(t in research_text for t in ["data", "analytics", "platform", "integration"]):
-        score += 15
+        score += 20
 
     # Keyword overlap
     research_words = set(research_text.split())

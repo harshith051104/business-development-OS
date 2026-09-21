@@ -1,4 +1,3 @@
-
 """
 LLM Function-Calling Tool Definitions.
 Wraps existing tools.py functions as OpenAI-compatible tool schemas.
@@ -451,6 +450,71 @@ AGENT_TOOL_SCHEMAS: list[dict] = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "recommend_showcase_deck",
+            "description": "Recommend the most relevant showcase project deck, presentation, or demo URL for an organization based on its industry and needs.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "organization_id": {"type": "integer", "description": "The ID of the organization"},
+                },
+                "required": ["organization_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "draft_outreach_email",
+            "description": "Draft a personalized cold or follow-up outreach email to an organization/contact, embedding relevant showcase presentations.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "organization_id": {"type": "integer", "description": "Target organization ID"},
+                    "contact_id": {"type": "integer", "description": "Optional specific contact ID"},
+                    "template_type": {"type": "string", "enum": ["introduction", "follow_up"], "default": "introduction"},
+                    "pitch_angle": {"type": "string", "description": "Specific value proposition or angle to emphasize"},
+                },
+                "required": ["organization_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "schedule_meeting",
+            "description": "Prepare a meeting with an organization. Returns a confirmation card for user approval before booking.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "organization_id": {"type": "integer", "description": "Target organization ID"},
+                    "title": {"type": "string", "description": "Meeting title or purpose"},
+                    "scheduled_at": {"type": "string", "description": "ISO timestamp or date string (e.g. 2026-09-15T10:00:00Z)"},
+                    "duration_minutes": {"type": "integer", "default": 30},
+                    "meeting_type": {"type": "string", "default": "Introduction"},
+                    "meeting_url": {"type": "string", "description": "Video call URL (e.g. Google Meet, Zoom)"},
+                    "notes": {"type": "string"},
+                },
+                "required": ["organization_id", "title", "scheduled_at"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "auto_generate_followups",
+            "description": "Scan stale leads, stalled opportunities, and overdue follow-ups to suggest immediate proactive outreach and actions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "organization_id": {"type": "integer", "description": "Optional organization ID to filter by"},
+                    "limit": {"type": "integer", "default": 5},
+                },
+            },
+        },
+    },
 ]
 
 
@@ -493,6 +557,11 @@ TOOL_REGISTRY: dict[str, Callable] = {
     "search_demos": tools.search_demos,
     "search_negotiations": tools.search_negotiations,
     "search_tasks": tools.search_tasks,
+    # Autonomous BD Execution tools
+    "recommend_showcase_deck": tools.recommend_showcase_deck,
+    "draft_outreach_email": tools.draft_outreach_email,
+    "schedule_meeting": tools.schedule_meeting_tool,
+    "auto_generate_followups": tools.auto_generate_followups,
 }
 
 

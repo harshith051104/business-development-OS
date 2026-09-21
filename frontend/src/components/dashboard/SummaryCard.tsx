@@ -7,6 +7,7 @@ interface SummaryCardProps {
   description: string
   icon: LucideIcon
   colorTheme: 'blue' | 'emerald' | 'amber' | 'purple' | 'indigo' | 'violet'
+  compact?: boolean
 }
 
 const themeStyles = {
@@ -60,8 +61,29 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   description,
   icon: Icon,
   colorTheme,
+  compact = false,
 }) => {
   const styles = themeStyles[colorTheme]
+
+  if (compact) {
+    return (
+      <div
+        className={`group relative bg-[#110B2E]/90 border ${styles.border} rounded-xl p-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 overflow-hidden flex items-center justify-between gap-2.5`}
+      >
+        <div className="min-w-0 flex-1">
+          <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400 block truncate">
+            {title}
+          </span>
+          <div className="text-lg sm:text-xl font-extrabold text-white tracking-tight font-mono mt-0.5">
+            {count.toLocaleString()}
+          </div>
+        </div>
+        <div className={`p-2 rounded-lg ${styles.iconBg} shrink-0 transition-transform group-hover:scale-105`}>
+          <Icon className="w-4 h-4" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div

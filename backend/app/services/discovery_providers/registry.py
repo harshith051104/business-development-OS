@@ -10,13 +10,14 @@ from app.services.discovery_providers.contact_provider import ExecutiveContactDi
 from app.services.discovery_providers.enrichment_provider import StandardEmailEnrichmentProvider
 from app.services.discovery_providers.tavily_provider import TavilySearchProvider
 from app.services.discovery_providers.serper_provider import SerperSearchProvider
+from app.services.discovery_providers.ai_agent_researcher import AIAgentLeadResearcher
 
 logger = logging.getLogger(__name__)
 
 
 class FallbackOrgProvider(BaseOrganizationDiscoveryProvider):
     """
-    Tries providers in priority order: Tavily → Serper → Directory.
+    Tries providers in priority order: AI Agent Lead Researcher (Apollo-Grade) → Curated Directory → Tavily → Serper.
     Falls back to next provider on empty results or errors.
     """
 
@@ -85,16 +86,20 @@ class ProviderRegistry:
         self._enrichment_providers: Dict[str, BaseEmailEnrichmentProvider] = {}
 
         # Default standard registrations
+        ai_agent = AIAgentLeadResearcher()
         default_dir = DirectoryDiscoveryProvider()
         default_contact = ExecutiveContactDiscoveryProvider()
         default_enrichment = StandardEmailEnrichmentProvider()
 
-        # Web search providers (directory first for speed, then web search for unknown orgs)
+        # Web search providers
         tavily = TavilySearchProvider()
         serper = SerperSearchProvider()
-        fallback = FallbackOrgProvider([default_dir, tavily, serper])
+
+        # Primary priority: AI Agent Lead Researcher (Apollo-grade) first!
+        fallback = FallbackOrgProvider([ai_agent, default_dir, tavily, serper])
 
         self.register_org_provider("Multi-Source Discovery (Recommended)", fallback)
+        self.register_org_provider("AI Agent Lead Researcher (Apollo-Grade)", ai_agent)
         self.register_org_provider("Tavily Web Search", tavily)
         self.register_org_provider("Serper Google Search", serper)
         self.register_org_provider("Curated Directory", default_dir)
