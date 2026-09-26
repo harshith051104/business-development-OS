@@ -1,0 +1,33 @@
+# Environments & secrets
+.env
+*.env
+gmail_token.json
+google_credentials.json
+google_gmail_credentials.json
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Databases
+*.db
+*.sqlite3
+
+# Uploads except .gitkeep
+uploads/*
+!uploads/.gitkeep
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+*.swp

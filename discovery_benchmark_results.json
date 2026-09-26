@@ -1,0 +1,913 @@
+{
+  "timestamp": "2026-09-13 21:55:51",
+  "duration_seconds": 8009.18,
+  "total_organizations": 33,
+  "total_contacts": 98,
+  "total_emails": 55,
+  "sectors": [
+    {
+      "sector": "SaaS / Technology",
+      "organizations": [
+        {
+          "name": "Shaping India's SaaS LandScape",
+          "website": "https://saasboomi.org/reports/saas-landscape-report-bkp",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 30,
+          "qualification_score": 51,
+          "qualification_tier": "Low",
+          "contacts_found": 0,
+          "contacts_with_email": 0,
+          "contact_names": [],
+          "contact_emails": [],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "India SaaS Report",
+          "website": "https://www.bain.com/insights/india-saas-report-2021",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 17,
+          "qualification_score": 46,
+          "qualification_tier": "Low",
+          "contacts_found": 6,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Uncertainty Executive",
+            "Private Equity",
+            "Insights View",
+            "Agenda Private",
+            "But Easy Wins",
+            "Accessibility Terms"
+          ],
+          "contact_emails": [
+            null,
+            null,
+            null,
+            null,
+            "but.wins@bain.com",
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "SaaS Application Development",
+          "website": "https://www.classicinformatics.com/saas-application-development",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 28,
+          "qualification_score": 46,
+          "qualification_tier": "Low",
+          "contacts_found": 3,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "David Mc",
+            "Building Tech Team",
+            "David Englestien"
+          ],
+          "contact_emails": [
+            null,
+            "building.team@classicinformatics.com",
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Compucom: Technology",
+          "website": "https://www.compucom.com",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 20,
+          "qualification_score": 56,
+          "qualification_tier": "Medium",
+          "contacts_found": 3,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Kevin Shank",
+            "Careers Contact",
+            "Conduct Terms"
+          ],
+          "contact_emails": [
+            "kevin.shank@compucom.com",
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Careers at saas.group",
+          "website": "https://crosstalent.com/fr/crosstalent/carriere",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 21,
+          "qualification_score": 66,
+          "qualification_tier": "Medium",
+          "contacts_found": 2,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Chady Salameh",
+            "Professional Development"
+          ],
+          "contact_emails": [
+            "chady.salameh@crosstalent.com",
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Zoho Corporation",
+          "website": "https://www.zoho.com",
+          "city": "Chennai",
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 16,
+          "qualification_score": 80,
+          "qualification_tier": "High",
+          "contacts_found": 3,
+          "contacts_with_email": 3,
+          "contact_names": [
+            "Sridhar Vembu",
+            "Shailesh Kumar Davey",
+            "El Gobierno"
+          ],
+          "contact_emails": [
+            "sridhar.vembu@zoho.com",
+            "shailesh.davey@zoho.com",
+            "el.gobierno@zoho.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Postman",
+          "website": "https://www.postman.com",
+          "city": "Bengaluru",
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 7,
+          "qualification_score": 80,
+          "qualification_tier": "High",
+          "contacts_found": 5,
+          "contacts_with_email": 3,
+          "contact_names": [
+            "Modern Software",
+            "Speaker Details",
+            "Abhinav Asthana",
+            "Rick Crawford",
+            "Events Languages"
+          ],
+          "contact_emails": [
+            "modern.software@postman.com",
+            "speaker.details@postman.com",
+            null,
+            "rick.crawford@postman.com",
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Freshworks",
+          "website": "https://www.freshworks.com",
+          "city": "Chennai",
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 10,
+          "qualification_score": 47,
+          "qualification_tier": "Low",
+          "contacts_found": 3,
+          "contacts_with_email": 2,
+          "contact_names": [
+            "Girish Mathrubootham",
+            "Motorola Mobility",
+            "Platform Freddy"
+          ],
+          "contact_emails": [
+            "girish.mathrubootham@freshworks.com",
+            "motorola.mobility@freshworks.com",
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "sector": "Fintech",
+      "organizations": [
+        {
+          "name": "Why India Leads in Digital Payments",
+          "website": "https://a16z.com/global-payments-india",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 35,
+          "qualification_score": 50,
+          "qualification_tier": "Low",
+          "contacts_found": 3,
+          "contacts_with_email": 3,
+          "contact_names": [
+            "Kaz Nejatian",
+            "Placing Multiple Bets",
+            "Reserve Bank"
+          ],
+          "contact_emails": [
+            "kaz.nejatian@a16z.com",
+            "placing.bets@a16z.com",
+            "reserve.bank@a16z.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "India Fintech Foundation",
+          "website": "https://indiafintechfoundation.com/FintechVerse",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 24,
+          "qualification_score": 53,
+          "qualification_tier": "Low",
+          "contacts_found": 2,
+          "contacts_with_email": 2,
+          "contact_names": [
+            "Perfios AA",
+            "India Fintech Foundation"
+          ],
+          "contact_emails": [
+            "perfios.aa@indiafintechfoundation.com",
+            "india.foundation@indiafintechfoundation.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Indian digital payments fintech PayGlocal raises US$12mn",
+          "website": "https://fintechmagazine.com/articles/indian-digital-payments-fintech-payglocal-raises-us-12mn",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 56,
+          "qualification_score": 59,
+          "qualification_tier": "Medium",
+          "contacts_found": 6,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "With Us",
+            "Glen White",
+            "Rohit Sukhija",
+            "Tube Medium",
+            "Advertise Globe",
+            "Newswire Press"
+          ],
+          "contact_emails": [
+            null,
+            null,
+            "rohit.sukhija@fintechmagazine.com",
+            null,
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "India Stack is Revolutionizing Access to Finance",
+          "website": "https://www.imf.org/external/pubs/ft/fandd/2021/07/india-stack-financial-access-and-digital-inclusion.htm",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 48,
+          "qualification_score": 56,
+          "qualification_tier": "Medium",
+          "contacts_found": 1,
+          "contacts_with_email": 0,
+          "contact_names": [
+            "Press Briefing"
+          ],
+          "contact_emails": [
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Fintech-Rec",
+          "website": "https://fintech-rec.co.uk/about-us",
+          "city": "Bury St",
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 11,
+          "qualification_score": 47,
+          "qualification_tier": "Low",
+          "contacts_found": 1,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Paresh Davdra"
+          ],
+          "contact_emails": [
+            "paresh.davdra@fintech-rec.co.uk"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Finkeda",
+          "website": "https://finkeda.com",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 7,
+          "qualification_score": 53,
+          "qualification_tier": "Low",
+          "contacts_found": 10,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Sunil Singh",
+            "Goyal Chairman",
+            "Director Puran",
+            "Director Rajesh",
+            "Shankar Aggarwal",
+            "Director Ramesh",
+            "Madhvi Sharma",
+            "Director Anshuk",
+            "Soukat Chief",
+            "Mahesh Chandra"
+          ],
+          "contact_emails": [
+            "sunil.singh@finkeda.com",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Fintech-Intel",
+          "website": "https://fintech-intel.com/contacts-us",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 13,
+          "qualification_score": 53,
+          "qualification_tier": "Low",
+          "contacts_found": 6,
+          "contacts_with_email": 6,
+          "contact_names": [
+            "Fintech Intel Lindemann",
+            "Mario Husha",
+            "Fintech Intel Login",
+            "Mariano Albera",
+            "Green Dot",
+            "Fintech Intel Leaderboard"
+          ],
+          "contact_emails": [
+            "fintech.lindemann@fintech-intel.com",
+            "mario.husha@fintech-intel.com",
+            "fintech.login@fintech-intel.com",
+            "mariano.albera@fintech-intel.com",
+            "green.dot@fintech-intel.com",
+            "fintech.leaderboard@fintech-intel.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Privacy Policy",
+          "website": "https://lpfintech.com/privacy-policy",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 14,
+          "qualification_score": 36,
+          "qualification_tier": "Low",
+          "contacts_found": 2,
+          "contacts_with_email": 2,
+          "contact_names": [
+            "Carl Windsor",
+            "John Whittle"
+          ],
+          "contact_emails": [
+            "carl.windsor@fortinet.com",
+            "john.whittle@fortinet.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "sector": "Healthcare",
+      "organizations": [
+        {
+          "name": "India shows health and digital health is the best investment",
+          "website": "https://www.weforum.org/stories/health-and-healthcare-systems/digital-health-investment-india",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 60,
+          "qualification_score": 75,
+          "qualification_tier": "Medium",
+          "contacts_found": 3,
+          "contacts_with_email": 3,
+          "contact_names": [
+            "United States",
+            "Google Poorna Iyer",
+            "World Economic Forum"
+          ],
+          "contact_emails": [
+            "united.states@weforum.org",
+            "google.iyer@weforum.org",
+            "world.forum@weforum.org"
+          ],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Digital health",
+          "website": "https://bolton.rl.talis.com/link",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 14,
+          "qualification_score": 71,
+          "qualification_tier": "Medium",
+          "contacts_found": 0,
+          "contacts_with_email": 0,
+          "contact_names": [],
+          "contact_emails": [],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "India’s evolving digital health strategy",
+          "website": "https://www.nature.com/articles/s41746-024-01279-2",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 40,
+          "qualification_score": 71,
+          "qualification_tier": "Medium",
+          "contacts_found": 0,
+          "contacts_with_email": 0,
+          "contact_names": [],
+          "contact_emails": [],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Contact Clinic, Doctor And Hospital For Healthcare Website Design, Online Marketing And Digital Marketing",
+          "website": "https://www.medkeon.com/contact-us",
+          "city": "3rd Floor, Plot No.5, Lane No.2, Kehar Singh Estate, Westend Marg, Behind Saket Metro Station, New Delhi 110030, India",
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 105,
+          "qualification_score": 83,
+          "qualification_tier": "High",
+          "contacts_found": 4,
+          "contacts_with_email": 2,
+          "contact_names": [
+            "Ameet Kishore",
+            "Specialized In Healthcare",
+            "Develop Launch",
+            "Marketing Result"
+          ],
+          "contact_emails": [
+            "ameet.kishore@medkeon.com",
+            "specialized.healthcare@medkeon.com",
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Alterahealth",
+          "website": "https://www.alterahealth.com",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 12,
+          "qualification_score": 71,
+          "qualification_tier": "Medium",
+          "contacts_found": 3,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Anna Wibberley",
+            "Care Director",
+            "Chief Nursing"
+          ],
+          "contact_emails": [
+            "anna.wibberley@alterahealth.com",
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Tchn",
+          "website": "http://tchn.carpenterhealth.net/contact-us",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 4,
+          "qualification_score": 65,
+          "qualification_tier": "Medium",
+          "contacts_found": 0,
+          "contacts_with_email": 0,
+          "contact_names": [],
+          "contact_emails": [],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Bassett",
+          "website": "https://bassett.org/contact-us",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 7,
+          "qualification_score": 60,
+          "qualification_tier": "Medium",
+          "contacts_found": 4,
+          "contacts_with_email": 4,
+          "contact_names": [
+            "Bassett Healthcare Network",
+            "Fox Hospital",
+            "Critical Access Hospitals",
+            "Ronette Wiley"
+          ],
+          "contact_emails": [
+            "bassett.network@bassett.org",
+            "fox.hospital@bassett.org",
+            "critical.hospitals@bassett.org",
+            "ronette.wiley@bassett.org"
+          ],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Sense",
+          "website": "https://www.sense.org.uk/our-services/contact-us-about-our-services",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 5,
+          "qualification_score": 44,
+          "qualification_tier": "Low",
+          "contacts_found": 2,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "James Watson",
+            "Safeguarding Accessibility"
+          ],
+          "contact_emails": [
+            "james.watson@sense.org.uk",
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "ELLY Hospital Intelligence Platform",
+          "email_personalized": true,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "sector": "Manufacturing",
+      "organizations": [
+        {
+          "name": "Anonautomation",
+          "website": "https://anonautomation.com/about-us-3",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 14,
+          "qualification_score": 68,
+          "qualification_tier": "Medium",
+          "contacts_found": 0,
+          "contacts_with_email": 0,
+          "contact_names": [],
+          "contact_emails": [],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Industrial Automation in Manufacturing",
+          "website": "https://www.gasbarre.com/manufacturing-technologies/automation",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": false,
+          "description_length": 38,
+          "qualification_score": 46,
+          "qualification_tier": "Low",
+          "contacts_found": 1,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Gasbarre Thermal Processing"
+          ],
+          "contact_emails": [
+            "gasbarre.processing@gasbarre.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "Enterprise Cloud Engine",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Parts & Prototype Manufacturing",
+          "website": "https://www.nrtcautomation.com/parts-manufacturing",
+          "city": "Alabama, USA",
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 31,
+          "qualification_score": 75,
+          "qualification_tier": "Medium",
+          "contacts_found": 1,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "North America"
+          ],
+          "contact_emails": [
+            "north.america@nrtcautomation.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "OptiCare Clinical Workflow & Automation Suite",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Industrial Automation Market Companies",
+          "website": "https://www.skyquestt.com/report/industrial-automation-market/companies",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 38,
+          "qualification_score": 50,
+          "qualification_tier": "Low",
+          "contacts_found": 5,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Our Team",
+            "Sovereign Partnerships",
+            "Senior Consultant",
+            "Partnerships Selamawit",
+            "Otis Elevator Company"
+          ],
+          "contact_emails": [
+            null,
+            null,
+            null,
+            null,
+            "otis.company@skyquestt.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Sciemetric",
+          "website": "https://www.sciemetric.com/contact-us-about-manufacturing-traceability",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 10,
+          "qualification_score": 46,
+          "qualification_tier": "Low",
+          "contacts_found": 3,
+          "contacts_with_email": 3,
+          "contact_names": [
+            "Nathan Sheaff",
+            "Off Highway",
+            "Sciemetric Sciemetric"
+          ],
+          "contact_emails": [
+            "nathan.sheaff@sciemetric.com",
+            "off.highway@sciemetric.com",
+            "sciemetric.sciemetric@sciemetric.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Emerge Automation India Pvt Ltd.",
+          "website": "https://graymattersystems.com/brand/india-office",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 32,
+          "qualification_score": 33,
+          "qualification_tier": "Low",
+          "contacts_found": 4,
+          "contacts_with_email": 4,
+          "contact_names": [
+            "Podcast Episode",
+            "Jim Gillespie Talks",
+            "Alan Hinchman",
+            "John Genovesi Joins"
+          ],
+          "contact_emails": [
+            "podcast.episode@graymattersystems.com",
+            "jim.talks@graymattersystems.com",
+            "alan.hinchman@graymattersystems.com",
+            "john.joins@graymattersystems.com"
+          ],
+          "research_complete": true,
+          "showcase_match": "Enterprise Cloud Engine",
+          "email_personalized": true,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "sector": "Telecom / Enterprise",
+      "organizations": [
+        {
+          "name": "IT & Cloud",
+          "website": "https://writerinformation.com/india",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 10,
+          "qualification_score": 81,
+          "qualification_tier": "High",
+          "contacts_found": 6,
+          "contacts_with_email": 2,
+          "contact_names": [
+            "Our Leadership",
+            "Navin Shukla",
+            "Writer Information",
+            "Ajay Soni",
+            "Media Coverage",
+            "Krishan Badaya"
+          ],
+          "contact_emails": [
+            null,
+            null,
+            "writer.information@writerinformation.com",
+            "ajay.soni@writerinformation.com",
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "Tata Communications: Digital Fabric for global enterprises",
+          "website": "https://www.tatacommunications.com",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 58,
+          "qualification_score": 71,
+          "qualification_tier": "Medium",
+          "contacts_found": 3,
+          "contacts_with_email": 1,
+          "contact_names": [
+            "Ganesh Lakshminarayanan",
+            "Economy Tata",
+            "Tata Communications"
+          ],
+          "contact_emails": [
+            "ganesh.lakshminarayanan@tatacommunications.com",
+            null,
+            null
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        },
+        {
+          "name": "1stel",
+          "website": "https://rocketreach.co/1stel-telecommunications-and-cloud-services-profile_b5c07eb0f42e0817",
+          "city": null,
+          "country": "India",
+          "validated": true,
+          "website_reachable": true,
+          "description_length": 5,
+          "qualification_score": 39,
+          "qualification_tier": "Low",
+          "contacts_found": 3,
+          "contacts_with_email": 3,
+          "contact_names": [
+            "Elevator Germany",
+            "Contact Information",
+            "Highspot Sr"
+          ],
+          "contact_emails": [
+            "elevator.germany@rocketreach.co",
+            "contact.information@rocketreach.co",
+            "highspot.sr@rocketreach.co"
+          ],
+          "research_complete": true,
+          "showcase_match": "",
+          "email_personalized": true,
+          "error": ""
+        }
+      ]
+    }
+  ]
+}
