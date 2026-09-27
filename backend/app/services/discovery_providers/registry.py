@@ -11,6 +11,7 @@ from app.services.discovery_providers.enrichment_provider import StandardEmailEn
 from app.services.discovery_providers.tavily_provider import TavilySearchProvider
 from app.services.discovery_providers.serper_provider import SerperSearchProvider
 from app.services.discovery_providers.ai_agent_researcher import AIAgentLeadResearcher
+from app.services.discovery_providers.google_maps_scraper_provider import GoogleMapsScraperProvider
 
 logger = logging.getLogger(__name__)
 
@@ -95,10 +96,15 @@ class ProviderRegistry:
         tavily = TavilySearchProvider()
         serper = SerperSearchProvider()
 
+        # Local Google Maps scraper: slow (1-3 min per search, one job at a time), so it is
+        # NOT in the default chain; pick "Google Maps Scraper (Local)" explicitly in the UI.
+        maps_scraper = GoogleMapsScraperProvider()
+
         # Primary priority: AI Agent Lead Researcher (Apollo-grade) first!
         fallback = FallbackOrgProvider([ai_agent, default_dir, tavily, serper])
 
         self.register_org_provider("Multi-Source Discovery (Recommended)", fallback)
+        self.register_org_provider("Google Maps Scraper (Local)", maps_scraper)
         self.register_org_provider("AI Agent Lead Researcher (Apollo-Grade)", ai_agent)
         self.register_org_provider("Tavily Web Search", tavily)
         self.register_org_provider("Serper Google Search", serper)

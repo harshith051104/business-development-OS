@@ -633,7 +633,7 @@ def search_discoveries(
 
             # Store research data if orchestrator provided it
             if res.get("research") and res["research"].get("research_status") == "completed":
-                from app.models.discovery import OrganizationResearchRecord
+                from app.models.research import OrganizationResearchRecord
                 research_rec = OrganizationResearchRecord(
                     discovered_org_id=new_record.id,
                     organization_name=new_record.name,

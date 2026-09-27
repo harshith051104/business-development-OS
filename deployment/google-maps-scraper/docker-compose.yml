@@ -1,0 +1,27 @@
+# Local Google Maps scraper (gosom/google-maps-scraper, MIT) used by the
+# "Google Maps Scraper (Local)" organization discovery provider.
+# Setup adapted from https://github.com/Mahanaicoach/google-maps-scraper-kit
+#
+# The image has NO built-in auth, so it is bound to 127.0.0.1 ONLY.
+# Never change the port mapping to a public interface without an auth proxy.
+#
+#   docker compose -f deployment/google-maps-scraper/docker-compose.yml up -d
+#   curl http://localhost:8095/api/v1/jobs      # -> [] when healthy (host port: GMAPS_SCRAPER_PORT, default 8095)
+
+services:
+  google-maps-scraper:
+    # v1.15.0 (kit default) is broken: its Playwright driver CDN (azureedge) now returns 404.
+    image: gosom/google-maps-scraper:v1.18.1
+    # platform: linux/amd64   # uncomment on Apple Silicon if the image won't start
+    container_name: elly-gmaps-scraper
+    restart: unless-stopped
+    command: ["-web", "-data-folder", "/gmapsdata"]
+    ports:
+      - "127.0.0.1:${GMAPS_SCRAPER_PORT:-8095}:8080"
+    volumes:
+      - gmaps_data:/gmapsdata
+      - gmaps_cache:/opt   # Playwright browser cache
+
+volumes:
+  gmaps_data:
+  gmaps_cache:

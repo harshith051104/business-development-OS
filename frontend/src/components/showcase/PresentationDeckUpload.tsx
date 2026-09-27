@@ -193,7 +193,7 @@ export const PresentationDeckUpload: React.FC<PresentationDeckUploadProps> = ({
           </div>
           <div className="flex items-center space-x-2 shrink-0">
             <a
-              href={value.startsWith('http') ? value : `http://127.0.0.1:8001${value}`}
+              href={value}
               target="_blank"
               rel="noopener noreferrer"
               className="px-2.5 py-1.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 text-xs font-semibold flex items-center space-x-1 transition"

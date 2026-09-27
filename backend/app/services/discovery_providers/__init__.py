@@ -11,6 +11,7 @@ from app.services.discovery_providers.tavily_provider import TavilySearchProvide
 from app.services.discovery_providers.serper_provider import SerperSearchProvider
 from app.services.discovery_providers.contact_provider import ExecutiveContactDiscoveryProvider
 from app.services.discovery_providers.enrichment_provider import StandardEmailEnrichmentProvider
+from app.services.discovery_providers.google_maps_scraper_provider import GoogleMapsScraperProvider
 from app.services.discovery_providers.registry import discovery_registry
 
 __all__ = [
@@ -20,6 +21,7 @@ __all__ = [
     "DirectoryDiscoveryProvider",
     "TavilySearchProvider",
     "SerperSearchProvider",
+    "GoogleMapsScraperProvider",
     "ExecutiveContactDiscoveryProvider",
     "StandardEmailEnrichmentProvider",
     "CURATED_HEALTHCARE_DIRECTORY",
