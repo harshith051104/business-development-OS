@@ -81,6 +81,14 @@ class Settings(BaseSettings):
     # Google Maps API
     GOOGLE_MAPS_API_KEY: str = ""
 
+    # Local Google Maps scraper (gosom/google-maps-scraper, see deployment/google-maps-scraper)
+    GMAPS_SCRAPER_ENABLED: bool = True
+    GMAPS_SCRAPER_URL: str = "http://localhost:8095"
+    GMAPS_SCRAPER_DEPTH: int = 5  # keep low; high depth risks temporary Google IP blocks
+    GMAPS_SCRAPER_MAX_TIME_SECONDS: int = 90
+    GMAPS_SCRAPER_EXTRACT_EMAILS: bool = False  # scraper-side email crawl overruns max_time by minutes; the executive finder scrapes site emails instead
+    GMAPS_SCRAPER_PROXIES: List[str] = Field(default=[])  # socks5://user:pass@host:port, http://...
+
     # Google Calendar API
     GOOGLE_CALENDAR_CREDENTIALS_FILE: str = ""  # OAuth2 credentials JSON
     GOOGLE_CALENDAR_ID: str = "primary"

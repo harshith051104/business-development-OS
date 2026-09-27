@@ -112,7 +112,7 @@ export const discoveryService = {
     const params = new URLSearchParams()
     if (status && status !== 'All') params.append('status', status)
     if (potential_fit && potential_fit !== 'All') params.append('potential_fit', potential_fit)
-    return `http://127.0.0.1:8001/api/business-development/discover/export?${params.toString()}`
+    return `/api/business-development/discover/export?${params.toString()}`
   },
 
   previewCsv: async (file: File): Promise<CsvImportPreview> => {
@@ -120,7 +120,7 @@ export const discoveryService = {
     const formData = new FormData()
     formData.append('file', file)
 
-    const res = await fetch('http://127.0.0.1:8001/api/business-development/discover/import/preview', {
+    const res = await fetch('/api/business-development/discover/import/preview', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

@@ -37,13 +37,15 @@ def discover_decision_makers(
     website: str = "",
     target_roles: Optional[List[str]] = None,
     limit: int = 10,
+    city: str = "",
 ) -> List[Dict[str, Any]]:
     """
     Discover decision-makers using free-first pipeline.
 
     Priority:
       1. Known executive roster
-      2. Public web discovery
+      2. Executive finder (Serper LinkedIn -> Tavily -> official site -> ScrapeGraph last resort)
+      2b. Legacy public web discovery (only if the finder found nothing)
       3. Existing discovered contacts
       4. Optional BetterContact enrichment
     """
@@ -89,8 +91,49 @@ def discover_decision_makers(
     except Exception as e:
         logger.warning("Known roster provider failed for %s: %s", organization_name, e)
 
-    # ── Step 2: Public web discovery (free) ──
+    # ── Step 2: Executive finder (Serper LinkedIn / Tavily / official website) ──
+    finder_hits = 0
     if len(contacts) < limit:
+        try:
+            from app.services.discovery_providers.executive_finder import get_executive_finder
+            finder = get_executive_finder()
+            if finder.is_available:
+                if not city:
+                    org_row = db.query(DiscoveredOrganization).filter(
+                        DiscoveredOrganization.name.ilike(f"%{organization_name}%"),
+                    ).first()
+                    city = (org_row.city if org_row else "") or ""
+                for c in finder.find_executives(
+                    organization_name=organization_name,
+                    website=website,
+                    city=city,
+                    target_roles=target_roles,
+                    limit=limit,
+                ):
+                    name = c["full_name"].strip()
+                    if not name or name.lower() in seen_names:
+                        continue
+                    seen_names.add(name.lower())
+                    finder_hits += 1
+                    contacts.append({
+                        "name": name,
+                        "role": c["job_title"],
+                        "organization_name": organization_name,
+                        "email": c.get("email"),
+                        "email_status": c.get("email_status", "not_found"),
+                        "phone": None,
+                        "linkedin_url": c.get("linkedin_url"),
+                        "source": c.get("source", "executive_finder"),
+                        "source_url": c.get("source_url"),
+                        "confidence": c.get("confidence", 0.6),
+                        "decision_maker_score": _calc_dm_score(c["job_title"]),
+                        "verification_state": "publicly_found",
+                    })
+        except Exception as e:
+            logger.warning("Executive finder failed for %s: %s", organization_name, e)
+
+    # ── Step 2b: Legacy public web discovery — only when the finder found nothing (produces noisy names) ──
+    if len(contacts) < limit and finder_hits == 0:
         try:
             from app.services.enrichment.public_web_provider import PublicWebContactProvider
             web_provider = PublicWebContactProvider()

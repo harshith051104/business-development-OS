@@ -62,6 +62,13 @@ class DiscoveryOrchestrator:
             limit=limit,
         )
 
+        # 1.5. Maps listings often lack an email: scrape public contact emails from their websites
+        try:
+            from app.services.discovery_providers.executive_finder import fill_missing_org_emails
+            fill_missing_org_emails([r for r in all_results if r.get("source_type") == "maps_scraper"])
+        except Exception as e:
+            logger.debug("Maps email fill failed: %s", e)
+
         # 2. Normalize
         normalized = [self._normalize_result(r) for r in all_results]
 
@@ -198,6 +205,7 @@ class DiscoveryOrchestrator:
             organization_type=disc_org.organization_type,
             website=disc_org.website,
             target_roles=roles,
+            city=disc_org.city or "",
         )
 
     def get_brief(self, org_id: int) -> Optional[Dict[str, Any]]:

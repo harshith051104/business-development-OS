@@ -486,6 +486,54 @@ class ExecutiveContactDiscoveryProvider(BaseContactDiscoveryProvider):
         target_roles: Optional[List[str]] = None,
         limit: int = 10,
     ) -> List[Dict[str, Any]]:
+        """Executives from public sources via ExecutiveFinder (Serper LinkedIn -> Tavily -> site -> ScrapeGraph).
+
+        Replaces the old Tavily-only line parser, which returned headline fragments as people.
+        """
+        try:
+            from app.services.discovery_providers.executive_finder import get_executive_finder
+            finder = get_executive_finder()
+            if not finder.is_available:
+                return []
+            found = finder.find_executives(
+                organization_name=organization_name, website=website or "", limit=limit,
+            )
+        except Exception as e:
+            logger.warning("Executive finder failed for %s: %s", organization_name, e)
+            return []
+        contacts = []
+        for c in found:
+            title = c["job_title"]
+            title_lower = title.lower()
+            if re.search(r"c[a-z]o|chief|president|managing director|founder|owner", title_lower) and "vice" not in title_lower:
+                seniority = "C-Suite"
+            elif re.search(r"vp|vice president", title_lower):
+                seniority = "VP"
+            elif re.search(r"head of|director", title_lower):
+                seniority = "Director"
+            else:
+                seniority = "Executive"
+            contacts.append({
+                "full_name": c["full_name"],
+                "job_title": title,
+                "seniority_level": seniority,
+                "department": _title_to_department(title),
+                "email": c.get("email"),
+                "email_status": c.get("email_status", "not_found"),
+                "linkedin_url": c.get("linkedin_url"),
+                "source_url": c.get("source_url"),
+                "source": c.get("source", "executive_finder"),
+                "confidence": c.get("confidence", 0.6),
+            })
+        return contacts
+
+    def _legacy_web_search_executives(
+        self,
+        organization_name: str,
+        website: Optional[str] = None,
+        target_roles: Optional[List[str]] = None,
+        limit: int = 10,
+    ) -> List[Dict[str, Any]]:
         """Search Tavily for real executive contacts at an organization."""
         api_key = settings.TAVILY_API_KEY
         if not api_key:

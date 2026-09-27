@@ -24,7 +24,7 @@ export const analyticsService = {
     if (params.start_date) queryParams.append('start_date', params.start_date)
     if (params.end_date) queryParams.append('end_date', params.end_date)
 
-    const url = `http://127.0.0.1:8001/api/business-development/analytics/export?${queryParams.toString()}`
+    const url = `/api/business-development/analytics/export?${queryParams.toString()}`
 
     const res = await fetch(url, {
       method: 'GET',

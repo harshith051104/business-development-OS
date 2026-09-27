@@ -238,6 +238,7 @@ app.add_middleware(RateLimitMiddleware, requests_per_minute=120)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -279,11 +280,23 @@ app.include_router(campaigns_router)
 # Mount uploads directory for showcase pitch decks, documents, and media
 import os
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 uploads_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads"))
 os.makedirs(os.path.join(uploads_path, "presentations"), exist_ok=True)
 app.mount("/api/uploads", StaticFiles(directory=uploads_path), name="api_uploads")
 app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
+
+# Frontend static distribution (when built for unified single-server deployment)
+frontend_dist = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "dist")
+)
+assets_path = os.path.join(frontend_dist, "assets")
+if os.path.exists(assets_path):
+    app.mount("/assets", StaticFiles(directory=assets_path), name="frontend_assets")
+logo_path = os.path.join(frontend_dist, "logo")
+if os.path.exists(logo_path):
+    app.mount("/logo", StaticFiles(directory=logo_path), name="frontend_logo")
 
 
 @app.exception_handler(Exception)
@@ -293,16 +306,6 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "Internal server error.", "path": request.url.path},
     )
-
-
-@app.get("/", tags=["Root"])
-def root():
-    return {
-        "service": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "phase": "PHASE 14 — Admin & Business Development Team Management",
-        "docs": "/docs",
-    }
 
 
 @app.get("/health", tags=["Health"])
@@ -340,3 +343,33 @@ def readiness():
         )
     finally:
         db.close()
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def serve_spa(request: Request, full_path: str):
+    # Pass through reserved backend endpoints
+    reserved = ("api", "auth", "docs", "redoc", "openapi.json", "uploads", "health", "ready")
+    first_segment = full_path.split("/")[0] if full_path else ""
+    if first_segment in reserved:
+        return JSONResponse(status_code=404, content={"detail": "Not found"})
+
+    # Check for direct static file in frontend/dist (e.g., favicon.ico, logo.svg)
+    candidate_file = os.path.join(frontend_dist, full_path)
+    if full_path and os.path.isfile(candidate_file):
+        return FileResponse(candidate_file)
+
+    # Return index.html for SPA routes if built
+    index_html = os.path.join(frontend_dist, "index.html")
+    if os.path.exists(index_html):
+        return FileResponse(index_html)
+
+    # Fallback when frontend hasn't been built yet
+    if not full_path or full_path == "/":
+        return {
+            "service": settings.APP_NAME,
+            "version": settings.APP_VERSION,
+            "phase": "PHASE 14 — Admin & Business Development Team Management",
+            "docs": "/docs",
+            "frontend": "Not built yet. Run 'npm run build' in frontend/ or access Vite on port 5173.",
+        }
+    return JSONResponse(status_code=404, content={"detail": "Not found"})
