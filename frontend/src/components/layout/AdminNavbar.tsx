@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  BookOpen,
 } from 'lucide-react'
 
 export const AdminNavbar: React.FC = () => {
@@ -26,6 +27,7 @@ export const AdminNavbar: React.FC = () => {
     { label: 'Users & Roles', path: '/admin/users', icon: Users },
     { label: 'BD Team Oversight', path: '/admin/team', icon: UserCheck },
     { label: 'Showcase Management', path: '/admin/showcase', icon: Sparkles },
+    { label: 'Knowledge Base', path: '/admin/knowledge-base', icon: BookOpen },
     { label: 'Audit Logs', path: '/admin/audit-logs', icon: History },
     { label: 'System Configuration', path: '/admin/settings', icon: Sliders },
   ]

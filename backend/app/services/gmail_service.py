@@ -4,8 +4,11 @@ import hmac
 import json
 import logging
 import os
+import re
 import secrets
 import time
+from datetime import datetime, timezone
+from urllib.parse import quote
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Optional, Dict, Any, List, Tuple
@@ -26,6 +29,28 @@ from app.models.campaign import GmailAccount
 from app.core.config import settings
 
 logger = logging.getLogger("elly.gmail_service")
+
+_HREF_RE = re.compile(r'href=(["\'])(https?://[^"\']+)\1', re.IGNORECASE)
+
+
+def _inject_tracking(body_html: str, campaign_contact_id: int) -> str:
+    """
+    Rewrites outbound http(s) links to route through the click-tracking redirect,
+    and appends a 1x1 open-tracking pixel. No-ops if PUBLIC_BASE_URL isn't configured
+    (an untracked email is better than one with a dead localhost link in it).
+    """
+    base = (settings.PUBLIC_BASE_URL or "").rstrip("/")
+    if not base:
+        return body_html
+
+    def _rewrite(match: "re.Match") -> str:
+        quote_char, url = match.group(1), match.group(2)
+        tracked = f"{base}/api/gmail/track/click/{campaign_contact_id}?url={quote(url, safe='')}"
+        return f"href={quote_char}{tracked}{quote_char}"
+
+    html = _HREF_RE.sub(_rewrite, body_html)
+    pixel = f'<img src="{base}/api/gmail/track/open/{campaign_contact_id}" width="1" height="1" alt="" style="display:none" />'
+    return html + pixel
 
 # Production mode: fail hard on mock credentials
 _IS_PRODUCTION = os.environ.get("ELLY_ENV", "").lower() in ("production", "prod", "deploy")
@@ -262,6 +287,7 @@ class GmailService:
         body_html: str,
         thread_id: Optional[str] = None,
         user_id: Optional[int] = None,
+        campaign_contact_id: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         Sends an email using the connected Gmail account via Google Gmail API.
@@ -290,6 +316,9 @@ class GmailService:
                 )
 
         sender_email = account.email if account else getattr(settings, "GMAIL_SENDER_EMAIL", "outreach@elly.ai").strip()
+
+        if campaign_contact_id is not None:
+            body_html = _inject_tracking(body_html, campaign_contact_id)
 
         # Build MIME Message
         message = MIMEMultipart("alternative")
@@ -378,6 +407,15 @@ class GmailService:
         )
 
         detected_replies = []
+        detected_bounces = []
+        BOUNCE_SENDER_MARKERS = ("mailer-daemon", "postmaster", "bounce")
+        BOUNCE_SUBJECT_MARKERS = (
+            "delivery status notification",
+            "undelivered mail",
+            "mail delivery failed",
+            "returned mail",
+            "failure notice",
+        )
         accounts = db.query(GmailAccount).filter(GmailAccount.is_active == True).all()
 
         for account in accounts:
@@ -408,11 +446,38 @@ class GmailService:
                         thread_data = service.users().threads().get(userId="me", id=cc.thread_id).execute()
                         messages = thread_data.get("messages", [])
 
-                        # Look for inbound messages from the contact
+                        # Look for inbound messages from the contact (or a bounce/NDR from the mail system)
                         for msg in messages:
                             payload = msg.get("payload", {})
                             headers = {h.get("name", "").lower(): h.get("value", "") for h in payload.get("headers", [])}
                             sender = headers.get("from", "")
+                            subject_lc = headers.get("subject", "").lower()
+
+                            is_bounce = any(m in sender.lower() for m in BOUNCE_SENDER_MARKERS) or any(
+                                m in subject_lc for m in BOUNCE_SUBJECT_MARKERS
+                            )
+                            if is_bounce and cc.status != CampaignContactStatus.BOUNCED.value:
+                                cc.status = CampaignContactStatus.BOUNCED.value
+                                cc.last_action_at = datetime.now(timezone.utc)
+                                db.add(cc)
+                                try:
+                                    from app.services import lead_tracker_service
+                                    lead_tracker_service.log_timeline_event(
+                                        db,
+                                        campaign_contact_id=cc.id,
+                                        user_id=None,
+                                        event_type="email_bounced",
+                                        description="Email bounced (delivery failure detected)",
+                                        metadata={"subject": headers.get("subject", "")},
+                                    )
+                                except Exception:
+                                    pass
+                                detected_bounces.append({
+                                    "contact_id": contact.id,
+                                    "contact_name": contact.full_name,
+                                    "campaign_contact_id": cc.id,
+                                })
+                                break
 
                             if contact.email.lower() in sender.lower() and account.email.lower() not in sender.lower():
                                 snippet = msg.get("snippet", "Interested in learning more.")
@@ -442,8 +507,13 @@ class GmailService:
             except Exception as acc_err:
                 logger.warning(f"Error syncing Gmail account {account.email}: {acc_err}")
 
+        if detected_bounces:
+            db.commit()
+
         return {
             "synced_active_threads": len(active_contacts),
             "replies_detected": len(detected_replies),
+            "bounces_detected": len(detected_bounces),
             "detected": detected_replies,
+            "bounces": detected_bounces,
         }

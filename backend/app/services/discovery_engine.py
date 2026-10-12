@@ -218,4 +218,13 @@ def convert_discovered_org_to_crm(
 
     db.commit()
     db.refresh(org)
+
+    try:
+        from app.services.google_sheets_service import sync_organization, sync_contact
+        sync_organization(org)
+        for c in created_contacts:
+            sync_contact(c)
+    except Exception:
+        pass
+
     return org, created_contacts

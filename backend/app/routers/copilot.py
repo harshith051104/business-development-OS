@@ -17,6 +17,7 @@ from app.schemas.copilot import (
     CopilotSuggestion,
 )
 from app.services.copilot.engine import CopilotEngine
+from app.services import signal_service
 
 router = APIRouter(prefix="/api/business-development/copilot", tags=["Copilot"])
 
@@ -116,11 +117,13 @@ def delete_conversation(
 @router.get("/suggestions", response_model=List[CopilotSuggestion])
 def get_copilot_suggestions(
     current_page: Optional[str] = None,
+    db: Session = Depends(get_db),
     current_user: User = Depends(require_business_development)
 ):
     """
     Provides contextual prompt suggestions based on current route or workload.
     """
+    top_signals = signal_service.list_active(db, limit=1)
     suggestions = [
         CopilotSuggestion(category="Priorities", prompt="What needs my attention today?", description="Check overdue tasks, today's meetings, and stale deals"),
         CopilotSuggestion(category="Briefing", prompt="Tell me everything about this organization", description="360° dossier combining contacts, deals, comms, and meetings"),
@@ -136,5 +139,9 @@ def get_copilot_suggestions(
 
     elif current_page and "/meetings" in current_page:
         suggestions.insert(0, CopilotSuggestion(category="Active Context", prompt="Prepare me for my next meeting", description="Talking points, project showcase match, and past notes"))
+
+    if top_signals:
+        sig = top_signals[0]
+        suggestions.insert(0, CopilotSuggestion(category="Signal", prompt="What's the top buying signal right now?", description=sig.description))
 
     return suggestions[:6]

@@ -33,6 +33,7 @@ import AnalyticsPage from './pages/analytics/AnalyticsPage'
 import DiscoveryPage from './pages/discovery/DiscoveryPage'
 import DiscoveryDetailPage from './pages/discovery/DiscoveryDetailPage'
 import OutreachWorkspacePage from './pages/outreach/OutreachWorkspacePage'
+import OutreachTrackerPage from './pages/outreach/OutreachTrackerPage'
 import OutreachDraftsListPage from './pages/outreach/OutreachDraftsListPage'
 import GmailSetupPage from './pages/outreach/GmailSetupPage'
 import PartnershipsListPage from './pages/partnerships/PartnershipsListPage'
@@ -46,6 +47,7 @@ import AdminUserNewPage from './pages/admin/AdminUserNewPage'
 import AdminUserDetailPage from './pages/admin/AdminUserDetailPage'
 import AdminTeamPage from './pages/admin/AdminTeamPage'
 import AdminShowcasePage from './pages/admin/AdminShowcasePage'
+import AdminKnowledgeBasePage from './pages/admin/AdminKnowledgeBasePage'
 import AdminShowcaseNewPage from './pages/admin/AdminShowcaseNewPage'
 import AdminShowcaseEditPage from './pages/admin/AdminShowcaseEditPage'
 import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage'
@@ -64,6 +66,10 @@ import { ReportsView } from './pages/ReportsView'
 import CampaignsListPage from './pages/campaigns/CampaignsListPage'
 import CampaignNewPage from './pages/campaigns/CampaignNewPage'
 import CampaignDetailPage from './pages/campaigns/CampaignDetailPage'
+import FundingPage from './pages/funding/FundingPage'
+import FundingCampaignsPage from './pages/funding/FundingCampaignsPage'
+import LeadImportPage from './pages/leads/LeadImportPage'
+import LeadTrackerPage from './pages/leads/LeadTrackerPage'
 
 export default function App() {
   return (
@@ -339,12 +345,56 @@ export default function App() {
           }
         />
 
+        {/* Funding / Investor Outreach — additive, no-approval send flow */}
+        <Route
+          path="/business-development/funding"
+          element={
+            <ProtectedRoute>
+              <FundingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/business-development/funding/campaigns"
+          element={
+            <ProtectedRoute>
+              <FundingCampaignsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Lead list upload — flexible column mapping, syncs into CRM + Google Sheets */}
+        <Route
+          path="/business-development/leads/import"
+          element={
+            <ProtectedRoute>
+              <LeadImportPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/business-development/leads/tracker"
+          element={
+            <ProtectedRoute>
+              <LeadTrackerPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Phase 12: Outreach Workspace & Communication Actions */}
         <Route
           path="/business-development/outreach"
           element={
             <ProtectedRoute>
               <OutreachWorkspacePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/business-development/outreach/tracker"
+          element={
+            <ProtectedRoute>
+              <OutreachTrackerPage />
             </ProtectedRoute>
           }
         />
@@ -561,6 +611,14 @@ export default function App() {
           element={
             <AdminProtectedRoute>
               <AdminShowcaseEditPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/knowledge-base"
+          element={
+            <AdminProtectedRoute>
+              <AdminKnowledgeBasePage />
             </AdminProtectedRoute>
           }
         />

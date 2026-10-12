@@ -83,6 +83,7 @@ export interface Campaign {
   name: string;
   description?: string;
   status: 'Draft' | 'Active' | 'Paused' | 'Completed';
+  category?: 'client' | 'funding';
   sender_email?: string;
   gmail_account_id?: string;
   target_industry?: string;
@@ -126,6 +127,38 @@ export interface CampaignPreviewResponse {
   validation_errors: string[];
   ai_generated_fields: Record<string, string>;
   showcase_project_used?: string;
+}
+
+export interface OutreachTrackerItem {
+  campaign_contact_id: number;
+  campaign_id: number;
+  campaign_name?: string;
+  contact_id: number;
+  contact_name?: string;
+  contact_email?: string;
+  organization_id: number;
+  organization_name?: string;
+  status: string;
+  subject_preview?: string;
+  sent_at?: string;
+  opened_at?: string;
+  open_count: number;
+  clicked_at?: string;
+  click_count: number;
+  replied_at?: string;
+}
+
+export interface OutreachTrackerResponse {
+  items: OutreachTrackerItem[];
+  summary: {
+    total_sent: number;
+    opened: number;
+    clicked: number;
+    replied: number;
+    open_rate: number;
+    click_rate: number;
+    reply_rate: number;
+  };
 }
 
 export interface GmailAccount {

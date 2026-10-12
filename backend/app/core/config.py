@@ -6,15 +6,18 @@ from pydantic import Field
 from typing import List
 
 
-def _get_jwt_secret() -> str:
-    """Return JWT_SECRET_KEY from env. Warn if auto-generated (dev-only safe)."""
+def _get_jwt_secret(debug: bool) -> str:
+    """Return JWT_SECRET_KEY from env. Auto-generates only in DEBUG mode — in
+    production leaves it empty so validate_config() catches it and refuses to boot,
+    rather than silently satisfying the length check with a throwaway secret."""
     env_val = os.environ.get("JWT_SECRET_KEY", "")
     if env_val:
         return env_val
-    # Auto-generate for dev — warn once
+    if not debug:
+        return ""
     secret = secrets.token_hex(32)
     print(
-        "\n[SECURITY] JWT_SECRET_KEY not set in .env — auto-generated for this session.\n"
+        "\n[SECURITY] JWT_SECRET_KEY not set in .env — auto-generated for this dev session.\n"
         "           Tokens will be INVALID after restart. Set JWT_SECRET_KEY in .env for production.\n",
         file=sys.stderr,
     )
@@ -24,7 +27,8 @@ def _get_jwt_secret() -> str:
 class Settings(BaseSettings):
     APP_NAME: str = "ELLY Business Development Portal"
     APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
+    # Secure by default — local dev sets DEBUG=true explicitly in .env.
+    DEBUG: bool = False
     DATABASE_URL: str = "sqlite:///./bd_portal.db"
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
@@ -97,27 +101,54 @@ class Settings(BaseSettings):
     GMAIL_CREDENTIALS_FILE: str = ""  # OAuth2 credentials JSON (same Google Cloud project)
     GMAIL_SENDER_EMAIL: str = ""  # Default sender email address (fallback only)
 
+    # Public base URL this backend is reachable at (e.g. an ngrok tunnel URL in dev,
+    # or the real domain in prod). Required for open-pixel/click-tracking links embedded
+    # in outbound campaign emails to resolve — if unset, tracking injection is skipped
+    # rather than emailing a broken localhost link.
+    PUBLIC_BASE_URL: str = ""
+
+    # Inbound webhook HMAC signing secret (shared across sources at this scale).
+    # Required in production -- set WEBHOOK_INBOUND_SECRET in .env.
+    WEBHOOK_INBOUND_SECRET: str = ""
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
 
 settings = Settings()
 # Apply JWT secret fallback after init (env not available at class-level default)
 if not settings.JWT_SECRET_KEY:
-    settings.JWT_SECRET_KEY = _get_jwt_secret()
+    settings.JWT_SECRET_KEY = _get_jwt_secret(settings.DEBUG)
 
 
 def validate_config():
-    """Validate critical config on startup. Warns but doesn't crash in dev."""
+    """Validate critical config on startup. In production (DEBUG=false), refuses to
+    start rather than merely warning — a silently-insecure prod deploy is worse than
+    a deploy that won't boot until fixed."""
     warnings = []
+    errors = []
     if not settings.DEBUG:
         if not settings.JWT_SECRET_KEY or len(settings.JWT_SECRET_KEY) < 32:
-            warnings.append("JWT_SECRET_KEY is too short or missing — tokens will be insecure")
+            errors.append("JWT_SECRET_KEY is too short or missing — set a fixed 32+ char secret in .env")
         if not settings.TOKEN_ENCRYPTION_KEY:
-            warnings.append("TOKEN_ENCRYPTION_KEY missing — OAuth tokens stored in plaintext")
+            errors.append(
+                "TOKEN_ENCRYPTION_KEY missing — OAuth tokens would be stored in plaintext. "
+                "Generate with: python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\""
+            )
+        if not settings.WEBHOOK_INBOUND_SECRET:
+            errors.append("WEBHOOK_INBOUND_SECRET missing — inbound webhooks would accept unsigned requests")
         if not settings.GROQ_API_KEY and not settings.NVIDIA_NIM_API_KEY and not settings.GEMINI_API_KEY:
             warnings.append("No LLM API keys configured — AI features will fail")
     for w in warnings:
         print(f"\n[CONFIG WARNING] {w}", file=sys.stderr)
+    if errors:
+        for e in errors:
+            print(f"\n[CONFIG ERROR] {e}", file=sys.stderr)
+        print(
+            "\nRefusing to start with DEBUG=false and the above unresolved. "
+            "Fix .env, or set DEBUG=true for local development only.\n",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 
 validate_config()

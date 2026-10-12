@@ -1203,6 +1203,39 @@ def search_tasks(db: Session, status: Optional[str] = None, priority: Optional[s
     } for t in tasks]
 
 
+def search_knowledge_base(db: Session, query: str, limit: int = 5) -> List[Dict[str, Any]]:
+    from app.services import kb_service
+    return kb_service.search(db, query=query, limit=limit)
+
+
+def get_my_notifications(db: Session, user: Any, unread_only: bool = True, limit: int = 20) -> List[Dict[str, Any]]:
+    from app.services import notification_service
+    notes = notification_service.list_for_user(db, user_id=user.id, unread_only=unread_only, limit=limit)
+    return [{
+        "id": n.id,
+        "type": n.type,
+        "title": n.title,
+        "body": n.body,
+        "link": n.link,
+        "is_read": n.is_read,
+        "created_at": n.created_at.strftime("%b %d, %Y %H:%M") if n.created_at else None,
+    } for n in notes]
+
+
+def get_active_signals(db: Session, limit: int = 20) -> List[Dict[str, Any]]:
+    from app.services import signal_service
+    signals = signal_service.list_active(db, limit=limit)
+    return [{
+        "id": s.id,
+        "organization_id": s.organization_id,
+        "contact_id": s.contact_id,
+        "signal_type": s.signal_type,
+        "description": s.description,
+        "score": s.score,
+        "created_at": s.created_at.strftime("%b %d, %Y") if s.created_at else None,
+    } for s in signals]
+
+
 def get_organization_global_timeline(db: Session, org_identifier: Any) -> List[Dict[str, Any]]:
     org = resolve_organization(db, org_identifier) if not isinstance(org_identifier, int) else db.query(Organization).filter(Organization.id == org_identifier, Organization.is_deleted == False).first()
     if not org:
@@ -1670,6 +1703,7 @@ def discover_qualified(
     # Save discovered orgs to DB and auto-promote to organizations
     orgs = result.get("organizations", [])
     saved_count = 0
+    newly_created_orgs = []
     for o in orgs:
         name = o.get("name", "").strip()
         if not name or name == "Unknown":
@@ -1748,12 +1782,19 @@ def discover_qualified(
             disc_org.organization_id = org.id
             disc_org.status = DiscoveryStatus.ADDED.value
             saved_count += 1
+            newly_created_orgs.append(org)
 
     db.commit()
 
     if saved_count > 0:
         result["saved_to_crm"] = saved_count
         result["message"] = f"{saved_count} new organizations added to CRM."
+        try:
+            from app.services.google_sheets_service import sync_organization
+            for created_org in newly_created_orgs:
+                sync_organization(created_org)
+        except Exception:
+            pass
 
     return result
 
@@ -2183,5 +2224,225 @@ def auto_generate_followups(
     }
 
 
+# ─────────────────────────────────────────────────────────────
+# 24. FUNDING / INVESTOR OUTREACH (additive — separate audience from client discovery)
+# ─────────────────────────────────────────────────────────────
+
+def find_investors(
+    db: Session,
+    sector: str = "",
+    stage: str = "",
+    location: str = "",
+    limit: int = 10,
+    user: Any = None,
+) -> List[Dict[str, Any]]:
+    """
+    Search for angel investors, VC firms and funds via the standalone
+    Investor & VC Discovery provider. Saves results to the Discovery queue and
+    promotes new ones to the CRM, same as discover_web/discover_qualified.
+    """
+    from app.services.discovery_providers.investor_discovery_provider import InvestorDiscoveryProvider
+    from app.models.discovery import DiscoveredOrganization, DiscoveryStatus
+    from app.models.organization import Organization, ConnectionStatus, PriorityLevel, OrganizationType
+    from app.services.discovery_engine import check_organization_duplicate
+
+    provider = InvestorDiscoveryProvider()
+    target_icp = f"Angel investors, VCs and funds investing in {sector}" if sector else "Angel investors, VCs and funds relevant to our sector and stage"
+    if stage:
+        target_icp += f", stage: {stage}"
+
+    results, _ = provider.search_organizations(
+        keyword=sector or None,
+        location=location or None,
+        target_icp=target_icp,
+        limit=limit,
+    )
+
+    saved = []
+    seen_org_ids = set()
+    for o in results:
+        name = o.get("name", "").strip()
+        if not name or name == "Unknown":
+            continue
+
+        existing = db.query(DiscoveredOrganization).filter(DiscoveredOrganization.name == name).first()
+        if existing and existing.id in seen_org_ids:
+            continue
+        if existing:
+            seen_org_ids.add(existing.id)
+            saved.append({
+                "name": name,
+                "status": "already_discovered",
+                "discovered_org_id": existing.id,
+                "organization_id": existing.organization_id,
+                "website": existing.website,
+                "potential_fit": existing.potential_fit,
+            })
+            continue
+
+        disc_org = DiscoveredOrganization(
+            name=name,
+            organization_type=o.get("organization_type", "Investor"),
+            city=o.get("city", ""),
+            website=o.get("website", ""),
+            email=o.get("email", ""),
+            phone=o.get("phone", ""),
+            description=o.get("description", ""),
+            target_icp=target_icp,
+            discovery_objective="Raise funding / build investor relationships",
+            source_type=o.get("source_type", "investor_search"),
+            source_name=o.get("source_name", "Investor & VC Discovery"),
+            source_url=o.get("source_url", ""),
+            status=DiscoveryStatus.DISCOVERED.value,
+            potential_fit=o.get("potential_fit", "Medium"),
+            potential_fit_score=o.get("potential_fit_score", 50),
+            qualification_reason=o.get("qualification_reason", ""),
+        )
+        db.add(disc_org)
+        db.flush()
+
+        is_dup, existing_id, _ = check_organization_duplicate(db, name, o.get("website"))
+        if is_dup and existing_id:
+            disc_org.organization_id = existing_id
+            disc_org.status = DiscoveryStatus.ADDED.value
+        else:
+            org = Organization(
+                name=name,
+                organization_type=OrganizationType.OTHER.value,
+                country=o.get("country", "Unknown"),
+                city=o.get("city"),
+                website=o.get("website", ""),
+                email=o.get("email"),
+                phone=o.get("phone"),
+                description=o.get("description", ""),
+                status=ConnectionStatus.POTENTIAL.value,
+                priority=PriorityLevel.MEDIUM.value,
+                notes=f"Investor lead via {o.get('source_name', 'Investor & VC Discovery')}.",
+            )
+            db.add(org)
+            db.flush()
+            disc_org.organization_id = org.id
+            disc_org.status = DiscoveryStatus.ADDED.value
+
+        seen_org_ids.add(disc_org.id)
+        saved.append({
+            "name": name,
+            "status": "added",
+            "discovered_org_id": disc_org.id,
+            "organization_id": disc_org.organization_id,
+            "website": o.get("website"),
+            "potential_fit": o.get("potential_fit"),
+        })
+
+    db.commit()
+    return saved
+
+
+def find_investor_contacts(
+    db: Session,
+    discovered_org_id: int,
+    roles: Optional[str] = None,
+    user: Any = None,
+) -> List[Dict[str, Any]]:
+    """
+    Find decision-maker / partner contacts at a discovered investor organization,
+    then immediately promote them into the real CRM Contact table (via
+    convert_discovered_org_to_crm) so send_funding_outreach has someone to send to.
+    Reuses the same executive discovery pipeline (now VC-title-aware: General
+    Partner, Venture Partner, etc.) and the existing discovered-contact-to-CRM
+    conversion path already used by the manual "Add to CRM" flow.
+    """
+    from app.models.discovery import DiscoveredOrganization, DiscoveredContact, DiscoveryStatus
+    from app.services.discovery_engine import convert_discovered_org_to_crm
+
+    found = discover_decision_makers_tool(db, discovered_org_id, roles=roles)
+
+    disc_org = db.query(DiscoveredOrganization).filter(
+        DiscoveredOrganization.id == discovered_org_id
+    ).first()
+
+    out_contacts: List[Dict[str, Any]] = []
+    if disc_org:
+        for c in found:
+            c_name = (c.get("name") or "").strip()
+            if not c_name:
+                continue
+            existing = db.query(DiscoveredContact).filter(
+                DiscoveredContact.discovered_org_id == disc_org.id,
+                DiscoveredContact.full_name == c_name,
+            ).first()
+            if not existing:
+                existing = DiscoveredContact(
+                    discovered_org_id=disc_org.id,
+                    full_name=c_name,
+                    job_title=c.get("role") or c.get("job_title") or "Executive",
+                    email=c.get("email"),
+                    email_status=c.get("email_status") or "not_found",
+                    phone=c.get("phone"),
+                    linkedin_url=c.get("linkedin_url"),
+                    fit_level=c.get("fit_level") or "High",
+                    fit_reason=c.get("fit_reason") or "Key executive decision-maker",
+                    status=DiscoveryStatus.DISCOVERED.value,
+                )
+                db.add(existing)
+                db.flush()
+            out_contacts.append({
+                "id": existing.id,
+                "full_name": existing.full_name,
+                "job_title": existing.job_title,
+                "email": existing.email,
+                "phone": existing.phone,
+                "linkedin_url": existing.linkedin_url,
+                "fit_level": existing.fit_level,
+                "fit_reason": existing.fit_reason,
+            })
+
+        if disc_org.organization_id:
+            convert_discovered_org_to_crm(
+                db,
+                disc_org,
+                selected_contact_ids=None,
+                user_id=user.id if user else None,
+            )
+        db.commit()
+
+    return out_contacts
+
+
+def send_funding_outreach(
+    db: Session,
+    organization_ids: str,
+    template: Optional[str] = None,
+    use_ai_template: bool = False,
+    campaign_name: Optional[str] = None,
+    user: Any = None,
+) -> Dict[str, Any]:
+    """
+    Send funding/investor outreach immediately, with no approval step — distinct
+    from the reviewed client-campaign flow. organization_ids is a comma-separated
+    list of CRM organization IDs (from find_investors' saved results).
+    """
+    from app.services.campaign_service import CampaignService
+
+    if isinstance(organization_ids, str):
+        org_ids = [int(x.strip()) for x in organization_ids.split(",") if x.strip().isdigit()]
+    else:
+        org_ids = [int(x) for x in organization_ids]
+
+    if not org_ids:
+        return {"error": "No valid organization_ids provided"}
+
+    body_template = None if use_ai_template else template
+    subject_template = None
+
+    result = CampaignService.quick_send(
+        db=db,
+        user=user,
+        organization_ids=org_ids,
+        subject_template=subject_template,
+        body_template=body_template,
+        campaign_name=campaign_name,
+    )
+    return result
 
 

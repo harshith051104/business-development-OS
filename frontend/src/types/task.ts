@@ -27,3 +27,19 @@ export interface BDTaskCreate {
   entity_type?: string | null;
   entity_id?: number | null;
 }
+
+export interface TaskComment {
+  id: number;
+  task_id: number;
+  user_id?: number | null;
+  user_name?: string | null;
+  body: string;
+  created_at: string;
+}
+
+export interface TaskDashboard {
+  open_count: number;
+  overdue_count: number;
+  completed_this_week: number;
+  by_priority: Record<string, number>;
+}

@@ -50,6 +50,20 @@ Thumbs.db
 # Third-party reference repos
 OpenOutreach/
 Scrapegraph-ai/
+Finance-Management-OS_IHT/
+
+# Unrelated local project nested in this working dir
+leads-business/
+
+# Superseded by elly-outreach-extension/
+whatsapp-extension/
+linkedin-extension/
+
+# User-uploaded lead data (runtime, not source)
+backend/private_uploads/
+
+# Scratch/debug scripts
+backend/_pw_funding_check.py
 
 # Test artifacts (keep test files, ignore generated data)
 backend/tests/__pycache__/

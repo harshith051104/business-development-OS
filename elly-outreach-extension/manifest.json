@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "ELLY Outreach Automation",
+  "version": "1.0.0",
+  "description": "Sends queued WhatsApp messages and LinkedIn connects/messages for leads assigned to you in ELLY. Caps, business hours, randomized delay, and a rehearsal mode are built in for both channels.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://www.linkedin.com/*",
+    "http://127.0.0.1:8001/*",
+    "http://localhost:8001/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ELLY Outreach Automation"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["wa-content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.linkedin.com/*"],
+      "js": ["li-content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

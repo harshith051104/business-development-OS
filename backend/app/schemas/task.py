@@ -40,3 +40,25 @@ class TaskOut(TaskBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TaskCommentCreate(BaseModel):
+    body: str
+
+
+class TaskCommentOut(BaseModel):
+    id: int
+    task_id: int
+    user_id: Optional[int] = None
+    user_name: Optional[str] = None
+    body: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaskDashboardOut(BaseModel):
+    open_count: int
+    overdue_count: int
+    completed_this_week: int
+    by_priority: dict

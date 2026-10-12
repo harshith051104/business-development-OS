@@ -77,6 +77,30 @@ def migrate_db_columns():
                 if "replied_at" not in cols:
                     conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN replied_at DATETIME;"))
                     changed = True
+                if "whatsapp_message_sent" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN whatsapp_message_sent BOOLEAN DEFAULT 0;"))
+                    changed = True
+                if "whatsapp_sent_at" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN whatsapp_sent_at DATETIME;"))
+                    changed = True
+                if "whatsapp_invalid_number" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN whatsapp_invalid_number BOOLEAN DEFAULT 0;"))
+                    changed = True
+                if "whatsapp_failed_attempts" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN whatsapp_failed_attempts INTEGER DEFAULT 0;"))
+                    changed = True
+                if "whatsapp_last_attempt_at" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN whatsapp_last_attempt_at DATETIME;"))
+                    changed = True
+                if "linkedin_failed_attempts" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN linkedin_failed_attempts INTEGER DEFAULT 0;"))
+                    changed = True
+                if "linkedin_last_attempt_at" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN linkedin_last_attempt_at DATETIME;"))
+                    changed = True
+                if "linkedin_unavailable" not in cols:
+                    conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN linkedin_unavailable BOOLEAN DEFAULT 0;"))
+                    changed = True
                 if changed:
                     conn.commit()
 
@@ -84,6 +108,21 @@ def migrate_db_columns():
             disc_cols = [row[1] for row in res_disc.fetchall()]
             if disc_cols and "search_history_id" not in disc_cols:
                 conn.execute(text("ALTER TABLE discovered_organizations ADD COLUMN search_history_id INTEGER;"))
+                conn.commit()
+
+            res_camp = conn.execute(text("PRAGMA table_info(campaigns)"))
+            camp_cols = [row[1] for row in res_camp.fetchall()]
+            camp_changed = False
+            if camp_cols and "whatsapp_message_template" not in camp_cols:
+                conn.execute(text("ALTER TABLE campaigns ADD COLUMN whatsapp_message_template TEXT;"))
+                camp_changed = True
+            if camp_cols and "linkedin_connection_note_template" not in camp_cols:
+                conn.execute(text("ALTER TABLE campaigns ADD COLUMN linkedin_connection_note_template TEXT;"))
+                camp_changed = True
+            if camp_cols and "linkedin_first_message_template" not in camp_cols:
+                conn.execute(text("ALTER TABLE campaigns ADD COLUMN linkedin_first_message_template TEXT;"))
+                camp_changed = True
+            if camp_changed:
                 conn.commit()
     except Exception as e:
         logger.error("Schema migration failed: %s", e)

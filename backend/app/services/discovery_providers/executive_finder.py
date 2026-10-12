@@ -38,12 +38,14 @@ ROLE_KEYWORDS = (
     r"chief\s+[a-z&]+(?:\s+[a-z&]+)?\s+officer|ceo|cto|cio|cdo|coo|cfo|cmo|cso|"
     r"co-?founder|founder|owner|proprietor|managing\s+director|executive\s+director|"
     r"president|vice\s+president|vp\b|svp|evp|director|head\s+of\s+[a-z&]+(?:\s+[a-z&]+)?|"
-    r"general\s+manager|partner\b|principal\b|chairman|chairperson|managing\s+partner"
+    r"general\s+manager|partner\b|principal\b|chairman|chairperson|managing\s+partner|"
+    r"general\s+partner|venture\s+partner|investment\s+director|investment\s+manager"
 )
 ROLE_RE = re.compile(rf"\b(?:{ROLE_KEYWORDS})", re.IGNORECASE)
 TOP_ROLE_RE = re.compile(
     r"\b(?:ceo|chief\s+executive|founder|co-?founder|owner|proprietor|managing\s+director|md\b|"
-    r"(?<!vice )(?<!vice-)(?<!assistant vice )president|chairman|chairperson|managing\s+partner)",
+    r"(?<!vice )(?<!vice-)(?<!assistant vice )president|chairman|chairperson|managing\s+partner|"
+    r"general\s+partner)",
     re.IGNORECASE,
 )
 JUNIOR_ROLE_RE = re.compile(r"\b(?:associate|assistant|deputy|junior|intern|trainee|senior\s+manager)", re.IGNORECASE)
@@ -113,7 +115,7 @@ def _seniority_rank(role: str) -> int:
         return 3
     if TOP_ROLE_RE.search(role) or re.search(r"\bc[a-z]o\b|chief", role, re.IGNORECASE):
         return 0
-    if re.search(r"\b(?:vp|vice\s+president|svp|evp|director|head\s+of|general\s+manager|partner)", role, re.IGNORECASE):
+    if re.search(r"\b(?:vp|vice\s+president|svp|evp|director|head\s+of|general\s+manager|partner|principal|venture\s+partner|investment\s+director|investment\s+manager)", role, re.IGNORECASE):
         return 1
     return 2
 

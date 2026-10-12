@@ -12,6 +12,7 @@ from app.services.discovery_providers.tavily_provider import TavilySearchProvide
 from app.services.discovery_providers.serper_provider import SerperSearchProvider
 from app.services.discovery_providers.ai_agent_researcher import AIAgentLeadResearcher
 from app.services.discovery_providers.google_maps_scraper_provider import GoogleMapsScraperProvider
+from app.services.discovery_providers.investor_discovery_provider import InvestorDiscoveryProvider
 
 logger = logging.getLogger(__name__)
 
@@ -100,11 +101,16 @@ class ProviderRegistry:
         # NOT in the default chain; pick "Google Maps Scraper (Local)" explicitly in the UI.
         maps_scraper = GoogleMapsScraperProvider()
 
+        # Investor/VC/angel search for the Funding module: a different target
+        # audience than client discovery, so never in the default chain either.
+        investor_search = InvestorDiscoveryProvider()
+
         # Primary priority: AI Agent Lead Researcher (Apollo-grade) first!
         fallback = FallbackOrgProvider([ai_agent, default_dir, tavily, serper])
 
         self.register_org_provider("Multi-Source Discovery (Recommended)", fallback)
         self.register_org_provider("Google Maps Scraper (Local)", maps_scraper)
+        self.register_org_provider("Investor & VC Discovery", investor_search)
         self.register_org_provider("AI Agent Lead Researcher (Apollo-Grade)", ai_agent)
         self.register_org_provider("Tavily Web Search", tavily)
         self.register_org_provider("Serper Google Search", serper)

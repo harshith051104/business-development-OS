@@ -1,5 +1,5 @@
 from typing import List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -17,8 +17,9 @@ from app.models.negotiation import Negotiation
 from app.models.partnership import Partnership
 from app.models.customer import Customer
 from app.models.task import BDTask, TaskStatus, TaskPriority
+from app.models.task_comment import TaskComment
 from app.core.audit import log_audit_event
-from app.schemas.task import TaskCreate, TaskUpdate, TaskOut
+from app.schemas.task import TaskCreate, TaskUpdate, TaskOut, TaskCommentCreate, TaskCommentOut, TaskDashboardOut
 
 router = APIRouter(prefix="/api/business-development/tasks", tags=["Tasks"])
 
@@ -83,6 +84,44 @@ def list_tasks(
 
     tasks = q.order_by(desc(BDTask.created_at)).limit(limit).all()
     return [_task_to_out(t, db) for t in tasks]
+
+
+@router.get("/dashboard", response_model=TaskDashboardOut)
+def get_task_dashboard(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Per-user open/overdue/completed-this-week counts for the dashboard widget."""
+    now = datetime.now(timezone.utc)
+    week_start = now - timedelta(days=7)
+
+    base = db.query(BDTask).filter(BDTask.is_deleted == False, BDTask.owner_id == current_user.id)
+
+    open_count = base.filter(BDTask.status.in_([TaskStatus.TODO.value, TaskStatus.IN_PROGRESS.value])).count()
+    overdue_count = base.filter(
+        BDTask.status.in_([TaskStatus.TODO.value, TaskStatus.IN_PROGRESS.value]),
+        BDTask.due_date.isnot(None),
+        BDTask.due_date <= now,
+    ).count()
+    completed_this_week = base.filter(
+        BDTask.status == TaskStatus.COMPLETED.value,
+        BDTask.completed_at.isnot(None),
+        BDTask.completed_at >= week_start,
+    ).count()
+
+    by_priority = {}
+    for p in TaskPriority:
+        by_priority[p.value] = base.filter(
+            BDTask.priority == p.value,
+            BDTask.status.in_([TaskStatus.TODO.value, TaskStatus.IN_PROGRESS.value]),
+        ).count()
+
+    return TaskDashboardOut(
+        open_count=open_count,
+        overdue_count=overdue_count,
+        completed_this_week=completed_this_week,
+        by_priority=by_priority,
+    )
 
 
 @router.get("/{task_id}", response_model=TaskOut)
@@ -169,3 +208,50 @@ def delete_task(
     t.is_deleted = True
     db.commit()
     return {"message": "Task deleted successfully"}
+
+
+def _comment_to_out(c: TaskComment) -> TaskCommentOut:
+    return TaskCommentOut(
+        id=c.id,
+        task_id=c.task_id,
+        user_id=c.user_id,
+        user_name=c.user.name if c.user else None,
+        body=c.body,
+        created_at=c.created_at,
+    )
+
+
+@router.get("/{task_id}/comments", response_model=List[TaskCommentOut])
+def list_task_comments(
+    task_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    t = db.query(BDTask).filter(BDTask.id == task_id, BDTask.is_deleted == False).first()
+    if not t:
+        raise HTTPException(status_code=404, detail="Task not found")
+    comments = (
+        db.query(TaskComment)
+        .filter(TaskComment.task_id == task_id)
+        .order_by(TaskComment.created_at.asc())
+        .all()
+    )
+    return [_comment_to_out(c) for c in comments]
+
+
+@router.post("/{task_id}/comments", response_model=TaskCommentOut, status_code=status.HTTP_201_CREATED)
+def create_task_comment(
+    task_id: int,
+    payload: TaskCommentCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    t = db.query(BDTask).filter(BDTask.id == task_id, BDTask.is_deleted == False).first()
+    if not t:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    comment = TaskComment(task_id=task_id, user_id=current_user.id, body=payload.body)
+    db.add(comment)
+    db.commit()
+    db.refresh(comment)
+    return _comment_to_out(comment)

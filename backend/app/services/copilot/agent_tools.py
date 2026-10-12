@@ -515,6 +515,98 @@ AGENT_TOOL_SCHEMAS: list[dict] = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "find_investors",
+            "description": "Search for angel investors, VC firms and funds matching a sector/stage/location. Saves results to the CRM, separate from client discovery.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "sector": {"type": "string", "description": "Sector or industry the investors should focus on, e.g. fintech, healthtech"},
+                    "stage": {"type": "string", "description": "Funding stage, e.g. seed, Series A"},
+                    "location": {"type": "string", "description": "City or region to search in"},
+                    "limit": {"type": "integer", "default": 10},
+                },
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "find_investor_contacts",
+            "description": "Find decision-maker/partner contacts (General Partner, Venture Partner, etc.) at a discovered investor organization.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "discovered_org_id": {"type": "integer"},
+                    "roles": {"type": "string", "description": "Comma-separated target roles, e.g. General Partner, Managing Partner"},
+                },
+                "required": ["discovered_org_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_knowledge_base",
+            "description": "Search uploaded internal knowledge-base documents (playbooks, pricing sheets, policy docs) for relevant passages. Use this to ground answers about internal process, pricing, or policy in the team's own uploaded documents instead of guessing.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "What to search for"},
+                    "limit": {"type": "integer", "default": 5, "description": "Max passages to return"},
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_my_notifications",
+            "description": "Get the current user's notifications (task due/overdue, new replies, milestone events, lead assignments). Defaults to unread only.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "unread_only": {"type": "boolean", "default": True},
+                    "limit": {"type": "integer", "default": 20},
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_active_signals",
+            "description": "Get active (not dismissed) engagement signals, e.g. 'opened 3+ times no reply' or 'no activity 14 days post-connection'. Use when the user asks what needs attention or which leads are showing buying signals.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "limit": {"type": "integer", "default": 20},
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "send_funding_outreach",
+            "description": "Send funding/investor outreach emails immediately with NO approval step (distinct from the reviewed client-campaign flow). Use a provided template, or omit it to let AI generate the message.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "organization_ids": {"type": "string", "description": "Comma-separated CRM organization IDs to send to"},
+                    "template": {"type": "string", "description": "Optional email body template with placeholders like {{first_name}}; omit to use AI-generated content"},
+                    "use_ai_template": {"type": "boolean", "default": False, "description": "If true, ignore 'template' and let AI generate the full message"},
+                    "campaign_name": {"type": "string", "description": "Optional name for the funding campaign created"},
+                },
+                "required": ["organization_ids"],
+            },
+        },
+    },
 ]
 
 
@@ -557,11 +649,18 @@ TOOL_REGISTRY: dict[str, Callable] = {
     "search_demos": tools.search_demos,
     "search_negotiations": tools.search_negotiations,
     "search_tasks": tools.search_tasks,
+    "search_knowledge_base": tools.search_knowledge_base,
+    "get_my_notifications": tools.get_my_notifications,
+    "get_active_signals": tools.get_active_signals,
     # Autonomous BD Execution tools
     "recommend_showcase_deck": tools.recommend_showcase_deck,
     "draft_outreach_email": tools.draft_outreach_email,
     "schedule_meeting": tools.schedule_meeting_tool,
     "auto_generate_followups": tools.auto_generate_followups,
+    # Funding / investor outreach (additive, no-approval send flow)
+    "find_investors": tools.find_investors,
+    "find_investor_contacts": tools.find_investor_contacts,
+    "send_funding_outreach": tools.send_funding_outreach,
 }
 
 

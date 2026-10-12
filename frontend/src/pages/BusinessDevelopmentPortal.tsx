@@ -12,6 +12,8 @@ import RecentCommunicationsSection from '../components/dashboard/RecentCommunica
 import RecentActivityFeed from '../components/dashboard/RecentActivityFeed'
 import Navbar from '../components/layout/Navbar'
 import { DailyPrioritiesWidget } from '../components/dashboard/DailyPrioritiesWidget'
+import { SignalsWidget } from '../components/dashboard/SignalsWidget'
+import { TaskDashboardWidget } from '../components/dashboard/TaskDashboardWidget'
 import {
   Building,
   UserCheck,
@@ -118,7 +120,7 @@ export const BusinessDevelopmentPortal: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2 self-start md:self-center">
             {/* Quick Action Buttons */}
             <Link
-              to="/business-development/organizations/add"
+              to="/business-development/organizations/new"
               className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition shadow-md shadow-violet-600/20"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -265,6 +267,12 @@ export const BusinessDevelopmentPortal: React.FC = () => {
             {/* 2. Compact Connection Pipeline Stepper */}
             <section>
               <ConnectionPipelineView pipeline={data!.pipeline} compact={true} />
+            </section>
+
+            {/* 2b. Buying Signals + Task Summary (rule-based, from engagement data) */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <SignalsWidget />
+              <TaskDashboardWidget />
             </section>
 
             {/* 3. Dual-Column Action Workspace (~380px tall) */}

@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.campaign import GmailAccount
 from app.schemas.campaign import GmailAccountOut
 from app.services.gmail_service import GmailService
+from app.services import deliverability_service
 from app.core.audit import log_audit_event
 
 router = APIRouter(
@@ -47,6 +48,15 @@ def list_gmail_accounts(
     return accounts
 
 
+@router.get("/deliverability")
+def get_deliverability_health(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    """Per-account bounce/reply health, rolled up from existing send data."""
+    return deliverability_service.get_all_accounts_health(db, user_id=current_user.id)
+
+
 @router.post("/sync-replies")
 def sync_gmail_replies(
     db: Session = Depends(get_db),
@@ -61,7 +71,9 @@ def sync_gmail_replies(
         "success": True,
         "synced_active_threads": result.get("synced_active_threads", 0),
         "replies_detected": result.get("replies_detected", 0),
+        "bounces_detected": result.get("bounces_detected", 0),
         "detected": result.get("detected", []),
+        "bounces": result.get("bounces", []),
     }
 
 
@@ -88,6 +100,39 @@ def track_email_open(
     # 1x1 transparent GIF binary
     gif_bytes = b'GIF89a\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
     return Response(content=gif_bytes, media_type="image/gif")
+
+
+@router.get("/track/click/{campaign_contact_id}")
+def track_email_click(
+    campaign_contact_id: int,
+    url: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """
+    Click-tracking redirect: records the click, then 302s to the original link.
+    Only http(s) targets are honored (open-redirect guard) — anything else falls
+    back to the dashboard rather than following it.
+    """
+    from datetime import datetime, timezone
+    from urllib.parse import urlparse
+    from app.models.campaign import CampaignContact
+
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        return RedirectResponse(url="/business-development", status_code=status.HTTP_302_FOUND)
+
+    cc = db.query(CampaignContact).filter(CampaignContact.id == campaign_contact_id).first()
+    if cc:
+        if not cc.clicked_at:
+            cc.clicked_at = datetime.now(timezone.utc)
+        cc.click_count = (cc.click_count or 0) + 1
+        # A click implies the email was opened too, even if the pixel got blocked.
+        if not cc.opened_at:
+            cc.opened_at = datetime.now(timezone.utc)
+            cc.open_count = (cc.open_count or 0) + 1
+        db.commit()
+
+    return RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
 
 
 @router.delete("/accounts/{account_id}", status_code=status.HTTP_204_NO_CONTENT)

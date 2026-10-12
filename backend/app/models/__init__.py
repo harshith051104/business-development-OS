@@ -49,8 +49,14 @@ from app.models.campaign import (
     CampaignSequenceStep,
     CampaignContact,
     CampaignContactStatus,
+    CampaignContactTimeline,
     GmailAccount,
 )
+from app.models.notification import Notification
+from app.models.signal import Signal
+from app.models.task_comment import TaskComment
+from app.models.knowledge_base import KBDocument, KBChunk
+from app.models.webhook import WebhookSubscription
 
 __all__ = [
     "User",
@@ -117,5 +123,12 @@ __all__ = [
     "CampaignSequenceStep",
     "CampaignContact",
     "CampaignContactStatus",
+    "CampaignContactTimeline",
     "GmailAccount",
+    "Notification",
+    "Signal",
+    "TaskComment",
+    "KBDocument",
+    "KBChunk",
+    "WebhookSubscription",
 ]

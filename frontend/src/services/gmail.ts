@@ -36,7 +36,21 @@ export const gmailService = {
     }).catch((err: any) => ({ success: true, message_id: 'msg_simulated', thread_id: 'th_simulated', error: err.message })),
 
   syncReplies: () =>
-    api.post<{ success: boolean; synced_active_threads: number; replies_detected: number; detected: any[] }>('/api/gmail/sync-replies'),
+    api.post<{ success: boolean; synced_active_threads: number; replies_detected: number; bounces_detected: number; detected: any[]; bounces: any[] }>('/api/gmail/sync-replies'),
+
+  getDeliverability: () => api.get<DeliverabilityHealth[]>('/api/gmail/deliverability'),
 
   disconnect: (accountId: string) => api.delete(`/api/gmail/accounts/${accountId}`),
 };
+
+export interface DeliverabilityHealth {
+  account_id: string;
+  email: string;
+  sent: number;
+  bounced: number;
+  replied: number;
+  bounce_rate: number;
+  reply_rate: number;
+  health_score: number;
+  status: 'healthy' | 'at_risk' | 'poor';
+}

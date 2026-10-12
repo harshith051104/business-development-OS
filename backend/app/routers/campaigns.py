@@ -531,6 +531,72 @@ def batch_approve_campaign_contacts(
     return {"approved": approved, "errors": errors}
 
 
+@router.get("/tracker/outreach")
+def get_outreach_tracker(
+    campaign_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """
+    Outreach Tracker: every campaign contact that's been sent at least one email,
+    with its sent/opened/clicked/replied status and timestamps, plus aggregate counts.
+    Backs the frontend Outreach Tracker dashboard.
+    """
+    sent_statuses = [
+        CampaignContactStatus.SENT.value,
+        CampaignContactStatus.REPLIED.value,
+        CampaignContactStatus.COMPLETED.value,
+    ]
+    query = db.query(CampaignContact).filter(CampaignContact.status.in_(sent_statuses))
+    if campaign_id:
+        query = query.filter(CampaignContact.campaign_id == campaign_id)
+    rows = query.order_by(desc(CampaignContact.last_action_at)).limit(500).all()
+
+    items = []
+    opened = clicked = replied = 0
+    for cc in rows:
+        contact = db.query(Contact).filter(Contact.id == cc.contact_id).first()
+        org = db.query(Organization).filter(Organization.id == cc.organization_id).first()
+        campaign = db.query(Campaign).filter(Campaign.id == cc.campaign_id).first()
+        if cc.opened_at:
+            opened += 1
+        if cc.clicked_at:
+            clicked += 1
+        if cc.replied_at:
+            replied += 1
+        items.append({
+            "campaign_contact_id": cc.id,
+            "campaign_id": cc.campaign_id,
+            "campaign_name": campaign.name if campaign else None,
+            "contact_id": cc.contact_id,
+            "contact_name": f"{contact.first_name} {contact.last_name or ''}".strip() if contact else None,
+            "contact_email": contact.email if contact else None,
+            "organization_id": cc.organization_id,
+            "organization_name": org.name if org else None,
+            "status": cc.status,
+            "subject_preview": cc.subject_preview,
+            "sent_at": cc.last_action_at,
+            "opened_at": cc.opened_at,
+            "open_count": cc.open_count,
+            "clicked_at": cc.clicked_at,
+            "click_count": cc.click_count,
+            "replied_at": cc.replied_at,
+        })
+
+    total_sent = len(items)
+    return {
+        "items": items,
+        "summary": {
+            "total_sent": total_sent,
+            "opened": opened,
+            "clicked": clicked,
+            "replied": replied,
+            "open_rate": round(opened / total_sent * 100, 1) if total_sent else 0.0,
+            "click_rate": round(clicked / total_sent * 100, 1) if total_sent else 0.0,
+            "reply_rate": round(replied / total_sent * 100, 1) if total_sent else 0.0,
+        },
+    }
+
+
 @router.get("/pending-reviews")
 def list_pending_reviews(
     campaign_id: Optional[int] = None,
