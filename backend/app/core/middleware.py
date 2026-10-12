@@ -17,21 +17,25 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.requests: dict[str, list[float]] = defaultdict(list)
 
     async def dispatch(self, request: Request, call_next):
-        client_ip = request.client.host if request.client else "unknown"
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.lower().startswith("bearer "):
+            client_key = auth_header[7:]
+        else:
+            client_key = request.client.host if request.client else "unknown"
         now = time.time()
         window = 60.0
 
         # Clean old entries
-        self.requests[client_ip] = [
-            t for t in self.requests[client_ip] if now - t < window
+        self.requests[client_key] = [
+            t for t in self.requests[client_key] if now - t < window
         ]
 
-        if len(self.requests[client_ip]) >= self.requests_per_minute:
+        if len(self.requests[client_key]) >= self.requests_per_minute:
             return Response(
                 content='{"detail":"Rate limit exceeded. Try again later."}',
                 status_code=429,
                 media_type="application/json",
             )
 
-        self.requests[client_ip].append(now)
+        self.requests[client_key].append(now)
         return await call_next(request)
