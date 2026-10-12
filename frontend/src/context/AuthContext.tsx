@@ -46,12 +46,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentUser = await authService.getMe()
         setUser(currentUser)
         localStorage.setItem(USER_KEY, JSON.stringify(currentUser))
-      } catch (err) {
-        console.warn('Session verification failed, logging out:', err)
-        localStorage.removeItem(TOKEN_KEY)
-        localStorage.removeItem(USER_KEY)
-        setToken(null)
-        setUser(null)
+      } catch (err: any) {
+        if (err?.status === 401 || err?.status === 403) {
+          console.warn('Session verification failed, logging out:', err)
+          localStorage.removeItem(TOKEN_KEY)
+          localStorage.removeItem(USER_KEY)
+          setToken(null)
+          setUser(null)
+        } else {
+          console.warn('Session verification request failed (keeping existing session):', err)
+        }
       } finally {
         setIsLoading(false)
       }
