@@ -168,6 +168,7 @@ def import_leads(
     orgs_created = orgs_matched = contacts_created = contacts_matched = skipped = 0
     errors: List[str] = []
     now = datetime.now(timezone.utc)
+    sheets_pending: List[Tuple[str, int]] = []  # ("org"|"contact", id) — synced after all DB commits
 
     for i, row in enumerate(rows, start=1):
         try:
@@ -204,10 +205,7 @@ def import_leads(
                 db.add(org)
                 db.flush()
                 orgs_created += 1
-                try:
-                    sync_organization(org)
-                except Exception:
-                    pass
+                sheets_pending.append(("org", org.id))
 
             full_name = get_val(row, "contact_full_name")
             first_name = get_val(row, "contact_first_name")
@@ -249,17 +247,15 @@ def import_leads(
                         description=f"Contact added via lead-list import ('{filename}').",
                     ))
                     contacts_created += 1
-                    try:
-                        sync_contact(contact)
-                    except Exception:
-                        pass
+                    sheets_pending.append(("contact", contact.id))
+
+            db.commit()
         except Exception as e:
+            db.rollback()
             logger.warning(f"Lead import row {i} failed: {e}")
             if len(errors) < 50:
                 errors.append(f"Row {i}: {e}")
             skipped += 1
-
-    db.commit()
 
     batch = LeadImportBatch(
         filename=filename,
@@ -277,4 +273,21 @@ def import_leads(
     db.add(batch)
     db.commit()
     db.refresh(batch)
+
+    # Best-effort Sheets mirror — runs after every DB commit is done, so a slow/rate-limited
+    # Sheets API never holds the SQLite write lock open (that was the actual cause of the
+    # "database is locked" failures during large imports).
+    for kind, obj_id in sheets_pending:
+        try:
+            if kind == "org":
+                o = db.query(Organization).filter(Organization.id == obj_id).first()
+                if o:
+                    sync_organization(o)
+            else:
+                c = db.query(Contact).filter(Contact.id == obj_id).first()
+                if c:
+                    sync_contact(c)
+        except Exception:
+            pass
+
     return batch
