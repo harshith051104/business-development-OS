@@ -5,6 +5,7 @@ import type {
   CampaignPreviewRequest,
   CampaignPreviewResponse,
   CampaignRoiFunnel,
+  OutreachTrackerResponse,
 } from '../types/campaign';
 
 export const campaignService = {
@@ -58,4 +59,7 @@ export const campaignService = {
       `/api/business-development/campaigns/contacts/${campaignContactId}/create-opportunity`,
       data
     ),
+
+  getOutreachTracker: (campaign_id?: number) =>
+    api.get<OutreachTrackerResponse>('/api/business-development/campaigns/tracker/outreach', { campaign_id }),
 };

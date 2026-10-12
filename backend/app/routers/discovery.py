@@ -1,10 +1,12 @@
 import csv
 import io
+import logging
 import math
 import re
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, desc
@@ -57,6 +59,9 @@ from app.services.discovery_engine import (
 from app.services.search_cache import get_cached_results, set_cached_results
 from app.services.google_sheets_service import save_search_results as sheets_save
 from app.services.discovery.discovery_orchestrator import DiscoveryOrchestrator
+from app.core.database import SessionLocal
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/api/business-development/discover",
@@ -488,9 +493,75 @@ def execute_csv_import(
     }
 
 
+def _save_contacts_for_org(db: Session, org: DiscoveredOrganization, contacts: List[Dict[str, Any]]) -> int:
+    """Persists executive-finder hits as DiscoveredContact rows, skipping ones already saved."""
+    saved = 0
+    for c in contacts:
+        c_name = (c.get("full_name") or c.get("name") or "").strip()
+        if not c_name:
+            continue
+        exists = db.query(DiscoveredContact).filter(
+            DiscoveredContact.discovered_org_id == org.id,
+            DiscoveredContact.full_name == c_name,
+        ).first()
+        if exists:
+            continue
+        db.add(DiscoveredContact(
+            discovered_org_id=org.id,
+            full_name=c_name,
+            job_title=c.get("job_title") or c.get("role") or "Executive",
+            seniority_level=c.get("seniority_level") or "Executive",
+            department=c.get("department") or "Executive",
+            email=c.get("email"),
+            email_status=c.get("email_status") or "not_found",
+            phone=c.get("phone"),
+            linkedin_url=c.get("linkedin_url"),
+            fit_level=c.get("fit_level") or "High",
+            fit_reason=c.get("fit_reason") or "Key executive decision-maker",
+            status=DiscoveryStatus.DISCOVERED.value,
+        ))
+        saved += 1
+    if saved:
+        db.commit()
+    return saved
+
+
+def _auto_find_executives_one(org_id: int) -> None:
+    """Runs the executive finder for one org on its own DB session, for the thread pool below."""
+    db = SessionLocal()
+    try:
+        org = db.query(DiscoveredOrganization).filter(DiscoveredOrganization.id == org_id).first()
+        if not org:
+            return
+        from app.services.discovery.decision_maker import discover_decision_makers as find_execs
+        contacts = find_execs(
+            db=db,
+            organization_name=org.name,
+            organization_type=org.organization_type,
+            website=org.website,
+            city=org.city or "",
+        )
+        saved = _save_contacts_for_org(db, org, contacts)
+        logger.info("Auto executive finder: %s -> %d contact(s) saved", org.name, saved)
+    except Exception as e:
+        logger.warning("Auto executive finder failed for org %s: %s", org_id, e)
+    finally:
+        db.close()
+
+
+def _auto_find_executives_bg(org_ids: List[int]) -> None:
+    """Background task: looks up executives for freshly-scraped orgs in parallel so results land
+    in the DB within seconds of the Maps search returning, instead of one manual click per org."""
+    if not org_ids:
+        return
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        list(pool.map(_auto_find_executives_one, org_ids))
+
+
 @router.post("/search", response_model=PaginatedDiscoveryOut)
 def search_discoveries(
     payload: DiscoverySearchQuery,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_business_development),
 ):
@@ -590,6 +661,7 @@ def search_discoveries(
     db.flush()
 
     out_items: List[DiscoveredOrganizationOut] = []
+    auto_exec_org_ids: List[int] = []
     for res in provider_results:
         clean_name = res["name"].strip()
         existing_record = db.query(DiscoveredOrganization).filter(
@@ -687,9 +759,15 @@ def search_discoveries(
                     )
                     db.add(new_contact)
             db.flush()
+        elif target_org and target_org.source_type == "maps_scraper":
+            # Maps gives name/address/phone only, never executives — go find them right after.
+            auto_exec_org_ids.append(target_org.id)
 
     history_entry.results_count = total_count
     db.commit()
+
+    if auto_exec_org_ids:
+        background_tasks.add_task(_auto_find_executives_bg, auto_exec_org_ids)
 
     total_pages = math.ceil(total_count / payload.page_size) if payload.page_size else 1
     return PaginatedDiscoveryOut(

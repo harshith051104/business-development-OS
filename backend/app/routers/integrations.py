@@ -1,19 +1,25 @@
-from typing import List
-from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status
+import hashlib
+import hmac
+import logging
+from typing import List, Optional
+from datetime import datetime
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
-from app.auth.deps import get_current_user
+from app.auth.deps import get_current_user, require_business_development
 from app.models.user import User
-from app.models.organization import Organization, ConnectionStatus, PriorityLevel, OrganizationType
-from app.models.contact import Contact
-from app.core.audit import log_audit_event
+from app.models.organization import Organization
+from app.services import lead_ingest_service, webhook_service, notification_service
 from app.schemas.integrations import (
     ExternalLeadIngestRequest,
     ExternalLeadIngestResponse,
     IntegrationStatus,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/business-development/integrations", tags=["Integrations"])
 
@@ -63,71 +69,7 @@ def ingest_external_lead(
     current_user: User = Depends(get_current_user),
 ):
     """Normalizes an external lead from Marketing, Growth, Events, or Investors into ELLY CRM."""
-    # Check if organization already exists by name (prevent duplicates)
-    org = (
-        db.query(Organization)
-        .filter(Organization.name.ilike(payload.organization_name.strip()), Organization.is_deleted == False)
-        .first()
-    )
-
-    is_new_org = False
-    if not org:
-        is_new_org = True
-        org = Organization(
-            name=payload.organization_name.strip(),
-            organization_type=payload.organization_type or OrganizationType.HOSPITAL.value,
-            city=payload.city,
-            state=payload.state,
-            website=payload.website,
-            status=ConnectionStatus.NEW.value,
-            priority=PriorityLevel.HIGH.value if (payload.lead_score or 50) >= 80 else PriorityLevel.MEDIUM.value,
-            notes=f"Source: {payload.source_system}. Campaign/Event: {payload.campaign_name or payload.event_name or 'N/A'}. Score: {payload.lead_score}. Notes: {payload.notes or ''}",
-            created_by=current_user.id,
-        )
-        db.add(org)
-        db.flush()
-
-    contact_id = None
-    if payload.contact_name:
-        parts = payload.contact_name.strip().split(maxsplit=1)
-        first_name = parts[0]
-        last_name = parts[1] if len(parts) > 1 else ""
-
-        # Check existing contact
-        c = (
-            db.query(Contact)
-            .filter(
-                Contact.organization_id == org.id,
-                Contact.first_name.ilike(first_name),
-                Contact.is_deleted == False
-            )
-            .first()
-        )
-        if not c:
-            c = Contact(
-                organization_id=org.id,
-                first_name=first_name,
-                last_name=last_name,
-                designation=payload.contact_role or "Lead Contact",
-                email=payload.contact_email,
-                phone=payload.contact_phone,
-                is_decision_maker=True if any(t in (payload.contact_role or "").lower() for t in ["ceo", "cto", "cio", "director", "head"]) else False,
-                created_by=current_user.id,
-            )
-            db.add(c)
-            db.flush()
-        contact_id = c.id
-
-    log_audit_event(
-        db,
-        action=f"INGEST_LEAD_{payload.source_system.upper()}",
-        resource_type="ORGANIZATION",
-        resource_id=org.id,
-        user=current_user,
-        metadata={"source": payload.source_system, "organization_name": org.name, "is_new": is_new_org},
-    )
-    db.commit()
-    db.refresh(org)
+    org, contact_id, is_new_org = lead_ingest_service.ingest_external_lead(db, payload, user=current_user)
 
     return ExternalLeadIngestResponse(
         success=True,
@@ -137,3 +79,102 @@ def ingest_external_lead(
         is_new_organization=is_new_org,
         source_system=payload.source_system,
     )
+
+
+# ── Inbound webhooks (generic external event receiver, HMAC-verified) ──
+
+def _verify_webhook_signature(raw_body: bytes, signature: Optional[str]) -> None:
+    if not settings.WEBHOOK_INBOUND_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Inbound webhooks are not configured (WEBHOOK_INBOUND_SECRET unset).",
+        )
+    if not signature:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing X-Signature header.")
+    expected = hmac.new(settings.WEBHOOK_INBOUND_SECRET.encode("utf-8"), raw_body, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid webhook signature.")
+
+
+@router.post("/webhooks/{source}", status_code=status.HTTP_202_ACCEPTED)
+async def receive_webhook(
+    source: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    x_signature: Optional[str] = Header(default=None, alias="X-Signature"),
+):
+    """Generic inbound webhook receiver for external systems. Verifies an
+    HMAC-SHA256 signature of the raw body against WEBHOOK_INBOUND_SECRET.
+    A payload with an 'organization_name' field is routed through the same
+    lead-ingestion path as /ingest; anything else becomes a notification
+    broadcast to the BD team so no inbound event is silently dropped."""
+    raw_body = await request.body()
+    _verify_webhook_signature(raw_body, x_signature)
+
+    try:
+        payload = await request.json()
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON body.")
+
+    if isinstance(payload, dict) and payload.get("organization_name"):
+        payload.setdefault("source_system", source)
+        try:
+            lead_payload = ExternalLeadIngestRequest(**payload)
+        except Exception as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid lead payload: {exc}")
+        org, contact_id, is_new_org = lead_ingest_service.ingest_external_lead(db, lead_payload, user=None)
+        return {
+            "status": "ingested",
+            "organization_id": org.id,
+            "contact_id": contact_id,
+            "is_new_organization": is_new_org,
+        }
+
+    # Generic event -- notify every BD/admin user rather than dropping it.
+    bd_users = db.query(User).filter(User.role.in_(["BUSINESS_DEVELOPMENT", "ADMIN"]), User.is_active == True).all()  # noqa: E712
+    for u in bd_users:
+        notification_service.notify(
+            db,
+            user_id=u.id,
+            type=f"webhook.{source}",
+            title=f"Webhook event from {source}",
+            body=str(payload)[:500],
+        )
+    return {"status": "received", "notified_users": len(bd_users)}
+
+
+# ── Outbound webhook subscriptions ──
+
+class WebhookSubscriptionCreate(BaseModel):
+    url: str
+    event_types: List[str] = ["*"]
+    secret: str
+
+
+class WebhookSubscriptionOut(BaseModel):
+    id: int
+    url: str
+    event_types: List[str]
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+@router.get("/webhook-subscriptions", response_model=List[WebhookSubscriptionOut], dependencies=[Depends(require_business_development)])
+def list_webhook_subscriptions(db: Session = Depends(get_db)):
+    return webhook_service.list_subscriptions(db)
+
+
+@router.post("/webhook-subscriptions", response_model=WebhookSubscriptionOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_business_development)])
+def create_webhook_subscription(payload: WebhookSubscriptionCreate, db: Session = Depends(get_db)):
+    return webhook_service.create_subscription(db, url=payload.url, event_types=payload.event_types, secret=payload.secret)
+
+
+@router.delete("/webhook-subscriptions/{subscription_id}", dependencies=[Depends(require_business_development)])
+def delete_webhook_subscription(subscription_id: int, db: Session = Depends(get_db)):
+    ok = webhook_service.delete_subscription(db, subscription_id)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Subscription not found.")
+    return {"message": "Subscription deleted."}

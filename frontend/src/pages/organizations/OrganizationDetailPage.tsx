@@ -83,7 +83,11 @@ export const OrganizationDetailPage: React.FC = () => {
   const [partnerships, setPartnerships] = useState<Partnership[]>([])
 
   const fetchOrgData = useCallback(async () => {
-    if (!id) return
+    if (!id || !/^\d+$/.test(id)) {
+      setError('Invalid organization id.')
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError(null)
     try {

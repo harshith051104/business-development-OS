@@ -9,5 +9,6 @@ build/
 growth.db
 uploads/*
 !uploads/.gitkeep
+backups/
 .venv/
 venv/

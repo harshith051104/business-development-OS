@@ -40,6 +40,7 @@ class CampaignService:
         campaign = Campaign(
             name=data.name,
             description=data.description,
+            category=getattr(data, "category", None) or "client",
             sender_email=data.sender_email,
             gmail_account_id=data.gmail_account_id,
             target_industry=data.target_industry,
@@ -158,6 +159,7 @@ class CampaignService:
                     organization_id=contact.organization_id,
                     current_step_number=1,
                     status=CampaignContactStatus.READY_FOR_REVIEW.value,
+                    assigned_user_id=user.id if user else None,
                     personalization_score=preview.get("personalization_score", 75.0) if preview else 75.0,
                     subject_preview=preview.get("subject", "") if preview else "",
                     body_preview=preview.get("body_html", "") if preview else "",
@@ -169,6 +171,123 @@ class CampaignService:
 
         db.commit()
         return added_count
+
+    @classmethod
+    def quick_send(
+        cls,
+        db: Session,
+        user: User,
+        organization_ids: List[int],
+        subject_template: Optional[str] = None,
+        body_template: Optional[str] = None,
+        campaign_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        No-approval bulk send for the Funding module (angel investors / VCs / business
+        contacts) — modeled on the user's other outreach platform, which skips the
+        human-review step used by client campaigns. Creates a 'funding'-category
+        Campaign, enrolls each org's first contact with a valid email directly as
+        APPROVED, then sends immediately via the existing send_step_email.
+
+        send_step_email's approval gate is untouched: pre-setting status=APPROVED here
+        is what lets this flow skip review, while every client campaign still requires
+        a human to hit /approve.
+        """
+        campaign = Campaign(
+            name=campaign_name or f"Funding Outreach {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')}",
+            category="funding",
+            status=CampaignStatus.ACTIVE.value,
+            created_by=user.id,
+            owner_id=user.id,
+        )
+        db.add(campaign)
+        db.flush()
+
+        # If no template given, let the existing AI personalization engine generate
+        # the whole message (opening_hook/relevant_problem/ai_value_prop/cta) — this is
+        # the "AI-generated" path; a user-supplied template takes the "user template" path.
+        default_subject = subject_template or "Introduction: {{organization_name}} x {{sender_name}}"
+        default_body = body_template or (
+            "Hi {{first_name}},\n\n{{opening_hook}}\n\n{{relevant_problem}}\n\n"
+            "{{ai_value_prop}}\n\n{{cta}}\n\nBest regards,\n{{sender_name}}\n{{sender_email}}"
+        )
+        db.add(CampaignSequenceStep(
+            campaign_id=campaign.id,
+            step_number=1,
+            delay_days=0,
+            channel="Email",
+            subject_template=default_subject,
+            body_template=default_body,
+        ))
+        db.flush()
+
+        now = datetime.now(timezone.utc)
+        results: List[Dict[str, Any]] = []
+
+        for org_id in organization_ids:
+            contact = (
+                db.query(Contact)
+                .filter(Contact.organization_id == org_id, Contact.email.isnot(None), Contact.email != "")
+                .order_by(Contact.id.asc())
+                .first()
+            )
+            if not contact:
+                results.append({"organization_id": org_id, "success": False, "error": "no_contact_with_email"})
+                continue
+
+            try:
+                preview = CampaignCompiler.compile_step_email(
+                    db=db,
+                    contact_id=contact.id,
+                    subject_template=default_subject,
+                    body_template=default_body,
+                    step_number=1,
+                    sender_user=user,
+                )
+            except Exception as e:
+                logger.warning(f"Quick-send compile failed for contact {contact.id}: {e}")
+                results.append({"organization_id": org_id, "contact_id": contact.id, "success": False, "error": "compile_failed"})
+                continue
+
+            cc = CampaignContact(
+                campaign_id=campaign.id,
+                contact_id=contact.id,
+                organization_id=org_id,
+                current_step_number=1,
+                status=CampaignContactStatus.APPROVED.value,
+                assigned_user_id=user.id,
+                approved_by=user.id,
+                approved_at=now,
+                personalization_score=preview.get("personalization_score", 75.0),
+                subject_preview=preview.get("subject", ""),
+                body_preview=preview.get("body_html", ""),
+                ai_cache=preview.get("ai_generated_fields") or {},
+            )
+            db.add(cc)
+            db.flush()
+
+            try:
+                send_res = cls.send_step_email(
+                    db=db,
+                    campaign_id=campaign.id,
+                    contact_id=contact.id,
+                    user=user,
+                    subject=preview["subject"],
+                    body_html=preview["body_html"],
+                )
+                results.append({"organization_id": org_id, "contact_id": contact.id, "success": True, **send_res})
+            except Exception as e:
+                logger.warning(f"Quick-send failed for contact {contact.id}: {e}")
+                results.append({"organization_id": org_id, "contact_id": contact.id, "success": False, "error": str(e)})
+
+        db.commit()
+
+        return {
+            "campaign_id": campaign.id,
+            "sent": sum(1 for r in results if r.get("success")),
+            "failed": sum(1 for r in results if not r.get("success")),
+            "results": results,
+        }
 
     @classmethod
     def get_campaign_stats(cls, db: Session, campaign_id: int) -> Dict[str, Any]:
@@ -250,6 +369,7 @@ class CampaignService:
             body_html=body_html,
             thread_id=cc.thread_id,
             user_id=user.id,
+            campaign_contact_id=cc.id,
         )
 
         now = datetime.now(timezone.utc)
@@ -399,14 +519,16 @@ class CampaignService:
             org.status = ConnectionStatus.RESPONDED.value
         contact.connection_status = "Responded"
 
-        # 5. Auto-create Opportunity if none exists for this org — reply = commercial signal
+        # 5. Auto-create Opportunity if none exists for this org — reply = commercial signal.
+        # Skip for funding/investor campaigns: a VC reply is not a sales pipeline opportunity.
         from app.models.opportunity import Opportunity, OpportunityStage
+        is_funding_campaign = bool(cc and cc.campaign and cc.campaign.category == "funding")
         existing_opp = db.query(Opportunity).filter(
             Opportunity.organization_id == contact.organization_id,
             Opportunity.is_deleted == False,
         ).first()
         opp_created = False
-        if not existing_opp:
+        if not existing_opp and not is_funding_campaign:
             new_opp = Opportunity(
                 organization_id=contact.organization_id,
                 name=f"{org_name} — Inbound Interest",
@@ -439,6 +561,21 @@ class CampaignService:
             logger.warning(f"Failed to auto-detect/schedule meeting from reply: {e}")
 
         db.commit()
+
+        notify_user_id = (cc.assigned_user_id if cc and cc.assigned_user_id else None) or user_id
+        if notify_user_id:
+            try:
+                from app.services import notification_service
+                notification_service.notify(
+                    db,
+                    user_id=notify_user_id,
+                    type="REPLY_RECEIVED",
+                    title=f"Reply from {contact.full_name}",
+                    body=f"{org_name}: {reply_snippet[:150]}",
+                    link="/business-development/leads/tracker",
+                )
+            except Exception as notify_err:
+                logger.warning(f"Failed to send reply notification: {notify_err}")
 
         return {
             "success": True,

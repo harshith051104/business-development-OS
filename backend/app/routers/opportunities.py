@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -14,6 +14,7 @@ from app.models.opportunity import Opportunity, OpportunityStage, OpportunityPri
 from app.models.activity import ContactActivity
 from app.models.meeting import Meeting
 from app.models.followup import FollowUp
+from app.models.task import BDTask, TaskPriority, TaskStatus
 from app.schemas.opportunity import (
     OpportunityCreate,
     OpportunityUpdate,
@@ -358,6 +359,25 @@ def get_opportunity(
     )
 
 
+def _create_next_step_task(db: Session, opp: Opportunity, old_stage: str, new_stage: str, created_by_name: str) -> None:
+    """Auto-task on stage change: gives the owner a concrete next step instead of a bare notification."""
+    if not opp.owner_id:
+        return
+    task = BDTask(
+        title=f"Next step: {opp.name} -> {new_stage}",
+        description=f"Opportunity moved from '{old_stage}' to '{new_stage}'. Define and execute the next action.",
+        priority=TaskPriority.HIGH.value if new_stage in (OpportunityStage.NEGOTIATION.value, OpportunityStage.PROPOSAL.value) else TaskPriority.MEDIUM.value,
+        status=TaskStatus.TODO.value,
+        due_date=datetime.now(timezone.utc) + timedelta(days=2),
+        entity_type="opportunity",
+        entity_id=opp.id,
+        owner_id=opp.owner_id,
+        created_by=created_by_name,
+    )
+    db.add(task)
+    db.commit()
+
+
 @router.patch("/{id}", response_model=OpportunityOut)
 def update_opportunity(
     id: int,
@@ -408,10 +428,11 @@ def update_opportunity(
         opp.owner_id = payload.owner_id
         changes.append(f"Owner assigned to {owner.name}")
 
+    stage_changed_from: Optional[str] = None
     if payload.stage is not None and payload.stage != opp.stage:
-        old_stage = opp.stage
+        stage_changed_from = opp.stage
         opp.stage = payload.stage
-        changes.append(f"Stage changed from '{old_stage}' to '{payload.stage}'")
+        changes.append(f"Stage changed from '{stage_changed_from}' to '{payload.stage}'")
 
     if payload.priority is not None and payload.priority != opp.priority:
         opp.priority = payload.priority
@@ -450,6 +471,9 @@ def update_opportunity(
         db.add(activity)
         db.commit()
 
+    if stage_changed_from is not None:
+        _create_next_step_task(db, opp, stage_changed_from, opp.stage, current_user.name)
+
     return _enrich_opportunity_out(opp, db)
 
 
@@ -487,6 +511,8 @@ def update_opportunity_stage(
     )
     db.add(activity)
     db.commit()
+
+    _create_next_step_task(db, opp, old_stage, opp.stage, current_user.name)
 
     return _enrich_opportunity_out(opp, db)
 

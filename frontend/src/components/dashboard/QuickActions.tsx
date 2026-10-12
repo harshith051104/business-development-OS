@@ -25,7 +25,7 @@ export const QuickActions: React.FC = () => {
       title: 'Add Organization',
       description: 'Register a new target organization',
       icon: Building,
-      path: '/business-development/organizations/add',
+      path: '/business-development/organizations/new',
       color: 'from-cyan-600/20 to-cyan-600/5 hover:border-cyan-500/40 text-cyan-400',
     },
     {

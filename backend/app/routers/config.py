@@ -13,6 +13,16 @@ from app.models.setting import SystemSetting
 
 router = APIRouter(prefix="/api/config", tags=["Config"])
 
+
+@router.get("/sheets-status")
+def get_sheets_sync_status(current_user=Depends(require_business_development)):
+    """Whether Google Sheets CRM sync is configured, and the sheet's link if so."""
+    from app.services.google_sheets_service import is_configured, get_spreadsheet_url
+    return {
+        "configured": is_configured(),
+        "spreadsheet_url": get_spreadsheet_url() if is_configured() else None,
+    }
+
 # Universal defaults — no healthcare hardcoding
 DEFAULT_ORG_TYPES = [
     "SaaS Company", "Software Company", "Technology Company", "AI Company",

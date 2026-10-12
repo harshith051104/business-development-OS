@@ -338,6 +338,12 @@ def create_contact(
     db.commit()
     db.refresh(new_contact)
 
+    try:
+        from app.services.google_sheets_service import sync_contact
+        sync_contact(new_contact)
+    except Exception:
+        pass
+
     return _format_contact_detail_out(new_contact)
 
 

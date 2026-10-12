@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ELLY Outreach Automation</title>
+  <style>
+    body { font: 13px system-ui; width: 320px; padding: 10px; color: #111; }
+    h3 { margin: 4px 0 8px; }
+    h4 { margin: 0 0 6px; }
+    label { display: block; margin-top: 8px; font-weight: 600; }
+    input { width: 100%; box-sizing: border-box; padding: 4px; margin-top: 2px; }
+    button { margin-top: 10px; width: 100%; padding: 6px; cursor: pointer; }
+    .row { display: flex; gap: 6px; }
+    .row input { width: auto; flex: 1; }
+    #status { margin-top: 8px; font-size: 12px; color: #065; min-height: 16px; }
+    hr { margin: 14px 0; border: none; border-top: 1px solid #ddd; }
+    .hint { color: #888; font-size: 11px; margin-top: 4px; }
+    .channel { border: 1px solid #ddd; border-radius: 8px; padding: 8px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h3>ELLY Outreach Automation</h3>
+
+  <label>Backend URL</label>
+  <input id="apiBase" placeholder="http://127.0.0.1:8001" />
+
+  <label>Email</label>
+  <input id="email" type="email" />
+  <label>Password</label>
+  <input id="password" type="password" />
+  <button id="loginBtn">Log in</button>
+
+  <hr />
+
+  <div class="channel">
+    <h4>WhatsApp</h4>
+    <label>Daily send cap</label>
+    <input id="waCap" type="number" min="1" max="200" />
+    <div class="row">
+      <div>
+        <label>Hours from</label>
+        <input id="waH1" type="number" min="0" max="23" />
+      </div>
+      <div>
+        <label>Hours until</label>
+        <input id="waH2" type="number" min="0" max="23" />
+      </div>
+    </div>
+    <label>Campaign ID (optional)</label>
+    <input id="waCampaignId" type="number" />
+    <button id="waSaveBtn">Save WhatsApp settings</button>
+  </div>
+
+  <div class="channel">
+    <h4>LinkedIn</h4>
+    <label>Daily action cap</label>
+    <input id="liCap" type="number" min="1" max="100" />
+    <div class="row">
+      <div>
+        <label>Hours from</label>
+        <input id="liH1" type="number" min="0" max="23" />
+      </div>
+      <div>
+        <label>Hours until</label>
+        <input id="liH2" type="number" min="0" max="23" />
+      </div>
+    </div>
+    <label>Campaign ID (optional)</label>
+    <input id="liCampaignId" type="number" />
+    <button id="liSaveBtn">Save LinkedIn settings</button>
+    <div class="hint">Lower cap, narrower hours than WhatsApp by default — LinkedIn's automated-behavior detection is reportedly stricter, and a ban here hits your personal profile.</div>
+  </div>
+
+  <div id="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

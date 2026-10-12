@@ -228,6 +228,12 @@ def create_organization(
         metadata={"name": new_org.name, "status": new_org.status, "priority": new_org.priority},
     )
 
+    try:
+        from app.services.google_sheets_service import sync_organization
+        sync_organization(new_org)
+    except Exception:
+        pass
+
     return OrganizationDetailOut.model_validate(new_org)
 
 

@@ -9,4 +9,7 @@ httpx==0.28.1
 google-api-python-client==2.166.0
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
+gspread==6.2.1
+openpyxl==3.1.5
 stagehand>=4.0.0
+apscheduler==3.10.4

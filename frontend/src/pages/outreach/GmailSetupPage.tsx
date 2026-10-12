@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import { gmailService } from '../../services/gmail'
-import type { GmailStatus } from '../../services/gmail'
-import { Mail, CheckCircle2, AlertCircle, ExternalLink, RotateCw, Shield } from 'lucide-react'
+import type { GmailStatus, DeliverabilityHealth } from '../../services/gmail'
+import { Mail, CheckCircle2, AlertCircle, ExternalLink, RotateCw, Shield, Activity } from 'lucide-react'
 
 export default function GmailSetupPage() {
   const navigate = useNavigate()
   const [status, setStatus] = useState<GmailStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState(false)
+  const [health, setHealth] = useState<DeliverabilityHealth[]>([])
 
   useEffect(() => {
     loadStatus()
@@ -20,6 +21,14 @@ export default function GmailSetupPage() {
     try {
       const s = await gmailService.getStatus()
       setStatus(s)
+      if (s.connected) {
+        try {
+          const h = await gmailService.getDeliverability()
+          setHealth(h)
+        } catch {
+          setHealth([])
+        }
+      }
     } catch {
       setStatus({ connected: false, sender_email: '', message: 'Failed to check Gmail status.' })
     }
@@ -90,6 +99,43 @@ export default function GmailSetupPage() {
                 </div>
               )}
             </div>
+
+            {/* Deliverability Health */}
+            {status?.connected && health.length > 0 && health.map((h) => (
+              <div key={h.account_id} className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-4 h-4 text-violet-400" />
+                    <h3 className="text-sm font-bold text-white">Deliverability Health</h3>
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase px-2 py-1 rounded-lg ${
+                      h.status === 'healthy'
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        : h.status === 'at_risk'
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                    }`}
+                  >
+                    {h.status.replace('_', ' ')} · {h.health_score}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="p-2 rounded-xl bg-[#1A1040]/70 border border-slate-800">
+                    <div className="text-sm font-bold text-white">{h.sent}</div>
+                    <div className="text-[10px] text-slate-500">Sent</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-[#1A1040]/70 border border-slate-800">
+                    <div className="text-sm font-bold text-white">{h.bounce_rate}%</div>
+                    <div className="text-[10px] text-slate-500">Bounce rate</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-[#1A1040]/70 border border-slate-800">
+                    <div className="text-sm font-bold text-white">{h.reply_rate}%</div>
+                    <div className="text-[10px] text-slate-500">Reply rate</div>
+                  </div>
+                </div>
+              </div>
+            ))}
 
             {/* Connect Button */}
             {!status?.connected && (

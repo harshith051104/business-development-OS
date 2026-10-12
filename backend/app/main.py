@@ -38,6 +38,14 @@ from app.routers.calendar import router as calendar_router
 from app.routers.config import router as config_router
 from app.routers.gmail import router as gmail_router
 from app.routers.campaigns import router as campaigns_router
+from app.routers.funding import router as funding_router
+from app.routers.lead_import import router as lead_import_router
+from app.routers.lead_tracker import router as lead_tracker_router
+from app.routers.notifications import router as notifications_router
+from app.routers.signals import router as signals_router
+from app.routers.knowledge_base import router as knowledge_base_router
+from app.routers.whatsapp_automation import router as whatsapp_automation_router
+from app.routers.linkedin_automation import router as linkedin_automation_router
 
 import app.models.user  # noqa: F401
 import app.models.organization  # noqa: F401
@@ -60,6 +68,7 @@ import app.models.proposal  # noqa: F401
 import app.models.negotiation  # noqa: F401
 import app.models.task  # noqa: F401
 import app.models.campaign  # noqa: F401
+import app.models.lead_import  # noqa: F401
 
 logger = logging.getLogger("elly.bd_portal")
 
@@ -155,6 +164,41 @@ try:
                 hist_changed = True
             if hist_changed:
                 conn.commit()
+
+        # Check campaign_contacts columns (click tracking)
+        cc_result = conn.execute(text("PRAGMA table_info(campaign_contacts)"))
+        cc_cols = [row[1] for row in cc_result.fetchall()]
+        if cc_cols:
+            cc_changed = False
+            if "clicked_at" not in cc_cols:
+                conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN clicked_at DATETIME"))
+                cc_changed = True
+            if "click_count" not in cc_cols:
+                conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN click_count INTEGER DEFAULT 0"))
+                cc_changed = True
+            for bool_col in (
+                "linkedin_followed", "linkedin_connection_sent", "linkedin_connection_accepted",
+                "linkedin_first_message_sent", "linkedin_reply_received",
+                "followup_1_sent", "followup_2_sent", "followup_3_sent",
+                "meeting_scheduled", "opportunity_closed",
+            ):
+                if bool_col not in cc_cols:
+                    conn.execute(text(f"ALTER TABLE campaign_contacts ADD COLUMN {bool_col} BOOLEAN DEFAULT 0"))
+                    cc_changed = True
+            if "assigned_user_id" not in cc_cols:
+                conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN assigned_user_id INTEGER"))
+                cc_changed = True
+            if "focus" not in cc_cols:
+                conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN focus VARCHAR(255)"))
+                cc_changed = True
+            if "tracker_notes" not in cc_cols:
+                conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN tracker_notes TEXT"))
+                cc_changed = True
+            if "next_followup_at" not in cc_cols:
+                conn.execute(text("ALTER TABLE campaign_contacts ADD COLUMN next_followup_at DATETIME"))
+                cc_changed = True
+            if cc_changed:
+                conn.commit()
 except Exception as e:
     logger.error("Startup schema migration failed — database may be in an inconsistent state: %s", e)
 
@@ -238,7 +282,6 @@ app.add_middleware(RateLimitMiddleware, requests_per_minute=120)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -276,6 +319,40 @@ app.include_router(calendar_router)
 app.include_router(config_router)
 app.include_router(gmail_router)
 app.include_router(campaigns_router)
+app.include_router(funding_router)
+app.include_router(lead_import_router)
+app.include_router(lead_tracker_router)
+app.include_router(notifications_router)
+app.include_router(signals_router)
+app.include_router(knowledge_base_router)
+app.include_router(whatsapp_automation_router)
+app.include_router(linkedin_automation_router)
+
+# Background job scheduler (in-process, no Celery/Redis needed at this scale)
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
+from app.services import scheduler as scheduler_service
+from app.services.backup_service import run_backup
+from app.services.task_sweep_service import sweep_due_tasks
+from app.services.reply_sync_job import sync_all_inboxes
+from app.services.signal_service import scan_signals
+from app.services.google_sheets_service import pull_updates_job as pull_sheet_tracker_updates
+
+scheduler_service.register_job("nightly_backup", run_backup, CronTrigger(hour=2, minute=30))
+scheduler_service.register_job("task_due_sweep", sweep_due_tasks, IntervalTrigger(minutes=30))
+scheduler_service.register_job("reply_sync", sync_all_inboxes, IntervalTrigger(minutes=5))
+scheduler_service.register_job("signal_scan", scan_signals, CronTrigger(hour=6, minute=0))
+scheduler_service.register_job("sheets_tracker_pull", pull_sheet_tracker_updates, IntervalTrigger(minutes=15))
+
+
+@app.on_event("startup")
+def _start_scheduler():
+    scheduler_service.start()
+
+
+@app.on_event("shutdown")
+def _stop_scheduler():
+    scheduler_service.shutdown()
 
 # Mount uploads directory for showcase pitch decks, documents, and media
 import os
