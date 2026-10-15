@@ -24,6 +24,7 @@ from app.models.user import User
 from app.schemas.campaign import CampaignCreate, CampaignUpdate, CampaignSequenceStepCreate
 from app.services.campaign.compiler import CampaignCompiler
 from app.services.gmail_service import GmailService
+from app.services.presend_gate import assert_send_allowed
 from app.core.audit import log_audit_event
 
 logger = logging.getLogger("elly.campaign.service")
@@ -359,6 +360,17 @@ class CampaignService:
         contact = db.query(Contact).filter(Contact.id == contact_id).first()
         if not contact or not contact.email:
             raise ValueError(f"Contact {contact_id} does not have a valid email address.")
+
+        # Deterministic pre-send safety gate (same checks as the direct Gmail path):
+        # blocks opt-outs, bounced/non-deliverable recipients and unresolved
+        # placeholders. SendBlockedError subclasses ValueError.
+        assert_send_allowed(
+            contact.email,
+            subject,
+            body_html,
+            contact=contact,
+            campaign_contact=cc,
+        )
 
         # 1. Send via Gmail API
         send_res = GmailService.send_email(

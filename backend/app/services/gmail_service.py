@@ -27,6 +27,7 @@ except ImportError:
 
 from app.models.campaign import GmailAccount
 from app.core.config import settings
+from app.services.presend_gate import assert_send_allowed
 
 logger = logging.getLogger("elly.gmail_service")
 
@@ -298,6 +299,16 @@ class GmailService:
         2. User's own active account (if user_id provided)
         3. Any active account (last resort, logs warning)
         """
+        # Deterministic pre-send gate — every send path passes the same checks
+        # (opt-out, bounce, non-deliverable status, placeholders, recipient match).
+        assert_send_allowed(
+            to_email,
+            subject or "",
+            body_html or "",
+            db=db,
+            campaign_contact_id=campaign_contact_id,
+        )
+
         account = None
         if gmail_account_id:
             account = db.query(GmailAccount).filter(GmailAccount.id == gmail_account_id, GmailAccount.is_active == True).first()

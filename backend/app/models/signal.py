@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Index
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Index, Float
 from app.core.database import Base
 
 
@@ -14,6 +14,10 @@ class Signal(Base):
     description = Column(String(500), nullable=False)
     score = Column(Integer, default=0, nullable=False)
     signal_metadata = Column(JSON, nullable=True)
+    # Provenance: how sure are we, where was it observed, and when.
+    confidence = Column(Float, nullable=True)
+    evidence_url = Column(String(500), nullable=True)
+    observed_at = Column(DateTime, nullable=True)
     dismissed = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import enum
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum, Float
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -128,3 +128,25 @@ class DiscoverySearchHistory(Base):
 
     def __repr__(self):
         return f"<DiscoverySearchHistory id={self.id} kw='{self.query_keyword}' loc='{self.location}' orgs={self.results_count}>"
+
+
+class EmailPattern(Base):
+    """
+    Learned corporate email format for a domain, derived from a CONFIRMED
+    (observed or externally verified) address. Candidates generated from a
+    learned pattern are still status 'guess' until independently verified.
+    """
+    __tablename__ = "email_patterns"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    domain = Column(String(255), nullable=False, unique=True, index=True)
+    pattern = Column(String(50), nullable=False)          # e.g. "first.last", "flast"
+    sample_email = Column(String(255), nullable=True)     # the confirmed address that revealed it
+    learned_from = Column(String(100), default="observed_address", nullable=False)
+    source_url = Column(String(500), nullable=True)
+    confidence = Column(Float, default=0.9, nullable=False)
+    observed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    def __repr__(self):
+        return f"<EmailPattern domain='{self.domain}' pattern='{self.pattern}'>"

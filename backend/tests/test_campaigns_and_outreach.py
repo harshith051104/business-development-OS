@@ -232,6 +232,17 @@ def test_campaign_send_step(client: TestClient, auth_headers: dict, sample_data:
         })()
     )
 
+    # Tier 0.4: human approval required before sending
+    cc = db_session.query(CampaignContact).filter(
+        CampaignContact.campaign_id == campaign.id,
+        CampaignContact.contact_id == contact.id,
+    ).first()
+    approve_resp = client.post(
+        f"/api/business-development/campaigns/contacts/{cc.id}/approve",
+        headers=auth_headers,
+    )
+    assert approve_resp.status_code == 200
+
     send_payload = {
         "subject": "Collaboration with Global Cloud Solutions",
         "body_html": "<p>Hi Marcus, let us collaborate.</p>",

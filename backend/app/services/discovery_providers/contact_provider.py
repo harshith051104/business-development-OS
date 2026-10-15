@@ -464,7 +464,7 @@ class ExecutiveContactDiscoveryProvider(BaseContactDiscoveryProvider):
                 )
                 if not item.get("email") and enriched.get("email"):
                     item["email"] = enriched["email"]
-                    item["email_status"] = enriched.get("email_status", "enriched")
+                    item["email_status"] = enriched.get("email_status", "guess")
                 if not item.get("linkedin_url") and enriched.get("linkedin_url"):
                     item["linkedin_url"] = enriched["linkedin_url"]
                 if not item.get("phone") and enriched.get("phone"):

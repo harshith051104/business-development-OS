@@ -85,9 +85,11 @@ class BaseEmailEnrichmentProvider(ABC):
         organization_name: str,
         website: Optional[str] = None,
         job_title: Optional[str] = None,
+        email_pattern: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Looks up business contact email/profile info safely without mass-harvesting.
         Returns dict with: email, email_status, linkedin_url, phone, verified.
+        email_pattern: optional learned domain pattern template (e.g. 'flast').
         """
         pass

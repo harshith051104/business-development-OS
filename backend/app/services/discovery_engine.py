@@ -193,6 +193,7 @@ def convert_discovered_org_to_crm(
             designation=d_contact.job_title,
             department=d_contact.department or "Executive Management",
             email=d_contact.email,
+            email_status=d_contact.email_status,  # delivery-confidence survives CRM conversion
             phone=d_contact.phone,
             linkedin_url=d_contact.linkedin_url,
             is_decision_maker=True,

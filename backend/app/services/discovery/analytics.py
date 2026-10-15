@@ -35,7 +35,8 @@ def get_discovery_analytics(db: Session) -> Dict[str, Any]:
 
     total_contacts = db.query(DiscoveredContact).count()
     verified_contacts = db.query(DiscoveredContact).filter(
-        DiscoveredContact.email_status == "enriched"
+        # "enriched" = legacy rows from before the four-state vocabulary
+        DiscoveredContact.email_status.in_(["verified", "enriched"])
     ).count()
 
     # Source performance

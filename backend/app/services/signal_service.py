@@ -49,6 +49,7 @@ def _create_signal(
     metadata: Optional[dict] = None,
     notify_user_id: Optional[int] = None,
 ) -> Signal:
+    meta = metadata or {}
     sig = Signal(
         organization_id=organization_id,
         contact_id=contact_id,
@@ -57,6 +58,10 @@ def _create_signal(
         description=description,
         score=score,
         signal_metadata=metadata,
+        # Provenance — callers may pass confidence/evidence_url via metadata
+        confidence=meta.get("confidence"),
+        evidence_url=meta.get("evidence_url"),
+        observed_at=datetime.now(timezone.utc),
     )
     db.add(sig)
     db.commit()

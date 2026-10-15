@@ -112,12 +112,36 @@ try:
                 ("last_contacted_at", "DATETIME"),
                 ("next_followup_at", "DATETIME"),
                 ("is_deleted", "BOOLEAN DEFAULT 0"),
+                ("email_status", "VARCHAR(50)"),
             ]:
                 if col_name not in c_cols:
                     conn.execute(text(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_type}"))
                     c_changed = True
             if c_changed:
                 conn.commit()
+
+        # Check signals provenance columns (confidence / evidence / observation time)
+        sig_result = conn.execute(text("PRAGMA table_info(signals)"))
+        sig_cols = [row[1] for row in sig_result.fetchall()]
+        if sig_cols:
+            sig_changed = False
+            for col_name, col_type in [
+                ("confidence", "REAL"),
+                ("evidence_url", "VARCHAR(500)"),
+                ("observed_at", "DATETIME"),
+            ]:
+                if col_name not in sig_cols:
+                    conn.execute(text(f"ALTER TABLE signals ADD COLUMN {col_name} {col_type}"))
+                    sig_changed = True
+            if sig_changed:
+                conn.commit()
+
+        # Check organization_research history column (preserve prior observations)
+        rrec_result = conn.execute(text("PRAGMA table_info(organization_research)"))
+        rrec_cols = [row[1] for row in rrec_result.fetchall()]
+        if rrec_cols and "history_json" not in rrec_cols:
+            conn.execute(text("ALTER TABLE organization_research ADD COLUMN history_json TEXT"))
+            conn.commit()
 
         # Check discovered_organizations columns
         disc_result = conn.execute(text("PRAGMA table_info(discovered_organizations)"))

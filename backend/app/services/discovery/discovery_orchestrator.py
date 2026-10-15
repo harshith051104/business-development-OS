@@ -109,6 +109,14 @@ class DiscoveryOrchestrator:
                             logger.warning("Research blocked for %s — skipping, continuing batch", org["name"])
                         else:
                             org["research_status"] = "failed"
+
+                        # Deterministic profiler findings qualify even when the
+                        # LLM research above failed/timed out.
+                        if org.get("research") is None and research_data.get("site_profile"):
+                            org["research"] = {
+                                "research_status": research_data.get("research_status"),
+                                "site_profile": research_data["site_profile"],
+                            }
                     except Exception as e:
                         org["research_status"] = "failed"
                         logger.warning("Research exception for %s: %s — continuing batch", org["name"], str(e)[:100])

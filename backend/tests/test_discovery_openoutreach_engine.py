@@ -135,7 +135,7 @@ def test_4_optional_email_enrichment(client: TestClient):
     enriched = enrich_res.json()
     assert enriched["email"] is not None
     assert "@" in enriched["email"]
-    assert enriched["email_status"] == "enriched"
+    assert enriched["email_status"] == "guess"  # pattern-derived candidates are never 'enriched'/'verified'
 
 
 def test_5_full_conversion_to_crm_with_contacts_and_deduplication(client: TestClient):

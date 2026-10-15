@@ -25,7 +25,10 @@ class OrganizationResearchRecord(Base):
     domain = Column(String(500), nullable=True, index=True)
 
     # Research data (JSON blobs)
-    research_data = Column(Text, nullable=True)  # Full research JSON
+    research_data = Column(Text, nullable=True)
+    # Prior observations kept as a JSON list when research is refreshed,
+    # so re-research preserves history instead of overwriting it.
+    history_json = Column(Text, nullable=True)  # Full research JSON
     signals_json = Column(Text, nullable=True)   # ResearchSignal list JSON
     sources_json = Column(Text, nullable=True)   # ResearchSource list JSON
     signals = Column(JSON, nullable=True)        # Structured signals dict

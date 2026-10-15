@@ -121,6 +121,22 @@ def store_research(
     now = datetime.now(timezone.utc)
 
     if existing:
+        # Preserve the previous observation before overwriting it.
+        try:
+            history = json.loads(existing.history_json or "[]")
+        except (json.JSONDecodeError, TypeError):
+            history = []
+        history.append({
+            "observed_at": (existing.research_date.isoformat()
+                            if isinstance(existing.research_date, datetime) else str(existing.research_date)),
+            "research_status": existing.research_status,
+            "signals": existing.signals,
+            "qualification": existing.qualification,
+            "decision_makers": existing.decision_makers,
+            "provider_used": existing.provider_used,
+        })
+        existing.history_json = json.dumps(history[-10:], default=str)  # keep last 10 observations
+
         # Update existing record
         existing.domain = domain or existing.domain
         existing.research_status = status

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 
@@ -17,6 +17,8 @@ class ResearchSignal(BaseModel):
     source_url: Optional[str] = None
     confidence: float = Field(0.0, ge=0.0, le=1.0)
     category: str = "business"  # "business", "technology", "leadership", "financial"
+    # When this observation was made (provenance; ISO string for JSON safety)
+    observed_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class OrganizationResearch(BaseModel):

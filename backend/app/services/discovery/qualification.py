@@ -118,6 +118,15 @@ class ExplainableQualification:
             reason=loc_reason,
         ))
 
+        # Record failed/incomplete extractions from the deterministic website
+        # profiler so "could not look this up" is explicit, never silent.
+        research = org.get("research")
+        site_profile = research.get("site_profile") if isinstance(research, dict) else None
+        if isinstance(site_profile, dict) and site_profile.get("unknown"):
+            missing.append(
+                f"Website data unavailable: {', '.join(str(k) for k in site_profile['unknown'][:4])}"
+            )
+
         total_score = sum(f.score for f in factors)
         total_score = max(0, min(100, total_score))
 
@@ -270,6 +279,13 @@ class ExplainableQualification:
         if isinstance(tech_inits, list) and tech_inits:
             signals.extend(tech_inits[:2])
 
+        # Deterministic website profiler findings (site_profiler). Unknown
+        # values (None) add nothing — a failed fetch is never a false signal.
+        site_profile = research.get("site_profile")
+        if isinstance(site_profile, dict):
+            for tech in (site_profile.get("tech_stack") or [])[:2]:
+                signals.append(f"{tech} (website)")
+
         desc = (org.get("description", "") + " " + org.get("name", "")).lower()
         for term in ["digital", "ai", "technology", "innovation", "smart", "platform"]:
             if term in desc and term not in " ".join(signals):
@@ -286,12 +302,18 @@ class ExplainableQualification:
         if not isinstance(research, dict):
             research = {}
 
+        site_profile = research.get("site_profile")
+        tech_stack = site_profile.get("tech_stack") if isinstance(site_profile, dict) else None
+
         has_leadership = bool(
             research.get("technology_initiatives") or
             research.get("ai_adoption") or
-            research.get("digital_transformation")
+            research.get("digital_transformation") or
+            tech_stack
         )
         if has_leadership:
+            if tech_stack:
+                return 15, f"Technology leadership and initiatives identified (stack: {', '.join(tech_stack[:3])})"
             return 15, "Technology leadership and initiatives identified"
         desc = org.get("description", "").lower()
         if any(t in desc for t in ["technology", "innovation", "digital", "platform"]):

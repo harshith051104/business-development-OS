@@ -905,6 +905,15 @@ def discover_decision_makers(
             db.add(new_c)
             db.flush()
             existing = new_c
+            # Confirmed addresses (publicly observed 'found' or externally
+            # 'verified') teach the domain pattern for later candidates.
+            if new_c.email and (new_c.email_status or "").lower() in ("found", "verified"):
+                from app.services.discovery.email_patterns import learn_pattern
+                learn_pattern(
+                    db, new_c.email, clean_name,
+                    source_url=c_data.get("source_url"),
+                    learned_from=f"discovered_{(new_c.email_status or '').lower()}",
+                )
 
         c_dup, c_existing_id, c_existing_name = check_contact_duplicate(
             db, email=existing.email, full_name=existing.full_name, organization_id=org.organization_id
@@ -960,16 +969,23 @@ def enrich_decision_maker_contact(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Discovered contact not found")
 
     enrichment_prov = discovery_registry.get_enrichment_provider()
+
+    # Learn from confirmed addresses seen at this domain, then generate the
+    # candidate from that pattern (still status 'guess' — never confirmed).
+    from app.services.discovery.email_patterns import get_pattern
+    learned_pattern = get_pattern(db, org.website or "")
+
     result = enrichment_prov.enrich_contact(
         full_name=contact.full_name,
         organization_name=org.name,
         website=org.website,
         job_title=contact.job_title,
+        email_pattern=learned_pattern,
     )
 
     if result.get("email"):
         contact.email = result["email"]
-        contact.email_status = result.get("email_status", "enriched")
+        contact.email_status = result.get("email_status", "guess")
     if result.get("linkedin_url"):
         contact.linkedin_url = result["linkedin_url"]
     if result.get("phone"):

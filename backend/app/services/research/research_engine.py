@@ -72,6 +72,30 @@ def _run_with_timeout(func, timeout: int = 60):
 
 def research_organization(url: str, force_refresh: bool = False) -> Dict[str, Any]:
     """
+    Public research entry point.
+
+    Runs the (LLM-based) deep research and attaches the deterministic,
+    zero-LLM website profile (site_profiler) to every result — including
+    failures — so qualification always gets observable signals when the
+    site is reachable, regardless of ScrapeGraph/Gemini availability.
+    """
+    result = _research_organization_inner(url, force_refresh)
+    if isinstance(result, dict) and "site_profile" not in result:
+        try:
+            from app.services.research.site_profiler import profile_website
+            result["site_profile"] = profile_website(url)
+        except Exception as exc:  # profiler must never break research
+            logger.warning("site_profiler failed for %s: %s", url, str(exc)[:100])
+            result["site_profile"] = {"unknown": True, "errors": [str(exc)[:120]]}
+        # Refresh the cached copy only for statuses the engine itself caches,
+        # so failed research is never served from cache.
+        if result.get("research_status") in ("completed", "blocked"):
+            _set_cache(url, result)
+    return result
+
+
+def _research_organization_inner(url: str, force_refresh: bool = False) -> Dict[str, Any]:
+    """
     Research an organization by scraping its website.
     Returns structured research data with sources and signals.
     """

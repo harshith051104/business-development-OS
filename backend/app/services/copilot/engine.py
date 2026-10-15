@@ -1019,7 +1019,7 @@ class CopilotEngine:
                 return "No decision-makers found. Try enriching contacts via the Discovery page.", "discover_decision_makers", tools_exec, [], ["Research the organization"]
             lines = [f"### Decision Makers Found ({len(contacts)}):"]
             for c in contacts[:8]:
-                verified = "✓ Verified" if c.get("email_status") == "enriched" else f"({c.get('email_status', 'unverified')})"
+                verified = "✓ Verified" if c.get("email_status") in ("verified", "enriched") else f"({c.get('email_status', 'unverified')})"
                 dm = f"[{c.get('decision_maker_score', 0)}]" if c.get("decision_maker_score", 0) >= 80 else ""
                 lines.append(f"- **{c['name']}** — {c['role']} {dm} | Email: {verified} | Source: {c.get('source', 'unknown')}")
                 if c.get("fit_reason"):

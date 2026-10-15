@@ -28,6 +28,9 @@ class Contact(Base):
     location = Column(String(150), nullable=True)
     is_decision_maker = Column(Boolean, default=False, nullable=False)
     is_primary_contact = Column(Boolean, default=False, nullable=False)
+    # Delivery-confidence of the email address: verified | risky | guess |
+    # invalid (or legacy values from discovery import). NULL = unknown.
+    email_status = Column(String(50), nullable=True)
     connection_status = Column(
         String(50),
         default=ContactRelationshipStatus.NOT_CONTACTED.value,
