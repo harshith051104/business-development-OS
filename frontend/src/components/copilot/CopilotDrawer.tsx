@@ -162,6 +162,8 @@ export const CopilotDrawer: React.FC = () => {
         pending_confirmation: res.pending_confirmation,
         confirmation_status: res.pending_confirmation ? 'pending' : undefined,
         suggested_followups: res.suggested_followups,
+        report_id: res.report_id,
+        formats: res.formats,
         created_at: new Date().toISOString(),
       }
 

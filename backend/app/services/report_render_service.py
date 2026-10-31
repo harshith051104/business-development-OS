@@ -1,5 +1,7 @@
 import json
 import logging
+import re
+from xml.sax.saxutils import escape
 
 from docx import Document
 from reportlab.lib.pagesizes import letter
@@ -83,6 +85,13 @@ def _render_template_fallback(data: ReportData) -> str:
     return "\n".join(lines)
 
 
+def _normalize_heading_text(line: str) -> str:
+    stripped = line.strip()
+    stripped = re.sub(r"^#{1,6}\s*", "", stripped)
+    stripped = stripped.strip("*").strip()
+    return stripped.rstrip(":")
+
+
 def _team_table_rows(data: ReportData) -> list:
     rows = [list(TEAM_TABLE_HEADERS)]
     for member in data.team:
@@ -104,11 +113,11 @@ def render_docx(narrative: str, data: ReportData, path: str) -> None:
     document.add_paragraph(f"Period: {data.period_start} to {data.period_end}")
 
     for line in narrative.splitlines():
-        stripped = line.strip().rstrip(":")
-        if not stripped:
+        normalized = _normalize_heading_text(line)
+        if not normalized:
             continue
-        if stripped in NARRATIVE_SECTION_HEADINGS:
-            document.add_heading(stripped, level=1)
+        if normalized in NARRATIVE_SECTION_HEADINGS:
+            document.add_heading(normalized, level=1)
         else:
             document.add_paragraph(line)
 
@@ -133,13 +142,13 @@ def render_pdf(narrative: str, data: ReportData, path: str) -> None:
     ]
 
     for line in narrative.splitlines():
-        stripped = line.strip().rstrip(":")
-        if not stripped:
+        normalized = _normalize_heading_text(line)
+        if not normalized:
             continue
-        if stripped in NARRATIVE_SECTION_HEADINGS:
-            flowables.append(Paragraph(stripped, styles["Heading1"]))
+        if normalized in NARRATIVE_SECTION_HEADINGS:
+            flowables.append(Paragraph(escape(normalized), styles["Heading1"]))
         else:
-            flowables.append(Paragraph(line, styles["Normal"]))
+            flowables.append(Paragraph(escape(line), styles["Normal"]))
 
     flowables.append(Spacer(1, 12))
     flowables.append(Paragraph("Per-Person Metrics", styles["Heading1"]))

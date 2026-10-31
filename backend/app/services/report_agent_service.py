@@ -20,14 +20,14 @@ def resolve_period(period_text: str) -> tuple[datetime, datetime]:
     now = datetime.now(timezone.utc)
     phrase = (period_text or "").strip().lower()
 
-    if phrase == "this week":
+    if "this week" in phrase:
         start_day = now - timedelta(days=now.weekday())
         start = datetime(start_day.year, start_day.month, start_day.day, 0, 0, 0, tzinfo=timezone.utc)
         return start, now
-    elif phrase == "this month":
+    elif "this month" in phrase:
         start = datetime(now.year, now.month, 1, 0, 0, 0, tzinfo=timezone.utc)
         return start, now
-    elif phrase == "last quarter":
+    elif "last quarter" in phrase:
         start = now - timedelta(days=90)
         return start, now
 

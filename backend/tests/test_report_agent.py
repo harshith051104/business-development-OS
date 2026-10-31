@@ -114,6 +114,24 @@ def test_intent_router_routes_executive_report_phrase():
     assert result.pre_resolved_args.get("period") == "Generate an executive report for the last 30 days"
 
 
+def test_intent_router_does_not_hijack_funnel_report_phrase():
+    from app.services.copilot.intent_router import route
+    result = route("Generate a funnel report")
+    assert result.tool_name == "get_funnel_reports"
+
+
+def test_intent_router_does_not_hijack_campaign_report_phrase():
+    from app.services.copilot.intent_router import route
+    result = route("Generate a campaign report")
+    assert result.tool_name == "get_campaign_roi"
+
+
+def test_resolve_period_parses_this_week_embedded_in_longer_message():
+    from app.services.report_agent_service import resolve_period
+    start, end = resolve_period("Generate an executive report for this week")
+    assert (end - start).days < 30
+
+
 def test_generate_executive_report_quiet_period_still_generates(db_session):
     from app.services.copilot.tools import generate_executive_report
     from app.models.user import User, UserRole
@@ -172,6 +190,49 @@ def test_download_report_404_for_missing_file_on_disk(client, db_session):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert res.status_code == 404
+
+
+def test_admin_user_create_accepts_dev_role():
+    from app.schemas.admin import AdminUserCreate
+    payload = AdminUserCreate(name="Dev User", email="newdev@test.local", password="password123", role="DEV")
+    assert payload.role == "DEV"
+
+
+def test_admin_user_role_update_accepts_dev_role():
+    from app.schemas.admin import AdminUserRoleUpdate
+    payload = AdminUserRoleUpdate(role="DEV")
+    assert payload.role == "DEV"
+
+
+def test_render_pdf_does_not_crash_on_markdown_narrative(tmp_path):
+    from app.services import report_render_service
+    from app.services.report_agent_service import ReportData
+    data = ReportData(period_start=None, period_end=None, team=[], task_stats={}, company_totals={})
+    narrative = "## Overview\n**Bold claim** with <unbalanced tag and an & ampersand.\n"
+    path = str(tmp_path / "report.pdf")
+    report_render_service.render_pdf(narrative, data, path)
+    import os
+    assert os.path.exists(path)
+    assert os.path.getsize(path) > 0
+
+
+def test_render_pdf_matches_markdown_style_headings(tmp_path, monkeypatch):
+    from app.services import report_render_service
+    from app.services.report_agent_service import ReportData
+    captured = []
+    orig_paragraph = report_render_service.Paragraph
+
+    def spy_paragraph(text, style):
+        captured.append((text, style))
+        return orig_paragraph(text, style)
+
+    monkeypatch.setattr(report_render_service, "Paragraph", spy_paragraph)
+    data = ReportData(period_start=None, period_end=None, team=[], task_stats={}, company_totals={})
+    narrative = "## Overview\nEverything is fine.\n"
+    path = str(tmp_path / "report.pdf")
+    report_render_service.render_pdf(narrative, data, path)
+    heading_texts = [text for text, style in captured if style.name == "Heading1"]
+    assert "Overview" in heading_texts
 
 
 def test_download_report_success_returns_correct_content_type(client, db_session, monkeypatch):
