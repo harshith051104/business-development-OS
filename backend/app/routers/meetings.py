@@ -28,6 +28,31 @@ from app.schemas.meeting import (
 router = APIRouter(prefix="/api/business-development", tags=["Meetings"])
 
 
+def _sync_meeting_calendar(db: Session, meeting: Meeting) -> None:
+    """Best-effort create/update the Google Calendar event for a meeting. Never raises."""
+    try:
+        from app.services.google_calendar_service import sync_meeting
+        contact_ids = meeting.contact_ids or ([meeting.primary_contact_id] if meeting.primary_contact_id else [])
+        attendee_emails = [c.email for c in db.query(Contact).filter(Contact.id.in_(contact_ids)).all() if c.email]
+        event_id = sync_meeting(meeting, attendee_emails=attendee_emails)
+        if event_id and event_id != meeting.google_event_id:
+            meeting.google_event_id = event_id
+            db.commit()
+    except Exception:
+        pass
+
+
+def _delete_meeting_calendar_event(db: Session, meeting: Meeting) -> None:
+    """Best-effort delete the Google Calendar event for a cancelled meeting. Never raises."""
+    try:
+        from app.services.google_calendar_service import delete_meeting_event
+        if meeting.google_event_id and delete_meeting_event(meeting.google_event_id):
+            meeting.google_event_id = None
+            db.commit()
+    except Exception:
+        pass
+
+
 def _ensure_utc(dt: Optional[datetime]) -> Optional[datetime]:
     if dt is None:
         return None
@@ -372,6 +397,8 @@ def create_meeting(
     db.commit()
     db.refresh(new_meeting)
 
+    _sync_meeting_calendar(db, new_meeting)
+
     return _format_meeting_detail_out(new_meeting, db)
 
 
@@ -402,6 +429,8 @@ def update_meeting(
     meeting.updated_at = now
     db.commit()
     db.refresh(meeting)
+
+    _sync_meeting_calendar(db, meeting)
 
     return _format_meeting_detail_out(meeting, db)
 
@@ -528,6 +557,8 @@ def cancel_meeting(
     db.commit()
     db.refresh(meeting)
 
+    _delete_meeting_calendar_event(db, meeting)
+
     return _format_meeting_detail_out(meeting, db)
 
 
@@ -569,6 +600,8 @@ def reschedule_meeting(
     db.add(act)
     db.commit()
     db.refresh(meeting)
+
+    _sync_meeting_calendar(db, meeting)
 
     return _format_meeting_detail_out(meeting, db)
 

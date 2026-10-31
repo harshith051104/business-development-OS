@@ -129,7 +129,9 @@ export interface AttentionRequired {
   overdue_followups: Array<{
     id: number
     title: string
+    organization_id?: number | null
     organization_name?: string | null
+    contact_id?: number | null
     due_at: string
     priority: string
   }>

@@ -189,6 +189,15 @@ def _research_organization_inner(url: str, force_refresh: bool = False) -> Dict[
         stagehand_result = _try_stagehand_fallback(url)
         if stagehand_result:
             return stagehand_result
+        # Direct HTTP text fallback (works even if LLM quota is exhausted)
+        raw_text = _fetch_with_httpx(url)
+        if raw_text:
+            return {
+                "research_status": "success",
+                "summary": raw_text[:500],
+                "company_overview": raw_text[:1200],
+                "website": url,
+            }
         return {"research_status": "failed", "error": str(e)}
 
 
@@ -198,7 +207,7 @@ def _build_config() -> Optional[dict]:
         return None
     return {
         "llm": {
-            "model": "google_genai/gemini-3.8-flash",
+            "model": "google_genai/gemini-2.0-flash",
             "api_key": api_key,
             "model_tokens": 100000,
             "temperature": 0,

@@ -27,7 +27,21 @@ from app.models.task import BDTask, TaskPriority, TaskStatus
 from app.models.user import User
 from app.services import notification_service
 
-EDITABLE_TEXT_FIELDS = {"tracker_notes", "focus", "next_followup_at"}
+EDITABLE_TEXT_FIELDS = {
+    "status",
+    "tracker_notes",
+    "notes",
+    "focus",
+    "next_followup_at",
+    "name",
+    "email",
+    "linkedin",
+    "company",
+    "assigned_user_id",
+    "email_sent",
+    "email_opened",
+    "email_replied",
+}
 
 # Checkbox fields that trigger an auto-created follow-up task, keyed to a (title, description, delay_days) template.
 AUTO_TASK_RULES = {
@@ -76,7 +90,7 @@ def update_checkboxes(
                     checked_milestones.append(field)
                 if new_value and field in AUTO_TASK_RULES:
                     auto_task_fields.append(field)
-        elif field == "tracker_notes":
+        elif field in ("tracker_notes", "notes"):
             if new_value and new_value != cc.tracker_notes:
                 log_timeline_event(
                     db,
@@ -88,6 +102,39 @@ def update_checkboxes(
                     _flush=False,
                 )
             cc.tracker_notes = new_value
+        elif field == "name":
+            if cc.contact:
+                parts = str(new_value or "").strip().split(" ", 1)
+                cc.contact.first_name = parts[0]
+                cc.contact.last_name = parts[1] if len(parts) > 1 else ""
+        elif field == "email":
+            if cc.contact:
+                cc.contact.email = str(new_value or "").strip()
+        elif field == "linkedin":
+            if cc.contact:
+                cc.contact.linkedin_url = str(new_value or "").strip()
+        elif field == "company":
+            if cc.organization:
+                cc.organization.name = str(new_value or "").strip()
+        elif field == "email_sent":
+            cc.status = CampaignContactStatus.SENT.value if new_value else CampaignContactStatus.PENDING.value
+        elif field == "email_opened":
+            cc.opened_at = datetime.now(timezone.utc) if new_value else None
+        elif field == "email_replied":
+            cc.replied_at = datetime.now(timezone.utc) if new_value else None
+        elif field == "status":
+            old_status = cc.status
+            cc.status = str(new_value)
+            if new_value != old_status:
+                log_timeline_event(
+                    db,
+                    campaign_contact_id=cc.id,
+                    user_id=user_id,
+                    event_type="status_change",
+                    description=f"Status changed from {old_status} to {new_value}",
+                    metadata={"old_status": old_status, "new_status": new_value},
+                    _flush=False,
+                )
         else:
             setattr(cc, field, new_value)
 

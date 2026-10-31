@@ -33,7 +33,11 @@ export const gmailService = {
       subject: payload.subject,
       body_html: payload.body_html || payload.body || '',
       gmail_account_id: payload.gmail_account_id,
-    }).catch((err: any) => ({ success: true, message_id: 'msg_simulated', thread_id: 'th_simulated', error: err.message })),
+    }).catch((err: any) => ({
+      // Surface the safe block/error message from the API instead of faking success.
+      success: false,
+      error: err?.message || 'Failed to send email via Gmail.',
+    })),
 
   syncReplies: () =>
     api.post<{ success: boolean; synced_active_threads: number; replies_detected: number; bounces_detected: number; detected: any[]; bounces: any[] }>('/api/gmail/sync-replies'),

@@ -7,7 +7,6 @@ import SummaryCard from '../components/dashboard/SummaryCard'
 import ConnectionPipelineView from '../components/dashboard/ConnectionPipelineView'
 import TodayActivities from '../components/dashboard/TodayActivities'
 import UpcomingMeetings from '../components/dashboard/UpcomingMeetings'
-import FollowUpsSection from '../components/dashboard/FollowUpsSection'
 import RecentCommunicationsSection from '../components/dashboard/RecentCommunicationsSection'
 import RecentActivityFeed from '../components/dashboard/RecentActivityFeed'
 import Navbar from '../components/layout/Navbar'
@@ -33,7 +32,6 @@ import {
   BarChart3,
   GitFork,
   MessageSquare,
-  Clock,
   Activity,
   CheckCircle2,
   Users,
@@ -46,7 +44,7 @@ export const BusinessDevelopmentPortal: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
 
   // Workspace tab states for compact navigation
-  const [leftTab, setLeftTab] = useState<'meetings' | 'followups' | 'today'>('meetings')
+  const [leftTab, setLeftTab] = useState<'meetings' | 'today'>('meetings')
   const [rightTab, setRightTab] = useState<'priorities' | 'activity' | 'communications'>('priorities')
 
   const fetchDashboard = useCallback(async () => {
@@ -79,15 +77,6 @@ export const BusinessDevelopmentPortal: React.FC = () => {
     data.today.activities.length === 0 &&
     data.upcoming_meetings.length === 0 &&
     data.recent_activity.length === 0
-
-  const totalFollowups =
-    data?.followups
-      ? (data.followups.overdue?.length || 0) +
-        (data.followups.today?.length || 0) +
-        (data.followups.upcoming?.length || 0)
-      : 0
-
-  const overdueCount = data?.followups?.overdue?.length || 0
 
   return (
     <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-12 md:pl-64">
@@ -297,22 +286,6 @@ export const BusinessDevelopmentPortal: React.FC = () => {
                       </button>
 
                       <button
-                        onClick={() => setLeftTab('followups')}
-                        className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                          leftTab === 'followups'
-                            ? 'bg-rose-600 text-white shadow-sm shadow-rose-600/30'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>Follow-ups</span>
-                        <span className="ml-1 text-[10px] opacity-80">({totalFollowups})</span>
-                        {overdueCount > 0 && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                        )}
-                      </button>
-
-                      <button
                         onClick={() => setLeftTab('today')}
                         className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                           leftTab === 'today'
@@ -330,8 +303,6 @@ export const BusinessDevelopmentPortal: React.FC = () => {
                       to={
                         leftTab === 'meetings'
                           ? '/business-development/meetings'
-                          : leftTab === 'followups'
-                          ? '/business-development/followups'
                           : '/business-development/connections'
                       }
                       className="text-[11px] text-slate-400 hover:text-violet-300 flex items-center space-x-0.5 transition"
@@ -345,9 +316,6 @@ export const BusinessDevelopmentPortal: React.FC = () => {
                   <div className="max-h-[340px] overflow-y-auto pr-1">
                     {leftTab === 'meetings' && (
                       <UpcomingMeetings meetings={data!.upcoming_meetings} hideContainer={true} />
-                    )}
-                    {leftTab === 'followups' && (
-                      <FollowUpsSection followups={data!.followups} hideContainer={true} />
                     )}
                     {leftTab === 'today' && (
                       <TodayActivities activities={data!.today.activities} hideContainer={true} />

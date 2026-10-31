@@ -154,7 +154,7 @@ def save_search_results(
 # CRM sync — live Organizations/Contacts tabs, upserted by ID.
 # Distinct from the raw-search-results "ELLY Discovery Leads" tab above:
 # this mirrors the actual CRM state (any creation path — manual, AI
-# discovery, funding/investor discovery, lead-list import).
+# discovery, lead-list import).
 # ─────────────────────────────────────────────────────────────
 
 ORG_SHEET_NAME = "ELLY Organizations"
@@ -311,6 +311,54 @@ def push_tracker_row(cc: Any) -> bool:
         cc.updated_at.isoformat() if cc.updated_at else "",
     ]
     return _upsert_row_by_id(worksheet, cc.id, row)
+
+
+def push_all_tracker_rows(db: Any) -> Dict[str, Any]:
+    """Pushes all CampaignContact rows to the Google Sheet tab in a fast batch write."""
+    from app.models.campaign import CampaignContact, LEAD_TRACKER_CHECKBOX_FIELDS
+    client = _get_client()
+    if not client:
+        return {"success": False, "reason": "not_configured", "pushed": 0}
+    worksheet = _get_or_create_named_sheet(client, TRACKER_SHEET_NAME, TRACKER_HEADERS)
+    if not worksheet:
+        return {"success": False, "reason": "sheet_unavailable", "pushed": 0}
+
+    contacts = db.query(CampaignContact).all()
+    if not contacts:
+        return {"success": True, "pushed": 0, "total": 0}
+
+    all_rows = []
+    for cc in contacts:
+        row = [
+            cc.id,
+            cc.campaign.name if cc.campaign else "",
+            cc.organization.name if cc.organization else "",
+            cc.contact.full_name if cc.contact else "",
+            cc.status,
+            cc.focus or "",
+            cc.tracker_notes or "",
+            cc.assigned_user_id or "",
+            cc.next_followup_at.isoformat() if cc.next_followup_at else "",
+        ] + [
+            "Yes" if getattr(cc, f) else "No" for f in LEAD_TRACKER_CHECKBOX_FIELDS
+        ] + [
+            cc.updated_at.isoformat() if cc.updated_at else "",
+        ]
+        all_rows.append([("" if v is None else v) for v in row])
+
+    try:
+        last_col = chr(ord("A") + len(TRACKER_HEADERS) - 1)
+        end_row = len(all_rows) + 1
+        worksheet.update(range_name=f"A2:{last_col}{end_row}", values=all_rows, value_input_option="USER_ENTERED")
+        return {"success": True, "pushed": len(all_rows), "total": len(contacts)}
+    except Exception as e:
+        logger.error(f"Google Sheets batch push failed, falling back to row-by-row: {e}")
+        pushed = 0
+        for cc in contacts:
+            if push_tracker_row(cc):
+                pushed += 1
+        return {"success": True, "pushed": pushed, "total": len(contacts)}
+
 
 
 def pull_updates(db: Any) -> Dict[str, Any]:

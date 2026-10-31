@@ -1,12 +1,15 @@
 from typing import Optional, Dict
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.auth.deps import require_business_development
 from app.core.database import get_db
 from app.models.user import User
 from app.models.lead_import import LeadImportBatch
+from app.models.organization import Organization
+from app.models.contact import Contact
+from app.models.campaign import Campaign
 from app.services import lead_import_service
 
 router = APIRouter(
@@ -21,6 +24,7 @@ MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10MB
 class ImportConfirmRequest(BaseModel):
     upload_id: str
     column_mapping: Dict[str, Optional[str]]
+    campaign_id: Optional[int] = None
 
 
 @router.post("/upload")
@@ -68,12 +72,18 @@ def confirm_lead_import(
     if not payload.column_mapping.get("org_name"):
         raise HTTPException(status_code=400, detail="You must map a column to 'org_name' (organization name) to import.")
 
+    if payload.campaign_id is not None:
+        campaign = db.query(Campaign).filter(Campaign.id == payload.campaign_id).first()
+        if not campaign:
+            raise HTTPException(status_code=400, detail=f"Campaign {payload.campaign_id} not found.")
+
     batch = lead_import_service.import_leads(
         db=db,
         rows=staged["rows"],
         column_mapping=payload.column_mapping,
         user_id=current_user.id,
         filename=staged["filename"],
+        campaign_id=payload.campaign_id,
     )
     lead_import_service.discard_staged_upload(payload.upload_id)
 
@@ -86,6 +96,8 @@ def confirm_lead_import(
         "contacts_created": batch.contacts_created,
         "contacts_matched": batch.contacts_matched,
         "skipped_count": batch.skipped_count,
+        "contacts_enrolled": getattr(batch, "contacts_enrolled", 0),
+        "campaign_id": payload.campaign_id,
         "errors": batch.errors or [],
     }
 
@@ -112,3 +124,59 @@ def list_lead_imports(
         }
         for b in batches
     ]
+
+
+@router.get("/imports/{batch_id}/records")
+def get_lead_import_records(
+    batch_id: int,
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Detail view for one past import — every Organization/Contact row it created."""
+    batch = db.query(LeadImportBatch).filter(LeadImportBatch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Import batch not found.")
+
+    orgs = (
+        db.query(Organization)
+        .filter(Organization.import_batch_id == batch_id, Organization.is_deleted.is_(False))
+        .order_by(Organization.name)
+        .all()
+    )
+    contacts = (
+        db.query(Contact)
+        .options(joinedload(Contact.organization))
+        .filter(Contact.import_batch_id == batch_id, Contact.is_deleted.is_(False))
+        .order_by(Contact.first_name)
+        .all()
+    )
+
+    return {
+        "batch_id": batch.id,
+        "filename": batch.filename,
+        "organizations": [
+            {
+                "id": o.id,
+                "name": o.name,
+                "website": o.website,
+                "city": o.city,
+                "state": o.state,
+                "country": o.country,
+                "status": o.status,
+            }
+            for o in orgs
+        ],
+        "contacts": [
+            {
+                "id": c.id,
+                "full_name": c.full_name,
+                "email": c.email,
+                "phone": c.phone,
+                "designation": c.designation,
+                "location": c.location,
+                "organization_id": c.organization_id,
+                "organization_name": c.organization.name if c.organization else None,
+            }
+            for c in contacts
+        ],
+    }

@@ -108,6 +108,9 @@ class ContactOut(BaseModel):
     phone: Optional[str] = None
     linkedin_url: Optional[str] = None
     location: Optional[str] = None
+    organization_city: Optional[str] = None
+    organization_state: Optional[str] = None
+    organization_country: Optional[str] = None
     is_decision_maker: bool
     is_primary_contact: bool
     connection_status: str

@@ -10,6 +10,7 @@ class TaskBase(BaseModel):
     priority: Optional[TaskPriority] = TaskPriority.MEDIUM
     status: Optional[TaskStatus] = TaskStatus.TODO
     due_date: Optional[datetime] = None
+    reminder_at: Optional[datetime] = None
     entity_type: Optional[str] = None
     entity_id: Optional[int] = None
     owner_id: Optional[int] = None
@@ -25,6 +26,7 @@ class TaskUpdate(BaseModel):
     priority: Optional[TaskPriority] = None
     status: Optional[TaskStatus] = None
     due_date: Optional[datetime] = None
+    reminder_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     entity_type: Optional[str] = None
     entity_id: Optional[int] = None

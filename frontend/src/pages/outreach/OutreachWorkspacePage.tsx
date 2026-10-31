@@ -49,7 +49,6 @@ const CHANNELS: { type: OutreachChannelType; label: string; icon: any }[] = [
   { type: 'Phone', label: 'Phone', icon: Phone },
   { type: 'LinkedIn', label: 'LinkedIn', icon: Globe },
   { type: 'WhatsApp', label: 'WhatsApp', icon: MessageSquare },
-  { type: 'Other', label: 'Other', icon: Send },
 ]
 
 export const OutreachWorkspacePage: React.FC = () => {

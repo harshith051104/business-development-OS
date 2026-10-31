@@ -35,4 +35,9 @@ export const copilotService = {
       current_page: currentPage || '',
     })
   },
+
+  getUserManual: async (section?: string): Promise<{ full_manual: string; sections: Array<{ key: string; title: string; content: string }> }> => {
+    return api.get('/api/business-development/copilot/user-manual', section ? { section } : undefined)
+  },
 }
+

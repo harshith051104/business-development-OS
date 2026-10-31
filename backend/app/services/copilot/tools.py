@@ -1,3 +1,4 @@
+import json
 import re
 import logging
 from datetime import datetime, timezone, timedelta
@@ -85,10 +86,10 @@ def get_dashboard_summary(db: Session, user: User) -> Dict[str, Any]:
     
     all_meets = db.query(Meeting).filter(Meeting.is_deleted == False).all()
     today_meets = len([m for m in all_meets if m.scheduled_at and today_start <= _to_utc(m.scheduled_at) < today_end])
-    
+
     all_fu = db.query(FollowUp).filter(FollowUp.is_deleted == False, FollowUp.status == FollowUpStatus.PENDING.value).all()
     overdue_fu = len([f for f in all_fu if f.due_at and _to_utc(f.due_at) < now])
-    
+
     active_partnerships = db.query(Partnership).filter(Partnership.is_deleted == False, Partnership.status == PartnershipStatus.ACTIVE.value).count()
 
     return {
@@ -120,7 +121,7 @@ def get_attention_items(db: Session, user: User) -> List[Dict[str, Any]]:
             "description": f"Due on {f.due_at.strftime('%b %d') if f.due_at else 'N/A'} for {f.organization.name if f.organization else 'General'}",
             "entity_type": "followup",
             "entity_id": f.id,
-            "url": f"/business-development/followups/{f.id}"
+            "url": f"/business-development/organizations/{f.organization_id}" if f.organization_id else (f"/business-development/contacts/{f.contact_id}" if f.contact_id else "/business-development")
         })
 
     # 2. Today's & Tomorrow's meetings
@@ -923,6 +924,7 @@ def prepare_outreach_draft_content(
         ).order_by(desc(OrganizationResearchRecord.created_at)).first()
         if research_rec and research_rec.research_data:
             rd = research_rec.research_data
+            rd = json.loads(rd) if isinstance(rd, str) else rd  # Text column stores JSON
             if rd.get("what_they_do"):
                 research_context += f"They specialize in {rd['what_they_do']}. "
             if rd.get("technology_initiatives"):
@@ -943,6 +945,7 @@ def prepare_outreach_draft_content(
         ).order_by(desc(OrganizationResearchRecord.created_at)).first()
         if research_rec and research_rec.research_data:
             rd = research_rec.research_data
+            rd = json.loads(rd) if isinstance(rd, str) else rd  # Text column stores JSON
             if rd.get("what_they_do"):
                 research_context += f"They specialize in {rd['what_they_do']}. "
             if rd.get("technology_initiatives"):
@@ -2185,7 +2188,7 @@ def auto_generate_followups(
     )
     if organization_id:
         overdue_q = overdue_q.filter(FollowUp.organization_id == organization_id)
-    
+
     for f in overdue_q.limit(limit).all():
         org = db.query(Organization).filter(Organization.id == f.organization_id).first()
         items.append({
@@ -2444,5 +2447,4 @@ def send_funding_outreach(
         campaign_name=campaign_name,
     )
     return result
-
 

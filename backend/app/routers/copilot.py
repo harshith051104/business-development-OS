@@ -145,3 +145,28 @@ def get_copilot_suggestions(
         suggestions.insert(0, CopilotSuggestion(category="Signal", prompt="What's the top buying signal right now?", description=sig.description))
 
     return suggestions[:6]
+
+
+@router.get("/user-manual")
+def get_user_manual(
+    section: Optional[str] = None,
+    current_user: User = Depends(require_business_development)
+):
+    """
+    Returns the comprehensive platform user manual and feature documentation.
+    """
+    from app.services.copilot.user_manual import USER_MANUAL_SECTIONS, get_full_user_manual
+    if section and section in USER_MANUAL_SECTIONS:
+        return {
+            "section": section,
+            "title": USER_MANUAL_SECTIONS[section]["title"],
+            "content": USER_MANUAL_SECTIONS[section]["content"]
+        }
+    return {
+        "full_manual": get_full_user_manual(),
+        "sections": [
+            {"key": k, "title": v["title"], "content": v["content"]}
+            for k, v in USER_MANUAL_SECTIONS.items()
+        ]
+    }
+

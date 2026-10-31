@@ -39,6 +39,7 @@ class Meeting(Base):
     location = Column(String(255), nullable=True)
     meeting_url = Column(String(500), nullable=True)
     status = Column(String(50), nullable=False, default=MeetingStatus.SCHEDULED.value, index=True)
+    google_event_id = Column(String(255), nullable=True)
 
     agenda = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)  # Discussion notes

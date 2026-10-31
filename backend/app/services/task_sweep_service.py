@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from app.core.database import SessionLocal
 from app.models.task import BDTask, TaskStatus
 from app.models.notification import Notification
+from app.models.setting import SystemSetting
 from app.services import notification_service
 
 logger = logging.getLogger("elly.task_sweep")
@@ -20,6 +21,10 @@ OPEN_STATUSES = {TaskStatus.TODO.value, TaskStatus.IN_PROGRESS.value}
 def sweep_due_tasks():
     db = SessionLocal()
     try:
+        setting = db.query(SystemSetting).filter(SystemSetting.key == "task_reminders_enabled").first()
+        if setting is not None and setting.value_json is False:
+            return
+
         now = datetime.now(timezone.utc)
         dedupe_cutoff = now - timedelta(hours=20)
 

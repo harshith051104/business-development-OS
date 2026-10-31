@@ -31,6 +31,12 @@ MEETING_LINK_PATTERN = re.compile(
     re.I,
 )
 
+RESCHEDULE_INTENT_PATTERN = re.compile(
+    r"\b(?:reschedule|resched|push (?:it|that|the meeting)?|move (?:it|that|the meeting)?|"
+    r"postpone|can'?t make it|won'?t be able to make|different time|another time|change the time)\b",
+    re.I,
+)
+
 
 def detect_and_schedule_meeting_from_reply(
     db: Session,
@@ -58,6 +64,68 @@ def detect_and_schedule_meeting_from_reply(
 
     # Extract or estimate scheduled datetime
     scheduled_at = extract_proposed_datetime(text_to_scan)
+
+    # If the reply reads as a reschedule request and an existing upcoming
+    # meeting is on file for this org, update that meeting instead of
+    # creating a duplicate.
+    if RESCHEDULE_INTENT_PATTERN.search(text_to_scan):
+        existing_meeting = (
+            db.query(Meeting)
+            .filter(
+                Meeting.organization_id == organization_id,
+                Meeting.is_deleted == False,
+                Meeting.status.in_([MeetingStatus.SCHEDULED.value, MeetingStatus.RESCHEDULED.value]),
+                Meeting.scheduled_at >= datetime.now(timezone.utc),
+            )
+            .order_by(Meeting.scheduled_at.desc())
+            .first()
+        )
+        if existing_meeting:
+            old_time = existing_meeting.scheduled_at.strftime("%Y-%m-%d %H:%M UTC")
+            existing_meeting.scheduled_at = scheduled_at
+            existing_meeting.status = MeetingStatus.RESCHEDULED.value
+            if meeting_url:
+                existing_meeting.meeting_url = meeting_url
+            if platform:
+                existing_meeting.location = platform
+
+            act = ContactActivity(
+                organization_id=organization_id,
+                contact_id=contact_id,
+                activity_type="meeting_rescheduled",
+                description=f"AI Agent rescheduled meeting from {old_time} to {scheduled_at.strftime('%Y-%m-%d %H:%M UTC')} per reply.",
+                performed_by="ELLY Inbound Agent",
+            )
+            db.add(act)
+
+            audit = AuditLog(
+                user_id=user_id or 1,
+                user_email="agent@elly.local",
+                action="MEETING_AUTO_RESCHEDULED",
+                resource_type="Meeting",
+                metadata_json=json.dumps({
+                    "meeting_id": existing_meeting.id,
+                    "contact_id": contact_id,
+                    "organization_id": organization_id,
+                    "scheduled_at": scheduled_at.isoformat(),
+                }),
+            )
+            db.add(audit)
+            db.commit()
+            db.refresh(existing_meeting)
+
+            try:
+                from app.services.google_calendar_service import sync_meeting
+                emails = [contact.email] if contact and contact.email else []
+                event_id = sync_meeting(existing_meeting, attendee_emails=emails)
+                if event_id and event_id != existing_meeting.google_event_id:
+                    existing_meeting.google_event_id = event_id
+                    db.commit()
+            except Exception:
+                pass
+
+            logger.info("Auto-rescheduled meeting ID %d to %s", existing_meeting.id, scheduled_at)
+            return existing_meeting
 
     # Build Meeting record
     meeting_title = f"Commercial Meeting with {contact_name} ({org_name})"
@@ -110,6 +178,16 @@ def detect_and_schedule_meeting_from_reply(
     db.add(audit)
     db.commit()
     db.refresh(meeting)
+
+    try:
+        from app.services.google_calendar_service import sync_meeting as sync_meeting_to_google_calendar
+        emails = [contact.email] if contact and contact.email else []
+        event_id = sync_meeting_to_google_calendar(meeting, attendee_emails=emails)
+        if event_id:
+            meeting.google_event_id = event_id
+            db.commit()
+    except Exception:
+        pass
 
     logger.info("Auto-scheduled meeting ID %d with %s for %s", meeting.id, contact_name, scheduled_at)
     return meeting

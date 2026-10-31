@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status, Request
+from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -16,6 +17,14 @@ router = APIRouter(
     prefix="/api/gmail",
     tags=["Gmail Integration"],
 )
+
+
+class GmailSendRequest(BaseModel):
+    to: str
+    subject: str
+    body: Optional[str] = None
+    body_html: Optional[str] = None
+    gmail_account_id: Optional[str] = None
 
 
 @router.get("/auth")
@@ -46,6 +55,32 @@ def list_gmail_accounts(
 ):
     accounts = db.query(GmailAccount).filter(GmailAccount.user_id == current_user.id).all()
     return accounts
+
+
+@router.post("/send")
+def send_email(
+    payload: GmailSendRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    """
+    Direct (ad-hoc) Gmail send from the outreach workspace.
+    Runs the same deterministic pre-send gate as campaign sends — opt-out,
+    bounce/non-deliverable status, unresolved placeholders, recipient match —
+    via GmailService.send_email; there is no second gate implementation here.
+    Blocked sends surface as 422/403 with a safe reason (see SecurityHeadersMiddleware).
+    Human approval remains campaign-scoped; direct sends require an
+    authenticated BD user, same as every other /api/gmail route.
+    """
+    body_html = payload.body_html or payload.body or ""
+    return GmailService.send_email(
+        db=db,
+        gmail_account_id=payload.gmail_account_id,
+        to_email=payload.to,
+        subject=payload.subject,
+        body_html=body_html,
+        user_id=current_user.id,
+    )
 
 
 @router.get("/deliverability")

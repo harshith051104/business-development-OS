@@ -16,6 +16,8 @@ Covers:
       * human-approval flow preserved (campaign path)
       * campaign path (CampaignService.send_step_email via API)
       * direct Gmail path (GmailService.send_email)
+      * direct-send API route (POST /api/gmail/send) — same gate,
+        safe 422 block reasons, send operation never reached when blocked
 """
 import pytest
 from datetime import datetime, timezone
@@ -291,8 +293,8 @@ class TestPreSendGate:
 # ─────────────────────────────────────────────────────────────
 
 class TestCampaignSendPathGate:
-    """Blocked sends surface as HTTP 500 (existing middleware contract — same
-    channel the approval gate already uses); nothing is sent or logged."""
+    """Blocked sends surface as 422 (gate) / 403 (approval required) with a safe
+    user-readable reason; nothing is sent or logged."""
 
     @staticmethod
     def _outgoing_count(db, contact_id):
@@ -310,7 +312,10 @@ class TestCampaignSendPathGate:
             json={"subject": "Hello", "body_html": "<p>Hi Grace</p>"},
             headers=auth_headers,
         )
-        assert resp.status_code == 500  # approval error -> same middleware channel
+        assert resp.status_code == 403  # approval required -> typed policy failure
+        body = resp.json()
+        assert body["code"] == "approval_required"
+        assert "approved" in body["detail"].lower()
         assert ctx["cc"].status == "Ready_For_Review"
         assert self._outgoing_count(db_session, ctx["contact"].id) == 0
 
@@ -343,7 +348,10 @@ class TestCampaignSendPathGate:
             json={"subject": "Hi {{first_name}}", "body_html": "<p>Intro</p>"},
             headers=auth_headers,
         )
-        assert resp.status_code == 500
+        assert resp.status_code == 422
+        body = resp.json()
+        assert body["code"] == "send_blocked"
+        assert "unresolved_placeholders" in body["reasons"]
         assert self._outgoing_count(db_session, ctx["contact"].id) == 0
 
     def test_do_not_contact_blocked_on_campaign_path(
@@ -358,7 +366,11 @@ class TestCampaignSendPathGate:
             json={"subject": "Hello", "body_html": "<p>Hi Grace</p>"},
             headers=auth_headers,
         )
-        assert resp.status_code == 500
+        assert resp.status_code == 422
+        body = resp.json()
+        assert body["code"] == "send_blocked"
+        assert "do_not_contact" in body["reasons"]
+        assert "opted out" in body["detail"]
         assert self._outgoing_count(db_session, ctx["contact"].id) == 0
 
     def test_non_deliverable_status_blocked_on_campaign_path(
@@ -373,7 +385,12 @@ class TestCampaignSendPathGate:
             json={"subject": "Hello", "body_html": "<p>Hi Grace</p>"},
             headers=auth_headers,
         )
-        assert resp.status_code == 500
+        assert resp.status_code == 422
+        body = resp.json()
+        assert body["code"] == "send_blocked"
+        assert "non_deliverable_email_status" in body["reasons"]
+        # Safe message: no CRM data (contact email) leaks to the client
+        assert ctx["contact"].email not in resp.text
         assert self._outgoing_count(db_session, ctx["contact"].id) == 0
 
 
@@ -426,3 +443,180 @@ class TestDirectGmailPathGate:
                 db_session, None, "bad address", "Hello", "<p>{{x}}</p>",
                 campaign_contact_id=ctx["cc"].id,
             )
+
+
+# ─────────────────────────────────────────────────────────────
+# F. Direct-send API route (POST /api/gmail/send) — same gate
+# ─────────────────────────────────────────────────────────────
+
+DIRECT_SEND_URL = "/api/gmail/send"
+
+
+class TestDirectSendRoute:
+    """POST /api/gmail/send (the outreach-workspace direct send) goes through
+    GmailService.send_email, so the SAME gate applies. Blocked sends return a
+    safe 422 with a stable code + user-readable reason and never reach the
+    Gmail send operation."""
+
+    @pytest.fixture
+    def route_contact(self, db_session: Session):
+        """Fresh CRM contact with a UNIQUE email. The direct path resolves the
+        contact by email; duplicate emails from earlier fixture instances in the
+        same session would mask the intended contact (gate would look up an
+        older, clean copy)."""
+        from uuid import uuid4
+        org = Organization(name="Route Gate Org", organization_type="SMB",
+                           status=ConnectionStatus.NEW.value)
+        db_session.add(org)
+        db_session.flush()
+        contact = Contact(
+            organization_id=org.id,
+            first_name="Riley",
+            last_name="Routecheck",
+            email=f"riley.{uuid4().hex[:8]}@route-gate-co.com",
+        )
+        db_session.add(contact)
+        db_session.commit()
+        return contact
+
+    @staticmethod
+    def _send_audit_count(db: Session) -> int:
+        from app.models.audit import AuditLog
+        return db.query(AuditLog).filter(
+            AuditLog.action.in_(["GMAIL_EMAIL_SENT", "GMAIL_EMAIL_SENT_SIMULATED"])
+        ).count()
+
+    @pytest.fixture
+    def no_send_reach(self, monkeypatch):
+        """Fail loudly if any request reaches Gmail message construction —
+        the gate must raise before the MIME message is ever built."""
+        def _boom(*args, **kwargs):
+            raise AssertionError("send operation was reached for a blocked request")
+        monkeypatch.setattr("app.services.gmail_service.MIMEMultipart", _boom)
+
+    def test_route_requires_auth(self, client: TestClient):
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": "someone@co.com", "subject": "Hi", "body": "Hello"},
+        )
+        assert resp.status_code in (401, 403)
+
+    def test_clean_direct_send_route_succeeds(
+        self, client: TestClient, auth_headers: dict, db_session: Session
+    ):
+        audits_before = self._send_audit_count(db_session)
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": "prospect@route-clean-co.com", "subject": "Hello", "body": "Hi there"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["success"] is True
+        assert body["message_id"]
+        # Simulated send is audited (proof the send operation ran)
+        assert self._send_audit_count(db_session) == audits_before + 1
+
+    def test_opt_out_blocked_via_route_with_safe_reason(
+        self, client: TestClient, auth_headers: dict, route_contact: Contact,
+        db_session: Session, no_send_reach,
+    ):
+        route_contact.do_not_contact = True
+        db_session.commit()
+        audits_before = self._send_audit_count(db_session)
+
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": route_contact.email, "subject": "Hello", "body": "Hi"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 422
+        body = resp.json()
+        assert body["code"] == "send_blocked"
+        assert "do_not_contact" in body["reasons"]
+        # User-readable, safe message: no CRM data, no stack traces
+        assert "opted out" in body["detail"]
+        assert route_contact.email not in resp.text
+        assert route_contact.first_name not in resp.text
+        assert "Traceback" not in resp.text
+        # Blocked request never reached the send operation
+        assert self._send_audit_count(db_session) == audits_before
+
+    def test_deleted_contact_blocked_via_route(
+        self, client: TestClient, auth_headers: dict, route_contact: Contact,
+        db_session: Session, no_send_reach,
+    ):
+        route_contact.is_deleted = True
+        db_session.commit()
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": route_contact.email, "subject": "Hello", "body": "Hi"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 422
+        body = resp.json()
+        assert "contact_deleted" in body["reasons"]
+        assert "deleted" in body["detail"]
+
+    def test_invalid_recipient_blocked_via_route(
+        self, client: TestClient, auth_headers: dict, no_send_reach,
+    ):
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": "not-an-email", "subject": "Hello", "body": "Hi"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 422
+        assert "invalid_recipient" in resp.json()["reasons"]
+
+    def test_unresolved_placeholders_blocked_via_route(
+        self, client: TestClient, auth_headers: dict, no_send_reach,
+    ):
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": "someone@co.com", "subject": "Hi", "body": "Hello {{first_name}}"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 422
+        assert "unresolved_placeholders" in resp.json()["reasons"]
+
+    def test_non_deliverable_status_blocked_via_route(
+        self, client: TestClient, auth_headers: dict, route_contact: Contact,
+        db_session: Session, no_send_reach,
+    ):
+        route_contact.email_status = "invalid"
+        db_session.commit()
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": route_contact.email, "subject": "Hello", "body": "Hi"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 422
+        assert "non_deliverable_email_status" in resp.json()["reasons"]
+
+    def test_bounced_contact_status_blocked_via_route(
+        self, client: TestClient, auth_headers: dict, route_contact: Contact,
+        db_session: Session, no_send_reach,
+    ):
+        route_contact.email_status = "bounced"
+        db_session.commit()
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": route_contact.email, "subject": "Hello", "body": "Hi"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 422
+        assert "non_deliverable_email_status" in resp.json()["reasons"]
+
+    def test_recipient_mismatch_is_impossible_on_route_by_design(
+        self, client: TestClient, auth_headers: dict, route_contact: Contact,
+    ):
+        """The route resolves the CRM contact BY the recipient email, so a
+        recipient/contact mismatch cannot be expressed on this path — it is
+        structurally impossible and covered by the gate unit tests instead."""
+        resp = client.post(
+            DIRECT_SEND_URL,
+            json={"to": route_contact.email, "subject": "Hello", "body": "Hi"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 200  # contact resolved by email -> always matches

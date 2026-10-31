@@ -72,7 +72,7 @@ class CampaignContactOut(BaseModel):
 class CampaignCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
-    category: Optional[str] = "client"  # "client" | "funding"
+    category: Optional[str] = "client"
     sender_email: Optional[str] = None
     gmail_account_id: Optional[str] = None
     target_industry: Optional[str] = None

@@ -45,6 +45,7 @@ class Contact(Base):
     is_deleted = Column(Boolean, default=False, nullable=False)
     created_by = Column(Integer, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    import_batch_id = Column(Integer, ForeignKey("lead_import_batches.id", ondelete="SET NULL"), nullable=True, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
         DateTime,

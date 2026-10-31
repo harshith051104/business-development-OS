@@ -105,6 +105,9 @@ export const DiscoveryPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isCsvModalOpen, setIsCsvModalOpen] = useState<boolean>(false)
+  // Tracks whether the user has explicitly run an AI discovery search this session.
+  // Until then, the 'search' tab shows already-discovered leads instead of auto-firing a new AI scan.
+  const [hasSearched, setHasSearched] = useState<boolean>(false)
 
   // Single Prompt Natural Language Discovery State
   const [singlePrompt, setSinglePrompt] = useState<string>('')
@@ -144,6 +147,7 @@ export const DiscoveryPage: React.FC = () => {
   const handlePromptDiscovery = async (customPrompt?: string) => {
     const promptToUse = (customPrompt || singlePrompt).trim()
     if (!promptToUse) return
+    setHasSearched(true)
     setIsParsingPrompt(true)
     setError(null)
     try {
@@ -233,9 +237,30 @@ export const DiscoveryPage: React.FC = () => {
     }
   }, [activeTab, keyword, location, selectedType, productDescription, targetIcp, discoveryObjective, selectedProvider, page, pageSize])
 
+  // Fast load of already-discovered leads (no AI scan) — used for the 'search' tab
+  // until the user explicitly runs a discovery search.
+  const loadRecent = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await discoveryService.list({ page, page_size: pageSize })
+      setItems(res.items)
+      setTotalItems(res.total)
+      setTotalPages(res.total_pages)
+    } catch (err: any) {
+      setError(err.detail || err.message || 'Failed to load discovered leads.')
+    } finally {
+      setLoading(false)
+    }
+  }, [page, pageSize])
+
   useEffect(() => {
-    executeSearch()
-  }, [executeSearch])
+    if (activeTab === 'search' && !hasSearched) {
+      loadRecent()
+    } else {
+      executeSearch()
+    }
+  }, [activeTab, hasSearched, executeSearch, loadRecent])
 
   // Save / Bookmark action
   const handleSave = async (id: number) => {
@@ -682,6 +707,7 @@ export const DiscoveryPage: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => {
+                    setHasSearched(true)
                     setPage(1)
                     executeSearch()
                   }}
@@ -732,7 +758,7 @@ export const DiscoveryPage: React.FC = () => {
             <h4 className="text-sm font-bold text-white">Discovery Query Error</h4>
             <p className="text-xs text-slate-400">{error}</p>
             <button
-              onClick={executeSearch}
+              onClick={() => (activeTab === 'search' && !hasSearched ? loadRecent() : executeSearch())}
               className="px-4 py-1.5 rounded-xl bg-violet-600 text-white text-xs font-semibold"
             >
               Retry
@@ -1073,7 +1099,11 @@ export const DiscoveryPage: React.FC = () => {
           onClose={() => setIsCsvModalOpen(false)}
           onSuccess={() => {
             setIsCsvModalOpen(false)
-            executeSearch()
+            if (activeTab === 'search' && !hasSearched) {
+              loadRecent()
+            } else {
+              executeSearch()
+            }
             discoveryService.getStats().then(setStats)
           }}
         />

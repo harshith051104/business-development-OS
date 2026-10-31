@@ -55,8 +55,8 @@ PROVIDERS = [
     {
         "name": "gemini",
         "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
-        "model": "gemini-3.8-flash",
-        "fallback_model": "gemini-2.5-flash",
+        "model": "gemini-2.0-flash",
+        "fallback_model": "gemini-1.5-flash",
         "priority": 3,
         "role": "deep research & large context",
     },

@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../components/layout/Navbar'
 import { leadImportService, TARGET_FIELD_LABELS } from '../../services/leadImport'
-import type { LeadUploadPreview, LeadImportResult, LeadImportBatchSummary } from '../../services/leadImport'
-import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History } from 'lucide-react'
+import type {
+  LeadUploadPreview,
+  LeadImportResult,
+  LeadImportBatchSummary,
+  LeadImportBatchRecords,
+} from '../../services/leadImport'
+import { campaignService } from '../../services/campaigns'
+import type { Campaign } from '../../types/campaign'
+import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History, X } from 'lucide-react'
 
 type Step = 'upload' | 'map' | 'result'
 
@@ -16,10 +23,36 @@ export const LeadImportPage: React.FC = () => {
   const [result, setResult] = useState<LeadImportResult | null>(null)
   const [history, setHistory] = useState<LeadImportBatchSummary[]>([])
   const [showAllFields, setShowAllFields] = useState(false)
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null)
+  const [selectedBatchId, setSelectedBatchId] = useState<number | null>(null)
+  const [batchRecords, setBatchRecords] = useState<LeadImportBatchRecords | null>(null)
+  const [batchRecordsLoading, setBatchRecordsLoading] = useState(false)
 
   useEffect(() => {
     leadImportService.listImports().then(setHistory).catch(() => {})
+    campaignService.list({ status: 'Active' }).then(setCampaigns).catch(() => {})
   }, [])
+
+  const openBatchRecords = async (batchId: number) => {
+    setSelectedBatchId(batchId)
+    setBatchRecords(null)
+    setBatchRecordsLoading(true)
+    try {
+      const data = await leadImportService.getBatchRecords(batchId)
+      setBatchRecords(data)
+    } catch (err: any) {
+      setError(err?.message || 'Could not load import details.')
+      setSelectedBatchId(null)
+    } finally {
+      setBatchRecordsLoading(false)
+    }
+  }
+
+  const closeBatchRecords = () => {
+    setSelectedBatchId(null)
+    setBatchRecords(null)
+  }
 
   const handleFile = async (file: File) => {
     setUploading(true)
@@ -41,7 +74,7 @@ export const LeadImportPage: React.FC = () => {
     setImporting(true)
     setError(null)
     try {
-      const res = await leadImportService.confirmImport(preview.upload_id, mapping)
+      const res = await leadImportService.confirmImport(preview.upload_id, mapping, selectedCampaignId)
       setResult(res)
       setStep('result')
       leadImportService.listImports().then(setHistory).catch(() => {})
@@ -58,6 +91,7 @@ export const LeadImportPage: React.FC = () => {
     setMapping({})
     setResult(null)
     setError(null)
+    setSelectedCampaignId(null)
   }
 
   return (
@@ -146,6 +180,28 @@ export const LeadImportPage: React.FC = () => {
               </button>
             )}
 
+            <div className="p-5 rounded-2xl bg-[#131127]/60 border border-white/5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5 block">
+                Enroll into Campaign (optional)
+              </label>
+              <select
+                value={selectedCampaignId ?? ''}
+                onChange={(e) => setSelectedCampaignId(e.target.value ? Number(e.target.value) : null)}
+                className="w-full sm:w-80 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
+              >
+                <option value="">— No campaign —</option>
+                {campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1.5">
+                Every contact created or matched by this import will be enrolled into the selected campaign
+                (duplicates are skipped automatically).
+              </p>
+            </div>
+
             <div className="overflow-x-auto rounded-xl border border-white/5">
               <table className="w-full text-xs">
                 <thead className="bg-[#131127]">
@@ -207,6 +263,7 @@ export const LeadImportPage: React.FC = () => {
                 ['Orgs Matched', result.organizations_matched],
                 ['Contacts Created', result.contacts_created],
                 ['Skipped', result.skipped_count],
+                ...(result.campaign_id ? [['Enrolled in Campaign', result.contacts_enrolled ?? 0]] : []),
               ].map(([label, value]) => (
                 <div key={label as string} className="p-4 rounded-xl bg-[#131127]/60 border border-white/5 text-center">
                   <div className="text-2xl font-bold">{value}</div>
@@ -249,7 +306,11 @@ export const LeadImportPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {history.map((b) => (
-                    <tr key={b.id} className="border-t border-white/5 text-gray-300">
+                    <tr
+                      key={b.id}
+                      onClick={() => openBatchRecords(b.id)}
+                      className="border-t border-white/5 text-gray-300 cursor-pointer hover:bg-white/5 transition-all"
+                    >
                       <td className="px-3 py-2 whitespace-nowrap">{b.filename}</td>
                       <td className="px-3 py-2">{b.total_rows}</td>
                       <td className="px-3 py-2">{b.organizations_created}</td>
@@ -262,6 +323,117 @@ export const LeadImportPage: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {selectedBatchId !== null && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+            onClick={closeBatchRecords}
+          >
+            <div
+              className="w-full max-w-3xl max-h-[80vh] overflow-y-auto rounded-2xl bg-[#131127] border border-white/10 p-6 space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                  {batchRecords?.filename || 'Import details'}
+                </h2>
+                <button
+                  onClick={closeBatchRecords}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {batchRecordsLoading && (
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Loading…
+                </div>
+              )}
+
+              {batchRecords && (
+                <>
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                      Organizations ({batchRecords.organizations.length})
+                    </div>
+                    <div className="overflow-x-auto rounded-xl border border-white/5">
+                      <table className="w-full text-xs">
+                        <thead className="bg-[#0c0a1f]">
+                          <tr>
+                            {['Name', 'Website', 'City', 'State', 'Country', 'Status'].map((h) => (
+                              <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">
+                                {h}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {batchRecords.organizations.map((o) => (
+                            <tr key={o.id} className="border-t border-white/5 text-gray-300">
+                              <td className="px-3 py-2 whitespace-nowrap">{o.name}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{o.website || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{o.city || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{o.state || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{o.country || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{o.status}</td>
+                            </tr>
+                          ))}
+                          {batchRecords.organizations.length === 0 && (
+                            <tr>
+                              <td colSpan={6} className="px-3 py-3 text-center text-gray-500">
+                                No organizations recorded for this import.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                      Contacts ({batchRecords.contacts.length})
+                    </div>
+                    <div className="overflow-x-auto rounded-xl border border-white/5">
+                      <table className="w-full text-xs">
+                        <thead className="bg-[#0c0a1f]">
+                          <tr>
+                            {['Name', 'Organization', 'Email', 'Phone', 'Designation', 'Location'].map((h) => (
+                              <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">
+                                {h}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {batchRecords.contacts.map((c) => (
+                            <tr key={c.id} className="border-t border-white/5 text-gray-300">
+                              <td className="px-3 py-2 whitespace-nowrap">{c.full_name}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{c.organization_name || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{c.email || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{c.phone || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{c.designation || '—'}</td>
+                              <td className="px-3 py-2 whitespace-nowrap">{c.location || '—'}</td>
+                            </tr>
+                          ))}
+                          {batchRecords.contacts.length === 0 && (
+                            <tr>
+                              <td colSpan={6} className="px-3 py-3 text-center text-gray-500">
+                                No contacts recorded for this import.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

@@ -254,3 +254,35 @@ class TestResearchSignalObservationTimestamp:
         assert data["source_url"] == "https://acme.com/news"
         assert data["confidence"] == 0.8
         assert data["observed_at"]  # observation timestamp present
+
+
+class TestDiscoveryResearchRecordPersistence:
+    """The discovery search router stores the orchestrator's research payload in
+    OrganizationResearchRecord.research_data (a Text column). Regression: the
+    raw dict used to be bound directly, crashing /discover/search with sqlite
+    "type 'dict' is not supported". It must be stored as JSON text."""
+
+    def test_research_payload_persists_as_json_text_and_round_trips(self, db_session):
+        from app.models.research import OrganizationResearchRecord
+        payload = {"research_status": "completed", "what_they_do": "AI healthcare platform",
+                   "blog_newest": "https://acme.com/sitemap.xml"}
+
+        # Same write pattern as routers/discovery.py
+        rec = OrganizationResearchRecord(
+            organization_name="Serialize Test Org",
+            research_data=json.dumps(payload, default=str),
+            qualification_score=70,
+            research_version="orchestrator-v1",
+            provider_used="scrapegraph",
+        )
+        db_session.add(rec)
+        db_session.commit()  # would raise ProgrammingError before the fix
+
+        stored = db_session.query(OrganizationResearchRecord).filter(
+            OrganizationResearchRecord.organization_name == "Serialize Test Org",
+        ).first()
+        assert stored is not None
+        assert isinstance(stored.research_data, str)
+        # Same read pattern as services/copilot/tools.py
+        rd = json.loads(stored.research_data) if isinstance(stored.research_data, str) else stored.research_data
+        assert rd["what_they_do"] == "AI healthcare platform"

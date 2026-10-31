@@ -140,6 +140,35 @@ def check_duplicate_organization(
     )
 
 
+def _schedule_geocode(org_id: int) -> None:
+    """Geocode an organization's address in a background daemon thread (non-blocking)."""
+    try:
+        def _geocode_sync():
+            import asyncio
+            from app.services import nominatim_service
+            from app.core.database import SessionLocal
+            db_bg = SessionLocal()
+            try:
+                org_bg = db_bg.query(Organization).filter(Organization.id == org_id).first()
+                if org_bg:
+                    addr_parts = [p for p in [org_bg.address, org_bg.city, org_bg.state, org_bg.country] if p]
+                    geocode_addr = ', '.join(addr_parts) if addr_parts else org_bg.name
+                    loop = asyncio.new_event_loop()
+                    result = loop.run_until_complete(nominatim_service.geocode(geocode_addr))
+                    loop.close()
+                    if result:
+                        org_bg.latitude = result['latitude']
+                        org_bg.longitude = result['longitude']
+                        db_bg.commit()
+            except Exception:
+                pass
+            finally:
+                db_bg.close()
+        threading.Thread(target=_geocode_sync, daemon=True).start()
+    except Exception:
+        pass
+
+
 @router.post("", response_model=OrganizationDetailOut, status_code=status.HTTP_201_CREATED)
 def create_organization(
     payload: OrganizationCreate,
@@ -192,32 +221,7 @@ def create_organization(
     db.commit()
     db.refresh(new_org)
 
-    # Auto-geocode in background thread (non-blocking)
-    try:
-        def _geocode_sync():
-            import asyncio
-            from app.services import nominatim_service
-            from app.core.database import SessionLocal
-            db_bg = SessionLocal()
-            try:
-                org_bg = db_bg.query(Organization).filter(Organization.id == new_org.id).first()
-                if org_bg:
-                    addr_parts = [p for p in [org_bg.address, org_bg.city, org_bg.state, org_bg.country] if p]
-                    geocode_addr = ', '.join(addr_parts) if addr_parts else org_bg.name
-                    loop = asyncio.new_event_loop()
-                    result = loop.run_until_complete(nominatim_service.geocode(geocode_addr))
-                    loop.close()
-                    if result:
-                        org_bg.latitude = result['latitude']
-                        org_bg.longitude = result['longitude']
-                        db_bg.commit()
-            except Exception:
-                pass
-            finally:
-                db_bg.close()
-        threading.Thread(target=_geocode_sync, daemon=True).start()
-    except Exception:
-        pass
+    _schedule_geocode(new_org.id)
 
     log_audit_event(
         db=db,
@@ -279,6 +283,9 @@ def update_organization(
     db.commit()
     db.refresh(org)
 
+    if any(f in update_data for f in ("address", "city", "state", "country")):
+        _schedule_geocode(org.id)
+
     log_audit_event(
         db=db,
         action="ORGANIZATION_UPDATED",
@@ -287,6 +294,12 @@ def update_organization(
         user=current_user,
         metadata={"updated_fields": list(update_data.keys())},
     )
+
+    try:
+        from app.services.google_sheets_service import sync_organization
+        sync_organization(org)
+    except Exception:
+        pass
 
     return OrganizationDetailOut.model_validate(org)
 

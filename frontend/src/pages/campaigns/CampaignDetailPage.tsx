@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { campaignService } from '../../services/campaigns';
+import { outreachAutomationService } from '../../services/outreachAutomation';
 import type { Campaign, CampaignContact, CampaignPreviewResponse, CampaignRoiFunnel } from '../../types/campaign';
 import Navbar from '../../components/layout/Navbar';
-import { 
-  Send, 
-  ArrowLeft, 
-  Play, 
-  Pause, 
-  Trash2, 
-  Clock, 
-  Users, 
-  Mail, 
-  Sparkles, 
-  CheckCircle2, 
-  AlertTriangle, 
-  TrendingUp, 
-  Building2, 
-  User, 
+import {
+  Send,
+  ArrowLeft,
+  Play,
+  Pause,
+  Trash2,
+  Clock,
+  Users,
+  Mail,
+  Sparkles,
+  CheckCircle2,
+  AlertTriangle,
+  TrendingUp,
+  Building2,
+  User,
   RefreshCw,
   Eye,
   Check,
@@ -29,7 +30,11 @@ import {
   Plus,
   Pencil,
   X,
-  Save
+  Save,
+  MessageCircle,
+  Loader2,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 export const CampaignDetailPage: React.FC = () => {
@@ -51,10 +56,73 @@ export const CampaignDetailPage: React.FC = () => {
   const [editingSequence, setEditingSequence] = useState(false);
   const [editedSteps, setEditedSteps] = useState<any[]>([]);
   const [savingSequence, setSavingSequence] = useState(false);
+  const [contactStatusFilter, setContactStatusFilter] = useState<string>('All');
+
+  const [automationExpanded, setAutomationExpanded] = useState(false);
+  const [automationLoading, setAutomationLoading] = useState(false);
+  const [waTemplate, setWaTemplate] = useState('');
+  const [waQueueCount, setWaQueueCount] = useState<number | null>(null);
+  const [waSaving, setWaSaving] = useState(false);
+  const [liConnectionNote, setLiConnectionNote] = useState('');
+  const [liFirstMessage, setLiFirstMessage] = useState('');
+  const [liQueueCount, setLiQueueCount] = useState<number | null>(null);
+  const [liSaving, setLiSaving] = useState(false);
+  const [automationMergeFields, setAutomationMergeFields] = useState<string[]>([]);
 
   useEffect(() => {
     loadCampaign();
   }, [campaignId]);
+
+  const toggleAutomationPanel = async () => {
+    const next = !automationExpanded;
+    setAutomationExpanded(next);
+    if (next && automationMergeFields.length === 0) {
+      try {
+        setAutomationLoading(true);
+        const [waSettings, waCount, liSettings, liCount] = await Promise.all([
+          outreachAutomationService.getWhatsappSettings(campaignId),
+          outreachAutomationService.getWhatsappQueueCount(campaignId),
+          outreachAutomationService.getLinkedinSettings(campaignId),
+          outreachAutomationService.getLinkedinQueueCount(campaignId),
+        ]);
+        setWaTemplate(waSettings.template);
+        setWaQueueCount(waCount);
+        setLiConnectionNote(liSettings.connection_note);
+        setLiFirstMessage(liSettings.first_message);
+        setLiQueueCount(liCount);
+        setAutomationMergeFields(waSettings.merge_fields);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setAutomationLoading(false);
+      }
+    }
+  };
+
+  const handleSaveWhatsappTemplate = async () => {
+    try {
+      setWaSaving(true);
+      const updated = await outreachAutomationService.updateWhatsappSettings(campaignId, waTemplate);
+      setWaTemplate(updated.template);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setWaSaving(false);
+    }
+  };
+
+  const handleSaveLinkedinTemplates = async () => {
+    try {
+      setLiSaving(true);
+      const updated = await outreachAutomationService.updateLinkedinSettings(campaignId, liConnectionNote, liFirstMessage);
+      setLiConnectionNote(updated.connection_note);
+      setLiFirstMessage(updated.first_message);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLiSaving(false);
+    }
+  };
 
   const loadCampaign = async () => {
     try {
@@ -464,20 +532,162 @@ export const CampaignDetailPage: React.FC = () => {
           )}
         </div>
 
+        {/* WhatsApp / LinkedIn Automation Settings */}
+        <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 space-y-3">
+          <button
+            onClick={toggleAutomationPanel}
+            className="w-full flex items-center justify-between"
+          >
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <MessageCircle className="w-4 h-4 text-emerald-400" />
+              Outreach Automation (WhatsApp / LinkedIn)
+            </h2>
+            {automationExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+          </button>
+
+          {automationExpanded && (
+            automationLoading ? (
+              <div className="p-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading automation settings...
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+                {/* WhatsApp */}
+                <div className="p-4 rounded-xl bg-[#0D0B1E] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-emerald-400" />
+                      WhatsApp Message Template
+                    </h3>
+                    <span className="text-[10px] font-semibold text-gray-400">
+                      Queue: {waQueueCount ?? '—'}
+                    </span>
+                  </div>
+                  <textarea
+                    rows={4}
+                    value={waTemplate}
+                    onChange={(e) => setWaTemplate(e.target.value)}
+                    className="w-full bg-[#080615] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-emerald-500 leading-relaxed"
+                  />
+                  <div className="text-[10px] text-gray-500">
+                    Merge fields: {automationMergeFields.join(' ')}
+                  </div>
+                  <button
+                    onClick={handleSaveWhatsappTemplate}
+                    disabled={waSaving}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-500 disabled:opacity-50"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    {waSaving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+
+                {/* LinkedIn */}
+                <div className="p-4 rounded-xl bg-[#0D0B1E] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-sky-400" />
+                      LinkedIn Templates
+                    </h3>
+                    <span className="text-[10px] font-semibold text-gray-400">
+                      Queue: {liQueueCount ?? '—'}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-gray-400 mb-1">Connection Note</label>
+                    <textarea
+                      rows={2}
+                      value={liConnectionNote}
+                      onChange={(e) => setLiConnectionNote(e.target.value)}
+                      className="w-full bg-[#080615] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-sky-500 leading-relaxed"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-gray-400 mb-1">First Message (after connect)</label>
+                    <textarea
+                      rows={3}
+                      value={liFirstMessage}
+                      onChange={(e) => setLiFirstMessage(e.target.value)}
+                      className="w-full bg-[#080615] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-sky-500 leading-relaxed"
+                    />
+                  </div>
+                  <div className="text-[10px] text-gray-500">
+                    Merge fields: {automationMergeFields.join(' ')}
+                  </div>
+                  <button
+                    onClick={handleSaveLinkedinTemplates}
+                    disabled={liSaving}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-sky-600 rounded-xl hover:bg-sky-500 disabled:opacity-50"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    {liSaving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+
         {/* Two Columns: Contact List + Live AI Preview */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Enrolled Contacts */}
           <div className="lg:col-span-5 space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
                 <Users className="w-4 h-4 text-blue-400" />
                 Target Contacts ({campaign.campaign_contacts?.length || 0})
               </h2>
+
+              {/* Status Filter on Top */}
+              <select
+                value={contactStatusFilter}
+                onChange={(e) => setContactStatusFilter(e.target.value)}
+                className="bg-[#1A1040] border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-white focus:outline-none focus:border-purple-500 cursor-pointer"
+                title="Filter contacts by reply & outreach status"
+              >
+                <option value="All">All Statuses</option>
+                <option value="Interested">🟢 Interested</option>
+                <option value="Not Interested">🔴 Not Interested</option>
+                <option value="Out of Office">🟠 Out of Office</option>
+                <option value="Meeting Booked">🔵 Meeting Booked</option>
+                <option value="Sent">Sent</option>
+                <option value="Replied">Replied</option>
+                <option value="Ready_For_Review">Ready for Review</option>
+                <option value="Pending">Pending</option>
+              </select>
             </div>
 
             <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
-              {campaign.campaign_contacts?.map((cc) => {
+              {campaign.campaign_contacts
+                ?.filter((cc) => contactStatusFilter === 'All' || cc.status?.toLowerCase() === contactStatusFilter.toLowerCase())
+                .map((cc) => {
                 const isSelected = cc.contact_id === selectedContactId;
+
+                // Color-coded status style helper
+                const getStatusStyle = (st: string) => {
+                  switch (st) {
+                    case 'Interested':
+                      return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm shadow-emerald-500/10';
+                    case 'Not Interested':
+                      return 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm shadow-rose-500/10';
+                    case 'Out of Office':
+                      return 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-500/10';
+                    case 'Meeting Booked':
+                      return 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sm shadow-sky-500/10';
+                    case 'Replied':
+                      return 'bg-violet-500/20 text-violet-300 border-violet-500/30';
+                    case 'Sent':
+                      return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+                    case 'Ready_For_Review':
+                      return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+                    case 'Bounced':
+                      return 'bg-red-500/20 text-red-400 border-red-500/30';
+                    default:
+                      return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+                  }
+                };
+
                 return (
                   <div
                     key={cc.id}
@@ -493,12 +703,7 @@ export const CampaignDetailPage: React.FC = () => {
                         <div className="text-sm font-bold text-white">{cc.contact_name || 'Contact'}</div>
                         <div className="text-xs text-gray-400">{cc.contact_role || 'Executive'} • <span className="text-purple-300">{cc.organization_name}</span></div>
                       </div>
-                      <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
-                        cc.status === 'Replied' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
-                        cc.status === 'Sent' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
-                        cc.status === 'Ready_For_Review' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
-                        'bg-gray-500/20 text-gray-400 border-gray-500/30'
-                      }`}>
+                      <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${getStatusStyle(cc.status)}`}>
                         {cc.status.replace('_', ' ')}
                       </span>
                     </div>

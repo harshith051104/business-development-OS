@@ -66,6 +66,7 @@ class Organization(Base):
     longitude = Column(Float, nullable=True)
     location_precision = Column(String(20), nullable=True, default=None)  # EXACT, APPROXIMATE, None
     location_source = Column(String(50), nullable=True, default=None)    # nominatim, google, manual, city_fallback
+    import_batch_id = Column(Integer, ForeignKey("lead_import_batches.id", ondelete="SET NULL"), nullable=True, index=True)
     industry = Column(String(100), nullable=True, default="Unknown")
     size = Column(String(50), nullable=True, default="200-1000")
     status = Column(String(50), nullable=False, default=ConnectionStatus.POTENTIAL.value)

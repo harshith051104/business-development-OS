@@ -918,6 +918,12 @@ def get_system_settings(
     proj_cats_setting = db.query(SystemSetting).filter(SystemSetting.key == "project_categories").first()
     proj_cats = proj_cats_setting.value_json if proj_cats_setting else DEFAULT_PROJECT_CATEGORIES
 
+    sync_setting = db.query(SystemSetting).filter(SystemSetting.key == "task_calendar_sync_enabled").first()
+    sync_enabled = sync_setting.value_json if sync_setting is not None else True
+
+    reminders_setting = db.query(SystemSetting).filter(SystemSetting.key == "task_reminders_enabled").first()
+    reminders_enabled = reminders_setting.value_json if reminders_setting is not None else True
+
     return SystemSettingsOut(
         organization_types=org_types,
         connection_statuses=DEFAULT_CONNECTION_STATUSES,
@@ -925,6 +931,8 @@ def get_system_settings(
         meeting_types=meet_types,
         priority_levels=DEFAULT_PRIORITY_LEVELS,
         project_categories=proj_cats,
+        task_calendar_sync_enabled=sync_enabled,
+        task_reminders_enabled=reminders_enabled,
     )
 
 
@@ -968,6 +976,24 @@ def update_system_settings(
             db.add(s)
         else:
             s.value_json = payload.project_categories
+            s.updated_by = current_user.email
+
+    if payload.task_calendar_sync_enabled is not None:
+        s = db.query(SystemSetting).filter(SystemSetting.key == "task_calendar_sync_enabled").first()
+        if not s:
+            s = SystemSetting(key="task_calendar_sync_enabled", category="tasks", value_json=payload.task_calendar_sync_enabled, updated_by=current_user.email)
+            db.add(s)
+        else:
+            s.value_json = payload.task_calendar_sync_enabled
+            s.updated_by = current_user.email
+
+    if payload.task_reminders_enabled is not None:
+        s = db.query(SystemSetting).filter(SystemSetting.key == "task_reminders_enabled").first()
+        if not s:
+            s = SystemSetting(key="task_reminders_enabled", category="tasks", value_json=payload.task_reminders_enabled, updated_by=current_user.email)
+            db.add(s)
+        else:
+            s.value_json = payload.task_reminders_enabled
             s.updated_by = current_user.email
 
     db.commit()

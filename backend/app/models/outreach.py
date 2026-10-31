@@ -10,7 +10,6 @@ class OutreachChannel(str, enum.Enum):
     PHONE = "Phone"
     LINKEDIN = "LinkedIn"
     WHATSAPP = "WhatsApp"
-    OTHER = "Other"
 
 
 class DraftStatus(str, enum.Enum):

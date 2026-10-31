@@ -49,6 +49,26 @@ export const fundingService = {
     })
   },
 
+  exportCsv: async (payload: {
+    sector?: string
+    stage?: string
+    location?: string
+    limit?: number
+  }): Promise<Blob> => {
+    const params = new URLSearchParams()
+    if (payload.sector) params.set('sector', payload.sector)
+    if (payload.stage) params.set('stage', payload.stage)
+    if (payload.location) params.set('location', payload.location)
+    if (payload.limit) params.set('limit', String(payload.limit))
+    const token = localStorage.getItem('elly_bd_auth_token')
+    const base = import.meta.env.VITE_API_URL || ''
+    const res = await fetch(`${base}/api/business-development/funding/export?${params.toString()}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    if (!res.ok) throw new Error('Export failed. Please try again.')
+    return res.blob()
+  },
+
   sendOutreach: async (payload: {
     organization_ids: number[]
     template?: string

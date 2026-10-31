@@ -14,7 +14,6 @@ import {
   Tv,
   FileText,
   Scale,
-  Clock3,
   CheckSquare,
   Handshake,
   UserCheck,
@@ -30,7 +29,6 @@ import {
   MessageSquare,
   Network,
   DollarSign,
-  Send,
   UploadCloud,
   Activity,
   ClipboardList,
@@ -133,13 +131,13 @@ export const Navbar: React.FC = () => {
         { label: 'Outreach Tracker', path: '/business-development/outreach/tracker', icon: Activity },
         { label: 'Meetings', path: '/business-development/meetings', icon: Calendar },
         { label: 'Demos', path: '/business-development/demos', icon: Tv },
+        ...(user?.role === 'ADMIN' ? [{ label: 'Settings', path: '/admin/settings', icon: Settings }] : []),
       ],
     },
     {
       title: 'Funding',
       items: [
         { label: 'Find Investors', path: '/business-development/funding', icon: DollarSign },
-        { label: 'Funding Campaigns', path: '/business-development/funding/campaigns', icon: Send },
       ],
     },
     {
@@ -147,11 +145,9 @@ export const Navbar: React.FC = () => {
       items: [
         { label: 'Proposals', path: '/business-development/proposals', icon: FileText },
         { label: 'Negotiations', path: '/business-development/negotiations', icon: Scale },
-        { label: 'Follow-ups', path: '/business-development/followups', icon: Clock3 },
         { label: 'Tasks', path: '/business-development/tasks', icon: CheckSquare },
         { label: 'Partnerships', path: '/business-development/partnerships', icon: Handshake },
         { label: 'Customers', path: '/business-development/customers', icon: UserCheck },
-        { label: 'Reports', path: '/business-development/reports', icon: BarChart3 },
         { label: 'Analytics', path: '/business-development/analytics', icon: BarChart3 },
         { label: 'Calendar', path: '/business-development/calendar', icon: Calendar },
         { label: 'Map View', path: '/business-development/map', icon: Map },
@@ -204,7 +200,7 @@ export const Navbar: React.FC = () => {
             )}
           </button>
           {notifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto bg-[#130D2A] border border-violet-900/50 rounded-xl shadow-2xl z-50">
+            <div className="absolute left-full top-0 ml-2 w-80 max-h-96 overflow-y-auto bg-[#130D2A] border border-violet-900/50 rounded-xl shadow-2xl z-50">
               <div className="flex items-center justify-between px-3 py-2 border-b border-violet-900/40 sticky top-0 bg-[#130D2A]">
                 <span className="text-xs font-bold text-white">Notifications</span>
                 {unreadCount > 0 && (

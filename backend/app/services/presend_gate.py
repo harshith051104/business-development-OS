@@ -40,13 +40,37 @@ class GateResult:
         return "ok" if self.ok else ",".join(self.reasons)
 
 
-class SendBlockedError(ValueError):
-    """Raised when the pre-send gate blocks a send. Subclass of ValueError so it
-    flows through the same error handling as the existing approval gate."""
+# Safe, user-readable text per reason code. Never include CRM data (emails,
+# names) here — this text is returned to the API client on blocked sends.
+REASON_MESSAGES = {
+    "invalid_recipient": "the recipient email address is missing or malformed",
+    "unresolved_placeholders": "the message still contains unresolved template placeholders",
+    "do_not_contact": "the recipient has opted out of contact",
+    "contact_deleted": "the recipient record has been deleted",
+    "recipient_mismatch": "the recipient address does not match the message recipient record",
+    "non_deliverable_email_status": "the recipient email address is marked non-deliverable",
+    "bounced_recipient": "the recipient previously bounced and cannot be emailed",
+    "approval_required": "the campaign step has not been approved by a human reviewer yet",
+}
 
-    def __init__(self, reasons: List[str]):
-        self.reasons = list(reasons)
-        super().__init__(f"Pre-send gate blocked send: {', '.join(self.reasons)}")
+
+def describe_reasons(reasons: List[str]) -> str:
+    """Human-readable summary of gate reasons — codes only, never CRM data."""
+    phrases = [REASON_MESSAGES.get(r, "failed pre-send validation") for r in reasons]
+    return "Send blocked: " + "; ".join(phrases) + "."
+
+
+class SendBlockedError(ValueError):
+    """Raised when the pre-send gate blocks a send (or approval is missing).
+    Subclass of ValueError so it flows through the same error handling as the
+    existing approval gate. Carries a stable machine code, the raw reason
+    codes, and a safe user-readable message for API responses."""
+
+    def __init__(self, reasons: List[str], code: str = "send_blocked", message: Optional[str] = None):
+        self.reasons = [str(r) for r in reasons]
+        self.code = code
+        self.message = message or describe_reasons(self.reasons)
+        super().__init__(f"{self.message} (reasons: {', '.join(self.reasons)})")
 
 
 def evaluate_send(

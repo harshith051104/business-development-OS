@@ -19,12 +19,11 @@ from app.models.communication import (
     CommunicationDirection,
     CommunicationStatus,
 )
-from app.models.followup import FollowUp, FollowUpPriority, FollowUpStatus
 from app.models.user import User
 from app.schemas.campaign import CampaignCreate, CampaignUpdate, CampaignSequenceStepCreate
 from app.services.campaign.compiler import CampaignCompiler
 from app.services.gmail_service import GmailService
-from app.services.presend_gate import assert_send_allowed
+from app.services.presend_gate import assert_send_allowed, SendBlockedError
 from app.core.audit import log_audit_event
 
 logger = logging.getLogger("elly.campaign.service")
@@ -352,9 +351,13 @@ class CampaignService:
             CampaignContactStatus.SENT.value,  # Allow re-sends
             CampaignContactStatus.REPLIED.value,  # Allow follow-ups
         ]:
-            raise ValueError(
-                f"Contact {contact_id} must be Approved before sending. "
-                f"Current status: {cc.status}. Use /approve endpoint first."
+            raise SendBlockedError(
+                ["approval_required"],
+                code="approval_required",
+                message=(
+                    f"Contact {contact_id} must be Approved before sending. "
+                    f"Current status: {cc.status}. Use /approve endpoint first."
+                ),
             )
 
         contact = db.query(Contact).filter(Contact.id == contact_id).first()
@@ -465,6 +468,61 @@ class CampaignService:
             "next_action_due": cc.next_action_due,
         }
 
+    @staticmethod
+    def classify_reply_sentiment_and_intent(subject: str, snippet: str) -> str:
+        """
+        Intelligent agent reply classifier.
+        Analyzes inbound outreach email replies and classifies intent into:
+          - 'Out of Office': Auto-responders, leave notices, vacation replies
+          - 'Meeting Booked': Calendar booking confirmations, scheduling links, accepted invites
+          - 'Not Interested': Unsubscribe, refusal, negative fit, removal requests
+          - 'Interested': Positive responses, questions, requests for info/pricing/deck
+        """
+        text = f"{subject or ''} {snippet or ''}".lower()
+
+        # 1. Out of Office
+        ooo_markers = [
+            "out of office", "out of the office", "on leave", "away from my desk",
+            "away from the office", "auto-reply", "autoreply", "automatic reply",
+            "annual leave", "sick leave", "maternity leave", "paternity leave",
+            "i am currently away", "i will be out", "returning on", "back on",
+            "limited access to email", "vacation", "holiday",
+        ]
+        if any(m in text for m in ooo_markers):
+            return "Out of Office"
+
+        # 2. Meeting Booked
+        meeting_markers = [
+            "calendly.com", "cal.com", "calendar invite", "zoom.us", "meet.google.com",
+            "teams.microsoft.com", "meeting confirmed", "meeting scheduled", "booked a time",
+            "invitation:", "accepted:", "looking forward to our call", "see you on",
+            "invite accepted", "scheduled time", "appointment confirmed", "booking confirmed",
+        ]
+        if any(m in text for m in meeting_markers):
+            return "Meeting Booked"
+
+        # 3. Not Interested
+        not_interested_markers = [
+            "not interested", "unsubscribe", "remove me", "remove from", "stop emailing",
+            "no thank you", "no thanks", "not a fit", "not looking", "please remove",
+            "do not contact", "pass on this", "not currently looking", "take me off",
+            "don't contact", "not relevant", "wrong person", "cease email",
+        ]
+        if any(m in text for m in not_interested_markers):
+            return "Not Interested"
+
+        # 4. Interested
+        interested_markers = [
+            "interested", "sounds good", "let's talk", "let's connect", "pricing",
+            "send more info", "send deck", "share more", "tell me more", "available tomorrow",
+            "free next week", "can we meet", "happy to chat", "forward to my team",
+            "share details", "would love to", "sounds interesting", "pitch deck", "call me",
+        ]
+        if any(m in text for m in interested_markers):
+            return "Interested"
+
+        return "Interested"
+
     @classmethod
     def record_reply_and_pause(
         cls,
@@ -477,7 +535,8 @@ class CampaignService:
     ) -> Dict[str, Any]:
         """
         Triggered when a reply is detected from a contact.
-        Pauses the campaign sequence, marks status=Replied, logs Communication, creates FollowUp.
+        Classifies reply into Interested, Not Interested, Out of Office, or Meeting Booked.
+        Pauses the campaign sequence, logs Communication.
         """
         query = db.query(CampaignContact).filter(CampaignContact.contact_id == contact_id)
         if campaign_id:
@@ -490,12 +549,32 @@ class CampaignService:
 
         now = datetime.now(timezone.utc)
 
+        # Classify the reply with the intelligent agent analyzer
+        classified_status = cls.classify_reply_sentiment_and_intent(reply_subject, reply_snippet)
+
         # 1. Update Campaign Contact
         if cc:
-            cc.status = CampaignContactStatus.REPLIED.value
+            cc.status = classified_status
             cc.next_action_due = None
             cc.last_action_at = now
             cc.replied_at = now
+            if classified_status == "Meeting Booked":
+                cc.meeting_scheduled = True
+
+            try:
+                from app.services import lead_tracker_service, google_sheets_service
+                lead_tracker_service.log_timeline_event(
+                    db,
+                    campaign_contact_id=cc.id,
+                    user_id=user_id,
+                    event_type="reply_classified",
+                    description=f"Inbound reply classified as '{classified_status}'. Snippet: '{reply_snippet[:120]}...'",
+                    metadata={"subject": reply_subject, "classified_status": classified_status},
+                    _flush=False,
+                )
+                google_sheets_service.push_tracker_row(cc)
+            except Exception:
+                pass
 
         # 2. Record Inbound Communication
         comm = Communication(
@@ -511,27 +590,14 @@ class CampaignService:
         )
         db.add(comm)
 
-        # 3. Create high-priority Follow-up
+        # 3. Update Organization & Contact Status
         org = db.query(Organization).filter(Organization.id == contact.organization_id).first()
         org_name = org.name if org else "Prospect"
-        followup = FollowUp(
-            organization_id=contact.organization_id,
-            contact_id=contact.id,
-            title=f"Respond to reply from {contact.full_name} ({org_name})",
-            description=f"Contact replied to outreach campaign. Snippet: '{reply_snippet}'. Review email thread and schedule demo/meeting.",
-            due_at=now + timedelta(days=1),
-            priority=FollowUpPriority.HIGH.value,
-            status=FollowUpStatus.PENDING.value,
-            created_by=user_id or 1,
-        )
-        db.add(followup)
-
-        # 4. Update Organization & Contact Status
         if org:
             org.status = ConnectionStatus.RESPONDED.value
         contact.connection_status = "Responded"
 
-        # 5. Auto-create Opportunity if none exists for this org — reply = commercial signal.
+        # 4. Auto-create Opportunity if none exists for this org — reply = commercial signal.
         # Skip for funding/investor campaigns: a VC reply is not a sales pipeline opportunity.
         from app.models.opportunity import Opportunity, OpportunityStage
         is_funding_campaign = bool(cc and cc.campaign and cc.campaign.category == "funding")
@@ -555,7 +621,7 @@ class CampaignService:
             db.add(new_opp)
             opp_created = True
 
-        # 6. Auto-schedule meeting if meeting intent / request detected in reply
+        # 5. Auto-schedule meeting if meeting intent / request detected in reply
         scheduled_meeting = None
         try:
             from app.services.meeting_scheduler import detect_and_schedule_meeting_from_reply
@@ -594,7 +660,6 @@ class CampaignService:
             "contact_id": contact_id,
             "status": "Replied",
             "sequence_paused": True,
-            "followup_created": True,
             "opportunity_created": opp_created,
             "meeting_created": bool(scheduled_meeting),
             "meeting_id": scheduled_meeting.id if scheduled_meeting else None,

@@ -32,7 +32,6 @@ from app.routers.negotiations import router as negotiations_router
 from app.routers.tasks import router as tasks_router
 from app.routers.calls import router as calls_router
 from app.routers.integrations import router as integrations_router
-from app.routers.reports import router as reports_router
 from app.routers.geocoding import router as geocoding_router
 from app.routers.calendar import router as calendar_router
 from app.routers.config import router as config_router
@@ -91,6 +90,7 @@ try:
             ("industry", "VARCHAR(100)"),
             ("size", "VARCHAR(50)"),
             ("is_deleted", "BOOLEAN DEFAULT 0"),
+            ("import_batch_id", "INTEGER"),
         ]
         for col_name, col_type in org_cols_needed:
             if existing_cols and col_name not in existing_cols:
@@ -113,6 +113,7 @@ try:
                 ("next_followup_at", "DATETIME"),
                 ("is_deleted", "BOOLEAN DEFAULT 0"),
                 ("email_status", "VARCHAR(50)"),
+                ("import_batch_id", "INTEGER"),
             ]:
                 if col_name not in c_cols:
                     conn.execute(text(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_type}"))
@@ -223,6 +224,28 @@ try:
                 cc_changed = True
             if cc_changed:
                 conn.commit()
+
+        # Check tasks columns (reminders)
+        task_result = conn.execute(text("PRAGMA table_info(tasks)"))
+        task_cols = [row[1] for row in task_result.fetchall()]
+        if task_cols:
+            task_changed = False
+            if "reminder_at" not in task_cols:
+                conn.execute(text("ALTER TABLE tasks ADD COLUMN reminder_at DATETIME"))
+                task_changed = True
+            if task_changed:
+                conn.commit()
+
+        # Check meetings columns (Google Calendar sync)
+        meeting_result = conn.execute(text("PRAGMA table_info(meetings)"))
+        meeting_cols = [row[1] for row in meeting_result.fetchall()]
+        if meeting_cols:
+            meeting_changed = False
+            if "google_event_id" not in meeting_cols:
+                conn.execute(text("ALTER TABLE meetings ADD COLUMN google_event_id VARCHAR(255)"))
+                meeting_changed = True
+            if meeting_changed:
+                conn.commit()
 except Exception as e:
     logger.error("Startup schema migration failed — database may be in an inconsistent state: %s", e)
 
@@ -235,10 +258,25 @@ app = FastAPI(
 )
 
 # Security Headers Middleware
+from app.services.presend_gate import SendBlockedError
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         try:
             response = await call_next(request)
+        except SendBlockedError as exc:
+            # Expected policy/validation failure: safe 4xx with a stable code,
+            # raw reason codes, and a user-readable message (no CRM data, no stack).
+            logger.warning("Send blocked on %s %s: %s", request.method, request.url.path, exc)
+            response = JSONResponse(
+                status_code=403 if exc.code == "approval_required" else 422,
+                content={
+                    "detail": exc.message,
+                    "code": exc.code,
+                    "reasons": exc.reasons,
+                    "path": request.url.path,
+                },
+            )
         except Exception as exc:
             logger.error("Unhandled exception reaching middleware on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
             response = JSONResponse(
@@ -337,7 +375,6 @@ app.include_router(negotiations_router)
 app.include_router(tasks_router)
 app.include_router(calls_router)
 app.include_router(integrations_router)
-app.include_router(reports_router)
 app.include_router(geocoding_router)
 app.include_router(calendar_router)
 app.include_router(config_router)
@@ -358,12 +395,14 @@ from apscheduler.triggers.interval import IntervalTrigger
 from app.services import scheduler as scheduler_service
 from app.services.backup_service import run_backup
 from app.services.task_sweep_service import sweep_due_tasks
+from app.services.task_reminder_service import sweep_task_reminders
 from app.services.reply_sync_job import sync_all_inboxes
 from app.services.signal_service import scan_signals
 from app.services.google_sheets_service import pull_updates_job as pull_sheet_tracker_updates
 
 scheduler_service.register_job("nightly_backup", run_backup, CronTrigger(hour=2, minute=30))
 scheduler_service.register_job("task_due_sweep", sweep_due_tasks, IntervalTrigger(minutes=30))
+scheduler_service.register_job("task_reminder_sweep", sweep_task_reminders, IntervalTrigger(minutes=5))
 scheduler_service.register_job("reply_sync", sync_all_inboxes, IntervalTrigger(minutes=5))
 scheduler_service.register_job("signal_scan", scan_signals, CronTrigger(hour=6, minute=0))
 scheduler_service.register_job("sheets_tracker_pull", pull_sheet_tracker_updates, IntervalTrigger(minutes=15))

@@ -216,6 +216,8 @@ class SystemSettingsOut(BaseModel):
     meeting_types: List[str]
     priority_levels: List[str]
     project_categories: List[str]
+    task_calendar_sync_enabled: bool
+    task_reminders_enabled: bool
 
 
 class SystemSettingsUpdate(BaseModel):
@@ -223,3 +225,5 @@ class SystemSettingsUpdate(BaseModel):
     partnership_types: Optional[List[str]] = None
     meeting_types: Optional[List[str]] = None
     project_categories: Optional[List[str]] = None
+    task_calendar_sync_enabled: Optional[bool] = None
+    task_reminders_enabled: Optional[bool] = None

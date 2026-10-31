@@ -12,6 +12,7 @@ export interface CalendarEvent {
   organization_name?: string
   contact_names: string[]
   meeting_url?: string
+  source?: 'meeting' | 'task'
 }
 
 export interface TimeSlot {

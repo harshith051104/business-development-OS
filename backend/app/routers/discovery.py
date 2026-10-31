@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import logging
 import math
 import re
@@ -709,7 +710,9 @@ def search_discoveries(
                 research_rec = OrganizationResearchRecord(
                     discovered_org_id=new_record.id,
                     organization_name=new_record.name,
-                    research_data=res["research"],
+                    # research_data is a Text column — store JSON, not the raw dict
+                    # (raw dict binding crashed /discover/search on sqlite).
+                    research_data=json.dumps(res["research"], default=str),
                     qualification_score=qual_score,
                     research_version="orchestrator-v1",
                     provider_used=res["research"].get("provider", "scrapegraph"),

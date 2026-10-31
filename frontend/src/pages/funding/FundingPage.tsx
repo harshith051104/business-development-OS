@@ -14,6 +14,7 @@ import {
   Send,
   ExternalLink,
   ListChecks,
+  Download,
 } from 'lucide-react'
 
 type ResultRow = InvestorSearchResult & {
@@ -35,6 +36,28 @@ export const FundingPage: React.FC = () => {
   const [useAiTemplate, setUseAiTemplate] = useState(true)
   const [sending, setSending] = useState(false)
   const [sendResult, setSendResult] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
+  const [exportError, setExportError] = useState<string | null>(null)
+
+  const handleExport = async () => {
+    setExporting(true)
+    setExportError(null)
+    try {
+      const blob = await fundingService.exportCsv({ sector, stage, location, limit: 10 })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'investor_leads.csv'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (err: any) {
+      setExportError(err?.message || 'Export failed. Please try again.')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -124,14 +147,30 @@ export const FundingPage: React.FC = () => {
               Search angel investors, VCs and funds, find their partner contacts, then send outreach immediately — no review step.
             </p>
           </div>
-          <Link
-            to="/business-development/funding/campaigns"
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 rounded-xl hover:bg-emerald-900/50 transition-all"
-          >
-            <ListChecks className="w-4 h-4" />
-            View Funding Campaigns
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 rounded-xl hover:bg-emerald-900/50 transition-all disabled:opacity-50"
+            >
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {exporting ? 'Exporting...' : 'Export to Excel (CSV)'}
+            </button>
+            <Link
+              to="/business-development/funding/campaigns"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 rounded-xl hover:bg-emerald-900/50 transition-all"
+            >
+              <ListChecks className="w-4 h-4" />
+              View Funding Campaigns
+            </Link>
+          </div>
         </div>
+
+        {exportError && (
+          <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-sm text-rose-300">
+            {exportError}
+          </div>
+        )}
 
         {/* Guided search form */}
         <form

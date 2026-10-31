@@ -414,7 +414,9 @@ def get_comprehensive_analytics(
         {
             "id": f.id,
             "title": f.title,
+            "organization_id": f.organization_id,
             "organization_name": f.organization.name if f.organization else None,
+            "contact_id": f.contact_id,
             "due_at": f.due_at,
             "priority": f.priority,
         }

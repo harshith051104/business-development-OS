@@ -25,7 +25,7 @@ TARGET_FIELDS = [
     "org_name", "org_website", "org_industry", "org_country", "org_state", "org_city",
     "org_phone", "org_email",
     "contact_full_name", "contact_first_name", "contact_last_name",
-    "contact_email", "contact_phone", "contact_designation", "contact_linkedin",
+    "contact_email", "contact_phone", "contact_designation", "contact_linkedin", "contact_location",
 ]
 
 # Keyword hints used to auto-suggest a mapping from the uploaded sheet's own headers.
@@ -51,6 +51,7 @@ _SUGGEST_HINTS: Dict[str, List[str]] = {
     "contact_phone": ["phone", "mobile", "cell", "contact number"],
     "contact_designation": ["title", "designation", "job title", "position", "role"],
     "contact_linkedin": ["linkedin"],
+    "contact_location": ["contact location", "contact city", "personal location"],
 }
 
 
@@ -150,14 +151,24 @@ def import_leads(
     column_mapping: Dict[str, Optional[str]],
     user_id: Optional[int],
     filename: str,
+    campaign_id: Optional[int] = None,
 ) -> LeadImportBatch:
     """
     Imports rows into Organization/Contact using the user-confirmed column mapping.
     One row = one organization (+ optionally one contact). Dedupes against existing CRM
     records the same way AI discovery promotion does, and mirrors every created/matched
     record into the Google Sheets CRM sync (best-effort, non-fatal).
+
+    Every Organization/Contact row *created* by this import (not matched to an existing
+    one) is tagged with `import_batch_id` so the batch's "Past Imports" detail view can
+    look the rows back up later.
+
+    If `campaign_id` is given, every contact touched by the import (created or matched)
+    is enrolled into that campaign as a `CampaignContact` (deduped — skipped if already
+    enrolled in that campaign).
     """
     from app.services.google_sheets_service import sync_organization, sync_contact
+    from app.models.campaign import Campaign, CampaignContact, CampaignContactStatus
 
     def get_val(row: Dict[str, str], field: str) -> str:
         header = column_mapping.get(field)
@@ -165,9 +176,33 @@ def import_leads(
             return ""
         return (row.get(header) or "").strip()
 
-    orgs_created = orgs_matched = contacts_created = contacts_matched = skipped = 0
-    errors: List[str] = []
     now = datetime.now(timezone.utc)
+
+    # Validate the campaign up front — an invalid id is simply ignored (import still runs,
+    # just without enrollment) rather than failing the whole import.
+    if campaign_id is not None:
+        campaign_exists = db.query(Campaign.id).filter(Campaign.id == campaign_id).first()
+        if not campaign_exists:
+            logger.warning(f"Lead import: campaign_id={campaign_id} not found; skipping enrollment.")
+            campaign_id = None
+
+    # Create the batch row first (committed immediately) so every org/contact created
+    # below can be tagged with its id. Aggregate counts are back-filled at the end.
+    batch = LeadImportBatch(
+        filename=filename,
+        uploaded_by=user_id,
+        column_mapping=column_mapping,
+        total_rows=len(rows),
+        status="completed",
+    )
+    db.add(batch)
+    db.commit()
+    db.refresh(batch)
+    batch_id = batch.id
+
+    orgs_created = orgs_matched = contacts_created = contacts_matched = skipped = 0
+    contacts_enrolled = 0
+    errors: List[str] = []
     sheets_pending: List[Tuple[str, int]] = []  # ("org"|"contact", id) — synced after all DB commits
 
     for i, row in enumerate(rows, start=1):
@@ -199,6 +234,7 @@ def import_leads(
                     notes=f"Imported from lead list '{filename}'.",
                     created_by=user_id,
                     owner_id=user_id,
+                    import_batch_id=batch_id,
                     created_at=now,
                     updated_at=now,
                 )
@@ -216,12 +252,15 @@ def import_leads(
                 last_name = parts[1] if len(parts) > 1 else ""
             contact_email = get_val(row, "contact_email")
 
+            contact_id_for_enrollment: Optional[int] = None
+
             if first_name or contact_email:
                 is_c_dup, existing_contact_id, _ = check_contact_duplicate(
                     db, email=contact_email, full_name=f"{first_name} {last_name}".strip(), organization_id=org.id
                 )
                 if is_c_dup and existing_contact_id:
                     contacts_matched += 1
+                    contact_id_for_enrollment = existing_contact_id
                 else:
                     contact = Contact(
                         organization_id=org.id,
@@ -231,10 +270,12 @@ def import_leads(
                         email=contact_email or None,
                         phone=get_val(row, "contact_phone") or None,
                         linkedin_url=get_val(row, "contact_linkedin") or None,
+                        location=get_val(row, "contact_location") or None,
                         connection_status=ContactRelationshipStatus.NOT_CONTACTED.value,
                         notes=f"Imported from lead list '{filename}'.",
                         created_by=user_id,
                         owner_id=user_id,
+                        import_batch_id=batch_id,
                         created_at=now,
                         updated_at=now,
                     )
@@ -248,6 +289,26 @@ def import_leads(
                     ))
                     contacts_created += 1
                     sheets_pending.append(("contact", contact.id))
+                    contact_id_for_enrollment = contact.id
+
+            if campaign_id and contact_id_for_enrollment:
+                already_enrolled = (
+                    db.query(CampaignContact.id)
+                    .filter(
+                        CampaignContact.campaign_id == campaign_id,
+                        CampaignContact.contact_id == contact_id_for_enrollment,
+                    )
+                    .first()
+                )
+                if not already_enrolled:
+                    db.add(CampaignContact(
+                        campaign_id=campaign_id,
+                        contact_id=contact_id_for_enrollment,
+                        organization_id=org.id,
+                        current_step_number=1,
+                        status=CampaignContactStatus.PENDING.value,
+                    ))
+                    contacts_enrolled += 1
 
             db.commit()
         except Exception as e:
@@ -257,22 +318,17 @@ def import_leads(
                 errors.append(f"Row {i}: {e}")
             skipped += 1
 
-    batch = LeadImportBatch(
-        filename=filename,
-        uploaded_by=user_id,
-        column_mapping=column_mapping,
-        total_rows=len(rows),
-        organizations_created=orgs_created,
-        organizations_matched=orgs_matched,
-        contacts_created=contacts_created,
-        contacts_matched=contacts_matched,
-        skipped_count=skipped,
-        errors=errors or None,
-        status="completed",
-    )
-    db.add(batch)
+    batch.organizations_created = orgs_created
+    batch.organizations_matched = orgs_matched
+    batch.contacts_created = contacts_created
+    batch.contacts_matched = contacts_matched
+    batch.skipped_count = skipped
+    batch.errors = errors or None
     db.commit()
     db.refresh(batch)
+    # Not persisted on the batch row itself (not an aggregate the model tracks) — stashed
+    # as a plain attribute so the router can read it off the returned object.
+    batch.contacts_enrolled = contacts_enrolled
 
     # Best-effort Sheets mirror — runs after every DB commit is done, so a slow/rate-limited
     # Sheets API never holds the SQLite write lock open (that was the actual cause of the

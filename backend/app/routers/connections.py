@@ -157,6 +157,7 @@ def auto_sync_pipeline(db: Session, user_name: str = "System Auto-Sync") -> int:
 def get_connections_pipeline(
     search: str = Query(None),
     priority: str = Query(None),
+    owner_id: int = Query(None, description="Filter organizations by assigned team member / owner"),
     auto_sync: bool = Query(True, description="Automatically progress stages based on live activity"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_business_development),
@@ -165,6 +166,9 @@ def get_connections_pipeline(
         auto_sync_pipeline(db, user_name="Auto-Pipeline Monitor")
 
     query = db.query(Organization).filter(Organization.is_deleted.is_(False))
+
+    if owner_id:
+        query = query.filter(Organization.owner_id == owner_id)
 
     if priority and priority != "All":
         query = query.filter(Organization.priority == priority)

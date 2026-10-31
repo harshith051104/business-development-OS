@@ -14,6 +14,9 @@ import {
   Handshake,
   Calendar,
   Sparkles,
+  Bell,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react'
 
 export const AdminSettingsPage: React.FC = () => {
@@ -22,6 +25,8 @@ export const AdminSettingsPage: React.FC = () => {
   const [partnershipTypes, setPartnershipTypes] = useState<string[]>([])
   const [meetingTypes, setMeetingTypes] = useState<string[]>([])
   const [projectCategories, setProjectCategories] = useState<string[]>([])
+  const [taskCalendarSyncEnabled, setTaskCalendarSyncEnabled] = useState<boolean>(true)
+  const [taskRemindersEnabled, setTaskRemindersEnabled] = useState<boolean>(true)
 
   // Inputs for adding new entries
   const [newOrgType, setNewOrgType] = useState<string>('')
@@ -44,6 +49,8 @@ export const AdminSettingsPage: React.FC = () => {
       setPartnershipTypes(data.partnership_types || [])
       setMeetingTypes(data.meeting_types || [])
       setProjectCategories(data.project_categories || [])
+      setTaskCalendarSyncEnabled(data.task_calendar_sync_enabled ?? true)
+      setTaskRemindersEnabled(data.task_reminders_enabled ?? true)
     } catch (err: any) {
       setError(err.detail || err.message || 'Failed to load system settings.')
     } finally {
@@ -66,6 +73,8 @@ export const AdminSettingsPage: React.FC = () => {
         partnership_types: partnershipTypes,
         meeting_types: meetingTypes,
         project_categories: projectCategories,
+        task_calendar_sync_enabled: taskCalendarSyncEnabled,
+        task_reminders_enabled: taskRemindersEnabled,
       })
       setSettings(updated)
       setSuccessMessage('System configuration saved successfully.')
@@ -315,6 +324,49 @@ export const AdminSettingsPage: React.FC = () => {
                   className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold"
                 >
                   <Plus className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* 5. Task Automation */}
+            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 md:col-span-2">
+              <div className="flex items-center space-x-2 pb-2 border-b border-slate-800">
+                <Bell className="w-4 h-4 text-rose-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Task Automation
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setTaskCalendarSyncEnabled((v) => !v)}
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#1A1040] border border-slate-700 text-left hover:border-slate-600 transition"
+                >
+                  <div>
+                    <p className="text-xs font-bold text-white">Sync Task Due Dates to Calendar</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Show tasks with a due date as events on the Calendar page.</p>
+                  </div>
+                  {taskCalendarSyncEnabled ? (
+                    <ToggleRight className="w-7 h-7 text-emerald-400 shrink-0" />
+                  ) : (
+                    <ToggleLeft className="w-7 h-7 text-slate-500 shrink-0" />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTaskRemindersEnabled((v) => !v)}
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#1A1040] border border-slate-700 text-left hover:border-slate-600 transition"
+                >
+                  <div>
+                    <p className="text-xs font-bold text-white">Task Due/Reminder Notifications</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Notify task owners when a task is due, overdue, or a reminder fires.</p>
+                  </div>
+                  {taskRemindersEnabled ? (
+                    <ToggleRight className="w-7 h-7 text-emerald-400 shrink-0" />
+                  ) : (
+                    <ToggleLeft className="w-7 h-7 text-slate-500 shrink-0" />
+                  )}
                 </button>
               </div>
             </div>

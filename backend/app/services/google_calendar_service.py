@@ -1,7 +1,8 @@
 """Google Calendar API service for meeting sync and scheduling."""
+import asyncio
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any, List
 from app.core.config import settings
 
@@ -216,3 +217,61 @@ async def sync_meeting_to_calendar(
         location=location,
         attendees=attendees,
     )
+
+
+def sync_meeting(meeting, attendee_emails: Optional[List[str]] = None) -> Optional[str]:
+    """
+    Create or update the Google Calendar event for a Meeting ORM object.
+    Creates if meeting.google_event_id is unset, else updates that event.
+    Returns the google_event_id on success, or None if Calendar isn't
+    configured or the sync call fails (caller treats this as a no-op).
+    """
+    if not settings.GOOGLE_CALENDAR_CREDENTIALS_FILE:
+        return None
+
+    start = meeting.scheduled_at
+    end = start + timedelta(minutes=meeting.duration_minutes or 45)
+    summary = meeting.title
+    description = meeting.agenda or meeting.description or ""
+    location = meeting.meeting_url or meeting.location or ""
+
+    try:
+        if meeting.google_event_id:
+            result = asyncio.run(
+                update_event(
+                    event_id=meeting.google_event_id,
+                    summary=summary,
+                    start_time=start.isoformat(),
+                    end_time=end.isoformat(),
+                    description=description,
+                    location=location,
+                )
+            )
+            if result:
+                return meeting.google_event_id
+            return None
+        else:
+            attendees = [{"email": e} for e in (attendee_emails or []) if e]
+            result = asyncio.run(
+                create_event(
+                    summary=summary,
+                    start_time=start.isoformat(),
+                    end_time=end.isoformat(),
+                    description=description,
+                    location=location,
+                    attendees=attendees,
+                )
+            )
+            return result.get("id") if result else None
+    except Exception:
+        return None
+
+
+def delete_meeting_event(google_event_id: Optional[str]) -> bool:
+    """Delete a previously synced Google Calendar event, if any."""
+    if not google_event_id or not settings.GOOGLE_CALENDAR_CREDENTIALS_FILE:
+        return False
+    try:
+        return asyncio.run(delete_event(google_event_id))
+    except Exception:
+        return False

@@ -40,6 +40,9 @@ def _format_contact_out(contact: Contact) -> ContactOut:
         phone=contact.phone,
         linkedin_url=contact.linkedin_url,
         location=contact.location,
+        organization_city=contact.organization.city if contact.organization else None,
+        organization_state=contact.organization.state if contact.organization else None,
+        organization_country=contact.organization.country if contact.organization else None,
         is_decision_maker=contact.is_decision_maker,
         is_primary_contact=contact.is_primary_contact,
         connection_status=contact.connection_status,
@@ -69,6 +72,9 @@ def _format_contact_detail_out(contact: Contact) -> ContactDetailOut:
         phone=contact.phone,
         linkedin_url=contact.linkedin_url,
         location=contact.location,
+        organization_city=contact.organization.city if contact.organization else None,
+        organization_state=contact.organization.state if contact.organization else None,
+        organization_country=contact.organization.country if contact.organization else None,
         is_decision_maker=contact.is_decision_maker,
         is_primary_contact=contact.is_primary_contact,
         connection_status=contact.connection_status,
@@ -422,6 +428,12 @@ def update_contact(
     db.add(act)
     db.commit()
     db.refresh(contact)
+
+    try:
+        from app.services.google_sheets_service import sync_contact
+        sync_contact(contact)
+    except Exception:
+        pass
 
     return _format_contact_detail_out(contact)
 

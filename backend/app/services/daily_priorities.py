@@ -109,7 +109,7 @@ def compute_daily_priorities(db: Session, user: Optional[User] = None) -> DailyP
             priority="High" if overdue_fu.priority == FollowUpPriority.HIGH.value or is_overdue else "Medium",
             reason_why=f"Follow-up was scheduled for {overdue_fu.due_at.strftime('%b %d, %Y') if overdue_fu.due_at else 'Soon'} ({'Overdue' if is_overdue else 'Due soon'}) for {org_name}.",
             recommended_action=f"Execute reminder task: '{overdue_fu.title}' and update status upon completion.",
-            url=f"/business-development/followups",
+            url=f"/business-development/organizations/{overdue_fu.organization_id}" if overdue_fu.organization_id else "/business-development",
             metadata={"due_at": overdue_fu.due_at.isoformat() if overdue_fu.due_at else None, "organization_id": overdue_fu.organization_id}
         )
         all_items.append(who_fu)

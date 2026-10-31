@@ -1,4 +1,14 @@
-"""Simple in-memory rate limiter middleware."""
+"""Simple in-memory rate limiter middleware.
+
+CONSTRAINT: state lives in this process's memory (self.requests) and resets
+on restart. This is correct only when the app runs as a single worker
+process. Every uvicorn/gunicorn invocation in this repo (Dockerfile,
+README.md, DEPLOYMENT.md) runs without --workers, i.e. exactly one worker —
+do not add --workers > 1 (or multiple gunicorn worker processes) without
+first moving this state to a shared store (e.g. a SQLite table, consistent
+with the rest of this app's no-new-infra approach), or the limit will
+silently stop being enforced per client.
+"""
 import time
 from collections import defaultdict
 from fastapi import Request, Response

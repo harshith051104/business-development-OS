@@ -30,6 +30,7 @@ class BDTask(Base):
     status = Column(String(50), nullable=False, default=TaskStatus.TODO.value, index=True)
 
     due_date = Column(DateTime, nullable=True, index=True)
+    reminder_at = Column(DateTime, nullable=True, index=True)
     completed_at = Column(DateTime, nullable=True)
 
     entity_type = Column(String(50), nullable=True, index=True)  # organization, contact, opportunity, meeting, demo, proposal, negotiation, partnership, customer

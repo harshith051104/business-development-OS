@@ -24,6 +24,10 @@ class CampaignContactStatus(str, enum.Enum):
     COMPLETED = "Completed"
     BOUNCED = "Bounced"
     REJECTED = "Rejected"
+    INTERESTED = "Interested"
+    NOT_INTERESTED = "Not Interested"
+    OUT_OF_OFFICE = "Out of Office"
+    MEETING_BOOKED = "Meeting Booked"
 
 
 class Campaign(Base):

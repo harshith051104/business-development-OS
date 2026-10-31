@@ -19,7 +19,6 @@ import MeetingsListPage from './pages/meetings/MeetingsListPage'
 import MeetingNewPage from './pages/meetings/MeetingNewPage'
 import MeetingDetailPage from './pages/meetings/MeetingDetailPage'
 import MeetingEditPage from './pages/meetings/MeetingEditPage'
-import FollowUpsListPage from './pages/followups/FollowUpsListPage'
 import ConnectionsBoardPage from './pages/connections/ConnectionsBoardPage'
 import OpportunitiesListPage from './pages/opportunities/OpportunitiesListPage'
 import OpportunityNewPage from './pages/opportunities/OpportunityNewPage'
@@ -62,12 +61,10 @@ import { CustomersView } from './pages/CustomersView'
 import { CallsView } from './pages/CallsView'
 import CalendarPage from './pages/CalendarPage'
 import MapPage from './pages/MapPage'
-import { ReportsView } from './pages/ReportsView'
 import CampaignsListPage from './pages/campaigns/CampaignsListPage'
 import CampaignNewPage from './pages/campaigns/CampaignNewPage'
 import CampaignDetailPage from './pages/campaigns/CampaignDetailPage'
 import FundingPage from './pages/funding/FundingPage'
-import FundingCampaignsPage from './pages/funding/FundingCampaignsPage'
 import LeadImportPage from './pages/leads/LeadImportPage'
 import LeadTrackerPage from './pages/leads/LeadTrackerPage'
 
@@ -232,15 +229,6 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/business-development/followups"
-          element={
-            <ProtectedRoute>
-              <FollowUpsListPage />
-            </ProtectedRoute>
-          }
-        />
-
         {/* Phase 7: Connection Pipeline Board & Opportunity Management */}
         <Route
           path="/business-development/connections"
@@ -354,15 +342,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/business-development/funding/campaigns"
-          element={
-            <ProtectedRoute>
-              <FundingCampaignsPage />
-            </ProtectedRoute>
-          }
-        />
-
         {/* Lead list upload — flexible column mapping, syncs into CRM + Google Sheets */}
         <Route
           path="/business-development/leads/import"
@@ -495,14 +474,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <CallsView />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/business-development/reports"
-          element={
-            <ProtectedRoute>
-              <ReportsView />
             </ProtectedRoute>
           }
         />

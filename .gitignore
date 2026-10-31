@@ -68,3 +68,9 @@ backend/_pw_funding_check.py
 # Test artifacts (keep test files, ignore generated data)
 backend/tests/__pycache__/
 backend/gmail_token.json
+
+# Generated/exported artifacts, not source
+architecture.json
+elly-architecture.html
+elly-architecture.visual-check.json
+phase23_live_validation.xlsx

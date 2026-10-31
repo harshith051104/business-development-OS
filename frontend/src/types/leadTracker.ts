@@ -1,17 +1,73 @@
-export const LEAD_TRACKER_CHECKBOX_FIELDS = [
-  'linkedin_followed',
-  'linkedin_connection_sent',
-  'linkedin_connection_accepted',
-  'linkedin_first_message_sent',
-  'linkedin_reply_received',
-  'followup_1_sent',
-  'followup_2_sent',
-  'followup_3_sent',
-  'meeting_scheduled',
-  'opportunity_closed',
-] as const;
+import {
+  UserPlus,
+  Send,
+  Handshake,
+  MessageCircle,
+  MessageSquare,
+  Mail,
+  Eye,
+  Reply,
+  Repeat,
+  Calendar,
+  CheckCircle2,
+  type LucideIcon,
+} from "lucide-react";
 
-export type LeadTrackerCheckboxField = typeof LEAD_TRACKER_CHECKBOX_FIELDS[number];
+export const CHECKBOX_LABELS: Record<string, string> = {
+  linkedin_followed: "LinkedIn Followed",
+  linkedin_connection_sent: "Connection Sent",
+  linkedin_connection_accepted: "Connection Accepted",
+  linkedin_first_message_sent: "First Message Sent",
+  linkedin_reply_received: "LinkedIn Reply",
+  email_sent: "Email Sent",
+  email_opened: "Email Opened",
+  email_replied: "Email Replied",
+  followup_1_sent: "Follow-up #1",
+  followup_2_sent: "Follow-up #2",
+  followup_3_sent: "Follow-up #3",
+  meeting_scheduled: "Meeting Scheduled",
+  opportunity_closed: "Deal Closed",
+};
+
+export const CHECKBOX_FIELDS = Object.keys(CHECKBOX_LABELS);
+
+export const CHECKBOX_ICONS: Record<string, LucideIcon> = {
+  linkedin_followed: UserPlus,
+  linkedin_connection_sent: Send,
+  linkedin_connection_accepted: Handshake,
+  linkedin_first_message_sent: MessageCircle,
+  linkedin_reply_received: MessageSquare,
+  email_sent: Mail,
+  email_opened: Eye,
+  email_replied: Reply,
+  followup_1_sent: Repeat,
+  followup_2_sent: Repeat,
+  followup_3_sent: Repeat,
+  meeting_scheduled: Calendar,
+  opportunity_closed: CheckCircle2,
+};
+
+export const LEAD_TRACKER_CHECKBOX_FIELDS = CHECKBOX_FIELDS;
+export type LeadTrackerCheckboxField = string;
+
+export interface TrackerUser {
+  id: string;
+  name: string;
+  display_name: string;
+  email: string;
+  role?: string;
+}
+
+export interface CreateLeadPayload {
+  name: string;
+  email: string;
+  company?: string;
+  focus?: string;
+  linkedin?: string;
+  campaign_id?: number | string;
+  notes?: string;
+  role?: string;
+}
 
 export interface LeadTrackerRow {
   id: number;

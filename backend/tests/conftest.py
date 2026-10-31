@@ -15,6 +15,19 @@ from app.models.organization import (
     PriorityLevel,
 )
 from app.models.project import Project, ProjectCategory, ProjectStatus
+import app.services.scheduler as scheduler_service
+
+# AsyncIOScheduler is a module-level singleton (app/services/scheduler.py) started
+# and stopped by FastAPI's startup/shutdown events. Every `with TestClient(app)`
+# block fires those events on its own event loop; APScheduler does not support
+# starting a real AsyncIOScheduler again after a real shutdown() against a closed
+# loop, so the 2nd+ TestClient use in a pytest session intermittently raises
+# "RuntimeError: Event loop is closed" in whatever test happens to be running at
+# the time. No-op it for the whole test session -- scheduled jobs are exercised
+# directly (e.g. test_signals.py calls signal_service.scan_signals() itself).
+scheduler_service.start = lambda: None
+scheduler_service.shutdown = lambda: None
+
 from app.main import app
 
 TEST_DB_FILE = "test_bd.db"
@@ -301,3 +314,13 @@ def client():
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(autouse=True)
+def redirect_rate_limiter_session(monkeypatch):
+    """GmailRateLimitMiddleware keeps its own SessionLocal (outside the get_db
+    override), so POST /api/gmail/send attempts would be written to the dev DB
+    — contending with a running dev server and accumulating rate-limit rows
+    across test runs. Point it at the test DB like everything else."""
+    import app.main as _app_main
+    monkeypatch.setattr(_app_main, "_RateLimitSession", TestingSessionLocal)

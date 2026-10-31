@@ -5,6 +5,7 @@ export const connectionsService = {
   getKanbanPipeline: async (params?: {
     search?: string
     priority?: string
+    owner_id?: number
   }): Promise<KanbanBoard> => {
     return api.get<KanbanBoard>('/api/business-development/connections/pipeline', params)
   },

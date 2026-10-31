@@ -14,7 +14,8 @@ import {
   Trash2,
   MessageSquare,
   X,
-  Send
+  Send,
+  Bell
 } from 'lucide-react';
 
 export const TasksView: React.FC = () => {
@@ -29,6 +30,7 @@ export const TasksView: React.FC = () => {
     priority: 'High',
     due_date: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10),
   });
+  const [reminderEnabled, setReminderEnabled] = useState(false);
   const [activeTask, setActiveTask] = useState<BDTask | null>(null);
   const [comments, setComments] = useState<TaskComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
@@ -55,6 +57,13 @@ export const TasksView: React.FC = () => {
     try {
       await taskService.create(form);
       setShowModal(false);
+      setReminderEnabled(false);
+      setForm({
+        title: '',
+        description: '',
+        priority: 'High',
+        due_date: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10),
+      });
       loadTasks();
     } catch (err) {
       console.error(err);
@@ -290,6 +299,31 @@ export const TasksView: React.FC = () => {
                     className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-teal-500"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-1 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={reminderEnabled}
+                    onChange={e => {
+                      const checked = e.target.checked;
+                      setReminderEnabled(checked);
+                      if (!checked) setForm({ ...form, reminder_at: null });
+                    }}
+                    className="accent-teal-500"
+                  />
+                  <Bell className="w-3.5 h-3.5" />
+                  <span>Set Reminder</span>
+                </label>
+                {reminderEnabled && (
+                  <input
+                    type="datetime-local"
+                    value={form.reminder_at || ''}
+                    onChange={e => setForm({ ...form, reminder_at: e.target.value })}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-teal-500"
+                  />
+                )}
               </div>
 
               <div>

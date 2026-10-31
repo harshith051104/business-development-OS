@@ -16,6 +16,8 @@ from app.core.config import settings
 from app.models.meeting import Meeting, MeetingStatus
 from app.models.organization import Organization
 from app.models.contact import Contact
+from app.models.task import BDTask
+from app.models.setting import SystemSetting
 
 router = APIRouter(prefix="/api/calendar", tags=["Calendar"])
 
@@ -32,6 +34,46 @@ class CalendarEvent(BaseModel):
     organization_name: Optional[str] = None
     contact_names: List[str] = []
     meeting_url: Optional[str] = None
+    source: str = "meeting"
+
+
+def _task_calendar_sync_enabled(db: Session) -> bool:
+    s = db.query(SystemSetting).filter(SystemSetting.key == "task_calendar_sync_enabled").first()
+    return s.value_json if s is not None else True
+
+
+def _task_to_event(task: BDTask) -> CalendarEvent:
+    """Convert a standalone BDTask with a due_date into a calendar event."""
+    dt = task.due_date if task.due_date.tzinfo else task.due_date.replace(tzinfo=timezone.utc)
+    return CalendarEvent(
+        id=task.id,
+        title=task.title,
+        start=dt.isoformat(),
+        end=None,
+        description=task.description or "",
+        location="",
+        meeting_type=None,
+        status=task.status or "To Do",
+        organization_name=None,
+        contact_names=[],
+        meeting_url=None,
+        source="task",
+    )
+
+
+def _get_task_events(db: Session, start_dt: Optional[datetime] = None, end_dt: Optional[datetime] = None) -> List[CalendarEvent]:
+    if not _task_calendar_sync_enabled(db):
+        return []
+    query = db.query(BDTask).filter(
+        BDTask.is_deleted == False,  # noqa: E712
+        BDTask.due_date.isnot(None),
+    )
+    if start_dt:
+        query = query.filter(BDTask.due_date >= start_dt.strftime("%Y-%m-%d %H:%M:%S"))
+    if end_dt:
+        query = query.filter(BDTask.due_date <= end_dt.strftime("%Y-%m-%d %H:%M:%S"))
+    tasks = query.order_by(BDTask.due_date).all()
+    return [_task_to_event(t) for t in tasks]
 
 
 class CalendarSyncRequest(BaseModel):
@@ -109,7 +151,20 @@ def get_calendar_events(
         query = query.filter(Meeting.status != "Cancelled")
 
     meetings = query.order_by(Meeting.scheduled_at).all()
-    return [_meeting_to_event(m, db) for m in meetings]
+    events = [_meeting_to_event(m, db) for m in meetings]
+
+    task_start = None
+    task_end = None
+    try:
+        if start_date:
+            task_start = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
+        if end_date:
+            task_end = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+    except ValueError:
+        pass
+    events.extend(_get_task_events(db, task_start, task_end))
+    events.sort(key=lambda e: e.start)
+    return events
 
 
 @router.get("/today")
@@ -132,7 +187,10 @@ def get_today_events(
         Meeting.status != "Cancelled",
     ).order_by(Meeting.scheduled_at).all()
 
-    return [_meeting_to_event(m, db) for m in meetings]
+    events = [_meeting_to_event(m, db) for m in meetings]
+    events.extend(_get_task_events(db, start, end))
+    events.sort(key=lambda e: e.start)
+    return events
 
 
 @router.get("/upcoming")
@@ -156,7 +214,10 @@ def get_upcoming_events(
         Meeting.status != "Cancelled",
     ).order_by(Meeting.scheduled_at).all()
 
-    return [_meeting_to_event(m, db) for m in meetings]
+    events = [_meeting_to_event(m, db) for m in meetings]
+    events.extend(_get_task_events(db, now, end))
+    events.sort(key=lambda e: e.start)
+    return events
 
 
 @router.post("/sync-to-google/{meeting_id}")
@@ -182,9 +243,20 @@ async def sync_meeting_to_google(
         raise HTTPException(status_code=404, detail="Meeting not found")
 
     try:
-        from app.services.google_calendar_service import sync_meeting_to_calendar
-        result = sync_meeting_to_calendar(meeting)
-        return {"status": "synced", "google_event_id": result.get("id"), "meeting_id": meeting_id}
+        from app.services.google_calendar_service import sync_meeting
+        attendee_emails = [c.email for c in db.query(Contact).filter(
+            Contact.id.in_(meeting.contact_ids or ([meeting.primary_contact_id] if meeting.primary_contact_id else [])),
+        ).all() if c.email]
+        event_id = sync_meeting(meeting, attendee_emails=attendee_emails)
+        if not event_id:
+            return {
+                "status": "sync_failed",
+                "message": "Google Calendar sync failed. Meeting saved locally.",
+                "meeting_id": meeting_id,
+            }
+        meeting.google_event_id = event_id
+        db.commit()
+        return {"status": "synced", "google_event_id": event_id, "meeting_id": meeting_id}
     except Exception as e:
         return {
             "status": "sync_failed",

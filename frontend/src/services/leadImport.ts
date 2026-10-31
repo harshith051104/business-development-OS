@@ -21,7 +21,37 @@ export interface LeadImportResult {
   contacts_created: number
   contacts_matched: number
   skipped_count: number
+  contacts_enrolled?: number
+  campaign_id?: number | null
   errors: string[]
+}
+
+export interface LeadImportBatchOrganization {
+  id: number
+  name: string
+  website?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  status: string
+}
+
+export interface LeadImportBatchContact {
+  id: number
+  full_name: string
+  email?: string | null
+  phone?: string | null
+  designation?: string | null
+  location?: string | null
+  organization_id: number
+  organization_name?: string | null
+}
+
+export interface LeadImportBatchRecords {
+  batch_id: number
+  filename: string
+  organizations: LeadImportBatchOrganization[]
+  contacts: LeadImportBatchContact[]
 }
 
 export interface LeadImportBatchSummary {
@@ -53,6 +83,7 @@ export const TARGET_FIELD_LABELS: Record<string, string> = {
   contact_phone: 'Contact Phone',
   contact_designation: 'Contact Title / Designation',
   contact_linkedin: 'Contact LinkedIn URL',
+  contact_location: 'Contact Location (City/Area)',
 }
 
 export const leadImportService = {
@@ -75,15 +106,21 @@ export const leadImportService = {
 
   confirmImport: async (
     uploadId: string,
-    columnMapping: Record<string, string | null>
+    columnMapping: Record<string, string | null>,
+    campaignId?: number | null
   ): Promise<LeadImportResult> => {
     return api.post<LeadImportResult>('/api/business-development/leads/import', {
       upload_id: uploadId,
       column_mapping: columnMapping,
+      campaign_id: campaignId ?? null,
     })
   },
 
   listImports: async (): Promise<LeadImportBatchSummary[]> => {
     return api.get<LeadImportBatchSummary[]>('/api/business-development/leads/imports')
+  },
+
+  getBatchRecords: async (batchId: number): Promise<LeadImportBatchRecords> => {
+    return api.get<LeadImportBatchRecords>(`/api/business-development/leads/imports/${batchId}/records`)
   },
 }

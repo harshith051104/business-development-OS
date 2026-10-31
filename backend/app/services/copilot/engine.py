@@ -210,6 +210,21 @@ class CopilotEngine:
                 db, conversation_id, reply, intent="outreach_refusal"
             )
 
+        # User Manual & Feature Documentation (Verbatim lookup - AI does not generate/hallucinate)
+        from app.services.copilot.user_manual import is_user_manual_query, lookup_user_manual_section
+        if is_user_manual_query(request.message):
+            manual_reply = lookup_user_manual_section(request.message)
+            return cls._save_and_return_response(
+                db, conversation_id, manual_reply,
+                intent="user_manual",
+                suggested_followups=[
+                    "What are the 13 milestones in Lead Tracker?",
+                    "How does the email reply monitoring agent work?",
+                    "What do the Interested and Out of Office statuses mean?",
+                    "How do I use My Status vs Team Status in Connection Pipeline?"
+                ]
+            )
+
         # Context resolution (pronoun binding)
         resolved_message = cls._resolve_pronouns_with_context(
             db, request.message, request.context
@@ -760,7 +775,8 @@ class CopilotEngine:
             for f in fups:
                 tag = "OVERDUE" if f["is_overdue"] else f"Due: {f['due_date']}"
                 lines.append(f"- **{f['title']}** for **{f['organization_name']}** - `{tag}` (Priority: `{f['priority']}`)")
-                data_refs.append(DataReference(entity_type="followup", entity_id=f["id"], title=f["title"], subtitle=f"{f['organization_name']} - {tag}", url=f"/business-development/followups/{f['id']}"))
+                followup_url = f"/business-development/organizations/{f['organization_id']}" if f.get("organization_id") else "/business-development"
+                data_refs.append(DataReference(entity_type="followup", entity_id=f["id"], title=f["title"], subtitle=f"{f['organization_name']} - {tag}", url=followup_url))
             followups_list = ["Create a new follow-up"]
             return "\n".join(lines), "search_followups", tools_exec, data_refs, followups_list
 
@@ -1294,7 +1310,7 @@ class CopilotEngine:
                 db.commit()
                 db.refresh(fu)
                 log_audit_event(db, action="COPILOT_CREATE_FOLLOWUP", resource_type="FOLLOWUP", resource_id=fu.id, user=user, metadata={"title": fu.title})
-                data_refs.append(DataReference(entity_type="followup", entity_id=fu.id, title=fu.title, subtitle=f"Due: {fu.due_at.strftime('%b %d')}", url=f"/business-development/followups/{fu.id}"))
+                data_refs.append(DataReference(entity_type="followup", entity_id=fu.id, title=fu.title, subtitle=f"Due: {fu.due_at.strftime('%b %d')}", url=f"/business-development/organizations/{fu.organization_id}" if fu.organization_id else "/business-development"))
                 _delete_confirmation(db, request.action_id)
                 return CopilotConfirmResponse(action_id=request.action_id, approved=True, success=True, message=f"Successfully created follow-up **{fu.title}**.", result_data={"followup_id": fu.id}, data_references=data_refs)
 

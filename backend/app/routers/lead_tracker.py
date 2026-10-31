@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.auth.deps import require_business_development
 from app.core.audit import log_audit_event
 from app.core.database import get_db
+from app.core.security import hash_password
 from app.models.user import User
 from app.models.contact import Contact
 from app.models.organization import Organization
@@ -105,6 +106,8 @@ def sync_pull_from_sheet(
 def get_tracker_board(
     campaign_id: Optional[int] = Query(None),
     assigned_user_id: Optional[int] = Query(None),
+    assigned_user: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
@@ -117,6 +120,19 @@ def get_tracker_board(
         query = query.filter(CampaignContact.campaign_id == campaign_id)
     if assigned_user_id:
         query = query.filter(CampaignContact.assigned_user_id == assigned_user_id)
+    elif assigned_user and assigned_user.lower() != "all":
+        u_ids = [
+            u.id
+            for u in db.query(User)
+            .filter(or_(User.name.ilike(f"%{assigned_user}%"), User.email.ilike(f"%{assigned_user}%")))
+            .all()
+        ]
+        if u_ids:
+            query = query.filter(CampaignContact.assigned_user_id.in_(u_ids))
+        else:
+            query = query.filter(CampaignContact.id == -1)
+    if status and status.lower() != "all":
+        query = query.filter(CampaignContact.status.ilike(status))
     if search:
         matching_contacts = db.query(Contact.id).filter(
             or_(Contact.first_name.ilike(f"%{search}%"), Contact.last_name.ilike(f"%{search}%"), Contact.email.ilike(f"%{search}%"))
@@ -225,3 +241,219 @@ def add_timeline_event(
         "metadata": event.event_metadata,
         "created_at": event.created_at,
     }
+
+
+@router.post("/sync/push")
+def sync_push_to_sheet(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    """Manually push all tracker leads to Google Sheets."""
+    result = google_sheets_service.push_all_tracker_rows(db)
+    log_audit_event(
+        db,
+        action="LEAD_TRACKER_SHEET_PUSH",
+        resource_type="CAMPAIGN_CONTACT",
+        resource_id=None,
+        user=current_user,
+        metadata=result,
+    )
+    pushed = result.get("pushed", 0)
+    return {"success": True, "message": f"Successfully pushed {pushed} leads to Google Sheets.", **result}
+
+
+class TrackerUserCreate(BaseModel):
+    name: str
+    display_name: Optional[str] = None
+    email: str
+    password: Optional[str] = "Secret123!"
+    role: Optional[str] = "BUSINESS_DEVELOPMENT"
+
+
+class TrackerUserUpdate(BaseModel):
+    name: Optional[str] = None
+    display_name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+
+
+@router.get("/users")
+def get_tracker_users(db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.is_active.is_(True)).all()
+    return [
+        {
+            "id": str(u.id),
+            "name": u.name,
+            "display_name": u.name,
+            "email": u.email,
+            "role": u.role,
+        }
+        for u in users
+    ]
+
+
+@router.post("/users", status_code=status.HTTP_201_CREATED)
+def create_tracker_user(
+    body: TrackerUserCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    email_clean = body.email.lower().strip()
+    existing = db.query(User).filter(User.email == email_clean).first()
+    if existing:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User with email '{email_clean}' already exists.")
+    user = User(
+        name=body.display_name or body.name,
+        email=email_clean,
+        password_hash=hash_password(body.password or "Secret123!"),
+        role=body.role or "BUSINESS_DEVELOPMENT",
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {
+        "id": str(user.id),
+        "name": user.name,
+        "display_name": user.name,
+        "email": user.email,
+        "role": user.role,
+    }
+
+
+@router.patch("/users/{user_id}")
+def update_tracker_user(
+    user_id: int,
+    body: TrackerUserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+    if body.name or body.display_name:
+        user.name = body.display_name or body.name
+    if body.email:
+        user.email = body.email.lower().strip()
+    if body.role:
+        user.role = body.role
+    db.commit()
+    db.refresh(user)
+    return {
+        "id": str(user.id),
+        "name": user.name,
+        "display_name": user.name,
+        "email": user.email,
+        "role": user.role,
+    }
+
+
+@router.delete("/users/{user_id}")
+def delete_tracker_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+    user.is_active = False
+    db.commit()
+    return {"message": f"User '{user.name}' successfully removed."}
+
+
+class CreateLeadRequest(BaseModel):
+    name: str
+    email: str
+    company: Optional[str] = None
+    focus: Optional[str] = None
+    linkedin: Optional[str] = None
+    campaign_id: Optional[int] = None
+    notes: Optional[str] = None
+    role: Optional[str] = "lead"
+
+
+@router.post("/leads", status_code=status.HTTP_201_CREATED)
+def create_tracker_lead(
+    body: CreateLeadRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    # Find or select campaign
+    campaign = None
+    if body.campaign_id:
+        campaign = db.query(Campaign).filter(Campaign.id == body.campaign_id).first()
+    if not campaign:
+        campaign = db.query(Campaign).first()
+    if not campaign:
+        campaign = Campaign(name="General Outreach", category="client", status="Active")
+        db.add(campaign)
+        db.commit()
+        db.refresh(campaign)
+
+    # Find or create organization
+    org_name = (body.company or "Independent / Unspecified").strip()
+    org = db.query(Organization).filter(Organization.name.ilike(org_name)).first()
+    if not org:
+        org = Organization(name=org_name, organization_type="Prospect", status="Active", owner_id=current_user.id)
+        db.add(org)
+        db.commit()
+        db.refresh(org)
+
+    # Find or create contact
+    parts = body.name.strip().split(" ", 1)
+    first_name = parts[0]
+    last_name = parts[1] if len(parts) > 1 else ""
+    contact = db.query(Contact).filter(Contact.email == body.email.strip()).first()
+    if not contact:
+        contact = Contact(
+            first_name=first_name,
+            last_name=last_name,
+            email=body.email.strip(),
+            linkedin_url=body.linkedin.strip() if body.linkedin else None,
+            organization_id=org.id,
+            owner_id=current_user.id,
+        )
+        db.add(contact)
+        db.commit()
+        db.refresh(contact)
+
+    # Create CampaignContact
+    cc = CampaignContact(
+        campaign_id=campaign.id,
+        contact_id=contact.id,
+        organization_id=org.id,
+        assigned_user_id=current_user.id,
+        focus=body.focus,
+        tracker_notes=body.notes,
+        status="Pending",
+    )
+    db.add(cc)
+    db.commit()
+    db.refresh(cc)
+
+    svc.log_timeline_event(
+        db,
+        campaign_contact_id=cc.id,
+        user_id=current_user.id,
+        event_type="lead_created",
+        description=f"Lead created in campaign '{campaign.name}'",
+        metadata={"name": body.name, "email": body.email},
+    )
+    google_sheets_service.push_tracker_row(cc)
+    return _row_out(cc, db)
+
+
+@router.delete("/{campaign_contact_id}")
+def delete_tracker_lead(
+    campaign_contact_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_business_development),
+):
+    cc = db.query(CampaignContact).filter(CampaignContact.id == campaign_contact_id).first()
+    if not cc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lead not found.")
+    contact_name = f"{cc.contact.first_name} {cc.contact.last_name or ''}".strip() if cc.contact else f"Lead #{cc.id}"
+    db.delete(cc)
+    db.commit()
+    return {"message": f"Lead '{contact_name}' deleted successfully."}

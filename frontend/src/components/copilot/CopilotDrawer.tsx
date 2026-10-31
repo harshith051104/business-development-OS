@@ -25,9 +25,11 @@ import {
   AlertTriangle,
   HelpCircle,
   Lightbulb,
+  BookOpen,
 } from 'lucide-react'
 import { copilotService } from '../../services/copilot'
 import { CopilotMessageContent } from './CopilotMessageContent'
+import { UserManualModal } from './UserManualModal'
 import type {
   CopilotMessage,
   CopilotContext,
@@ -39,6 +41,7 @@ import type {
 export const CopilotDrawer: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showUserManual, setShowUserManual] = useState(false)
   const [inputMessage, setInputMessage] = useState('')
   const [conversationId, setConversationId] = useState<string | undefined>(undefined)
   const [messages, setMessages] = useState<CopilotMessage[]>([])
@@ -271,7 +274,15 @@ export const CopilotDrawer: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setShowUserManual(true)}
+                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-purple-200 hover:text-white bg-purple-900/40 hover:bg-purple-800/60 border border-purple-500/40 rounded-xl transition-all cursor-pointer shadow-sm shadow-purple-900/20"
+                title="Open Official User Manual"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-purple-300" />
+                <span className="text-[11px]">User Manual</span>
+              </button>
               <button
                 onClick={handleClearChat}
                 className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
@@ -512,6 +523,9 @@ export const CopilotDrawer: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* User Manual Modal */}
+      <UserManualModal isOpen={showUserManual} onClose={() => setShowUserManual(false)} />
     </>
   )
 }

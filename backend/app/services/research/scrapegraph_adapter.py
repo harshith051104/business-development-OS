@@ -28,7 +28,7 @@ class ScrapeGraphAdapter:
 
         self._config = {
             "llm": {
-                "model": "google_genai/gemini-3.8-flash",
+                "model": "google_genai/gemini-2.0-flash",
                 "api_key": api_key,
                 "model_tokens": 100000,
                 "temperature": 0,

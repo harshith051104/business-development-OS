@@ -86,7 +86,13 @@ export const RelationshipTimeline: React.FC<RelationshipTimelineProps> = ({
       return `/business-development/meetings/${event.reference_id}`
     }
     if (event.event_type === 'followup') {
-      return `/business-development/followups`
+      if (organizationId) {
+        return `/business-development/organizations/${organizationId}`
+      }
+      if (contactId) {
+        return `/business-development/contacts/${contactId}`
+      }
+      return null
     }
     return null
   }
