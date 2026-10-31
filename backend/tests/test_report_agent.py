@@ -122,3 +122,69 @@ def test_generate_executive_report_quiet_period_still_generates(db_session):
     far_future_period = (datetime.now(timezone.utc) + timedelta(days=3650)).isoformat()
     result = generate_executive_report(db_session, dev_user, period="this week")
     assert "report_id" in result
+
+
+def _dev_token(client):
+    res = client.post("/auth/login", json={"email": "dev@elly.test", "password": "password123"})
+    assert res.status_code == 200
+    return res.json()["access_token"]
+
+
+def _bd_token(client):
+    res = client.post("/auth/login", json={"email": "bd@test.local", "password": "password123"})
+    assert res.status_code == 200
+    return res.json()["access_token"]
+
+
+def test_download_report_requires_dev_role(client, db_session):
+    token = _bd_token(client)
+    res = client.get(
+        "/api/reports/1/download?format=docx",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert res.status_code == 403
+
+
+def test_download_report_404_for_unknown_id(client, db_session):
+    token = _dev_token(client)
+    res = client.get(
+        "/api/reports/99999/download?format=docx",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert res.status_code == 404
+
+
+def test_download_report_404_for_missing_file_on_disk(client, db_session):
+    from app.models.report import ReportGeneration
+    from datetime import datetime, timezone
+    row = ReportGeneration(
+        requested_by_id=None,
+        period_start=datetime.now(timezone.utc),
+        period_end=datetime.now(timezone.utc),
+        docx_path="nonexistent/path.docx",
+        pdf_path="nonexistent/path.pdf",
+    )
+    db_session.add(row)
+    db_session.commit()
+    token = _dev_token(client)
+    res = client.get(
+        f"/api/reports/{row.id}/download?format=docx",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert res.status_code == 404
+
+
+def test_download_report_success_returns_correct_content_type(client, db_session, monkeypatch):
+    from app.services.copilot import tools as tools_module
+    from app.services import report_render_service
+    from app.models.user import User, UserRole
+    monkeypatch.setattr(report_render_service, "_get_llm_router", lambda: (_ for _ in ()).throw(Exception("skip llm in test")))
+    dev_user = db_session.query(User).filter(User.role == UserRole.DEV.value).first()
+    result = tools_module.generate_executive_report(db_session, dev_user, period="last 30 days")
+    token = _dev_token(client)
+    res = client.get(
+        f"/api/reports/{result['report_id']}/download?format=docx",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert res.status_code == 200
+    assert res.headers["content-type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
