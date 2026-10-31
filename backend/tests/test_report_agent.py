@@ -34,6 +34,36 @@ def test_get_team_performance_filters_by_period(db_session):
     assert isinstance(result, list)
 
 
+def test_render_narrative_success(monkeypatch):
+    from app.services import report_render_service
+    from app.services.report_agent_service import ReportData
+    from app.services.copilot.llm_router import LLMResponse
+
+    class StubRouter:
+        def chat(self, *args, **kwargs):
+            return LLMResponse(content="Overview: things are fine.")
+
+    monkeypatch.setattr(report_render_service, "_get_llm_router", lambda: StubRouter())
+    data = ReportData(period_start=None, period_end=None, team=[], task_stats={}, company_totals={})
+    result = report_render_service.render_narrative(data)
+    assert "Overview" in result
+
+
+def test_render_narrative_falls_back_on_llm_failure(monkeypatch):
+    from app.services import report_render_service
+    from app.services.report_agent_service import ReportData
+    from app.services.copilot.llm_router import AllProvidersExhausted, LLMProviderError
+
+    class StubRouter:
+        def chat(self, *args, **kwargs):
+            raise AllProvidersExhausted([LLMProviderError("groq", 500, "boom")])
+
+    monkeypatch.setattr(report_render_service, "_get_llm_router", lambda: StubRouter())
+    data = ReportData(period_start=None, period_end=None, team=[], task_stats={}, company_totals={})
+    result = report_render_service.render_narrative(data)
+    assert isinstance(result, str) and len(result) > 0
+
+
 def test_gather_report_data_shape(db_session):
     from app.services.report_agent_service import gather_report_data
     from datetime import datetime, timezone, timedelta
