@@ -18,6 +18,7 @@ from app.models.followup import FollowUp, FollowUpStatus
 from app.models.activity import ContactActivity
 from app.models.communication import Communication
 from app.models.partnership import Partnership
+from app.services.report_agent_service import get_team_performance
 from app.schemas.analytics import (
     OverviewMetricsOut,
     PipelineStageCountOut,
@@ -351,30 +352,9 @@ def get_comprehensive_analytics(
     )
 
     # 10. Team Performance
-    users = db.query(User).filter(User.is_active.is_(True)).all()
-    team_perf: List[TeamMemberPerformanceOut] = []
-    for u in users:
-        u_name = u.name or u.email
-        u_orgs = db.query(Organization).filter(Organization.created_by == u_name).count()
-        u_contacts = db.query(Contact).filter(Contact.created_by == u_name).count()
-        u_comms = db.query(Communication).filter(Communication.created_by == u_name).count()
-        u_mtgs = db.query(Meeting).filter(Meeting.created_by == u_name, Meeting.status == MeetingStatus.COMPLETED.value).count()
-        u_opps = db.query(Opportunity).filter(or_(Opportunity.owner_id == u.id, Opportunity.created_by == u_name)).count()
-        u_fols = db.query(FollowUp).filter(FollowUp.created_by == u_name, FollowUp.status == FollowUpStatus.COMPLETED.value).count()
-
-        team_perf.append(
-            TeamMemberPerformanceOut(
-                user_id=u.id,
-                name=u_name,
-                email=u.email,
-                organizations_added=u_orgs,
-                contacts_added=u_contacts,
-                communications_logged=u_comms,
-                meetings_completed=u_mtgs,
-                opportunities_managed=u_opps,
-                followups_completed=u_fols,
-            )
-        )
+    team_period_start = start_dt if start_dt else datetime(1970, 1, 1, tzinfo=timezone.utc)
+    team_period_end = end_dt if end_dt else now
+    team_perf = get_team_performance(db, team_period_start, team_period_end)
 
     # 11. Top Opportunities
     top_opps_query = (
