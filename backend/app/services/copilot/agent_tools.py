@@ -593,6 +593,20 @@ AGENT_TOOL_SCHEMAS: list[dict] = [
     {
         "type": "function",
         "function": {
+            "name": "generate_executive_report",
+            "description": "Generate a CEO-facing executive report (team activity narrative + docx/pdf) covering a given period. Restricted to DEV accounts; non-DEV callers get a friendly refusal.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "period": {"type": "string", "description": "Free-text period like 'this week', 'last 30 days', 'this month', 'last quarter'"},
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "send_funding_outreach",
             "description": "Send funding/investor outreach emails immediately with NO approval step (distinct from the reviewed client-campaign flow). Use a provided template, or omit it to let AI generate the message.",
             "parameters": {
@@ -661,6 +675,7 @@ TOOL_REGISTRY: dict[str, Callable] = {
     "find_investors": tools.find_investors,
     "find_investor_contacts": tools.find_investor_contacts,
     "send_funding_outreach": tools.send_funding_outreach,
+    "generate_executive_report": tools.generate_executive_report,
 }
 
 

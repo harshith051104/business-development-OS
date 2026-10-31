@@ -140,7 +140,9 @@ SYSTEM_PROMPT = (
     "- When the user asks 'what's new', 'what needs my attention', or "
     "about notifications, use get_my_notifications.\n"
     "- When the user asks which leads/orgs are showing buying signals or "
-    "engagement worth following up on, use get_active_signals."
+    "engagement worth following up on, use get_active_signals.\n"
+    "- When the user asks for a leadership/CEO/executive report or summary "
+    "of team activity, use generate_executive_report."
 )
 
 
@@ -259,6 +261,10 @@ class CopilotEngine:
                         data_references=data_refs, pending_confirmation=pending_conf,
                         suggested_followups=followups
                     )
+            elif route_result.tool_name == "generate_executive_report":
+                return cls._handle_generate_executive_report(
+                    db, user, route_result.pre_resolved_args or {}, conversation_id
+                )
 
             try:
                 args = route_result.pre_resolved_args or {}
@@ -1433,7 +1439,7 @@ class CopilotEngine:
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     @classmethod
-    def _save_and_return_response(cls, db, conversation_id, reply, intent=None, tools_executed=None, data_references=None, pending_confirmation=None, suggested_followups=None):
+    def _save_and_return_response(cls, db, conversation_id, reply, intent=None, tools_executed=None, data_references=None, pending_confirmation=None, suggested_followups=None, report_ready=None):
         tools_json = [t.model_dump(mode="json") for t in tools_executed] if tools_executed else None
         refs_json = [r.model_dump(mode="json") for r in data_references] if data_references else None
         conf_json = pending_confirmation.model_dump(mode="json") if pending_confirmation else None
@@ -1446,7 +1452,8 @@ class CopilotEngine:
             tools_executed=tools_json,
             data_references=refs_json,
             pending_confirmation=conf_json,
-            confirmation_status="pending" if pending_confirmation else None
+            confirmation_status="pending" if pending_confirmation else None,
+            report_ready=report_ready
         )
         db.add(msg)
         db.commit()
@@ -1461,5 +1468,34 @@ class CopilotEngine:
             data_references=data_references or [],
             pending_confirmation=pending_confirmation,
             suggested_followups=suggested_followups or [],
-            created_at=msg.created_at
+            created_at=msg.created_at,
+            report_id=report_ready.get("report_id") if report_ready else None,
+            formats=report_ready.get("formats") if report_ready else None
+        )
+
+    @classmethod
+    def _handle_generate_executive_report(cls, db, user, args, conversation_id):
+        from app.services.copilot.agent_tools import TOOL_REGISTRY
+        func = TOOL_REGISTRY["generate_executive_report"]
+        result = func(db, user=user, period=args.get("period", ""))
+
+        if "report_id" not in result:
+            reply = result.get(
+                "error",
+                "Executive reports are only available to DEV accounts."
+            )
+            return cls._save_and_return_response(
+                db, conversation_id, reply, intent="generate_executive_report"
+            )
+
+        tools_exec = [ToolExecutionRecord(
+            tool_name="generate_executive_report", arguments=args, status="success"
+        )]
+        reply = f"Executive report ready for {result['period_start']} to {result['period_end']}."
+        report_ready = {"report_id": result["report_id"], "formats": result["formats"]}
+        return cls._save_and_return_response(
+            db, conversation_id, reply,
+            intent="generate_executive_report",
+            tools_executed=tools_exec,
+            report_ready=report_ready
         )

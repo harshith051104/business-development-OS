@@ -59,6 +59,12 @@ SIMPLE_INTENTS: list[tuple[str, re.Pattern, str, Optional[callable]]] = [
      "get_stage_organizations",
      lambda m: {"stage": m.group(2)}),
 
+    # Executive report ("Generate an executive report", "CEO report")
+    ("generate_executive_report", re.compile(
+        r"\b(executive report|ceo report|leadership report|generate.*report)\b",
+        re.I),
+     "generate_executive_report", None),
+
     # Funnel reports
     ("funnel_reports", re.compile(
         r"\b(funnel|commercial report|full report)\b",
@@ -309,6 +315,10 @@ def route(message: str, context: Optional[dict] = None) -> RouteResult:
                     args["time_filter"] = "past"
                 else:
                     args["time_filter"] = "upcoming"
+
+            # Extract period for executive report
+            if intent_name == "generate_executive_report":
+                args["period"] = msg
 
             # Extract overdue for followups
             if intent_name == "followups_list":

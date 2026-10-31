@@ -52,6 +52,8 @@ class CopilotChatResponse(BaseModel):
     pending_confirmation: Optional[ConfirmationAction] = None
     suggested_followups: List[str] = Field(default_factory=list)
     created_at: datetime
+    report_id: Optional[int] = None
+    formats: Optional[List[str]] = None
 
 
 class CopilotConfirmRequest(BaseModel):
@@ -80,6 +82,8 @@ class CopilotMessageOut(BaseModel):
     pending_confirmation: Optional[Dict[str, Any]] = None
     confirmation_status: Optional[str] = None
     created_at: datetime
+    report_id: Optional[int] = None
+    formats: Optional[List[str]] = None
 
     model_config = ConfigDict(from_attributes=True)
 

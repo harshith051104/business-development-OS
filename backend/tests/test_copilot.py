@@ -337,3 +337,34 @@ def test_18_copilot_rbac_security(client: TestClient):
         json={"message": "Hello"}
     )
     assert res_forbidden.status_code == 403
+
+
+def get_dev_token(client: TestClient) -> str:
+    res = client.post(
+        "/auth/login",
+        json={"email": "dev@elly.test", "password": "password123"},
+    )
+    assert res.status_code == 200
+    return res.json()["access_token"]
+
+
+def test_copilot_engine_dispatches_generate_executive_report(client: TestClient, monkeypatch):
+    from app.services.copilot import agent_tools
+    orig_func = agent_tools.TOOL_REGISTRY.get("generate_executive_report")
+    agent_tools.TOOL_REGISTRY["generate_executive_report"] = lambda db, **kwargs: {
+        "report_id": 1, "formats": ["docx", "pdf"], "period_start": "x", "period_end": "y"
+    }
+    try:
+        token = get_dev_token(client)
+        res = client.post(
+            "/api/business-development/copilot/chat",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"message": "Generate an executive report for the last 30 days"}
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["report_id"] == 1
+        assert data["formats"] == ["docx", "pdf"]
+    finally:
+        if orig_func is not None:
+            agent_tools.TOOL_REGISTRY["generate_executive_report"] = orig_func

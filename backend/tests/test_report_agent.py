@@ -106,6 +106,14 @@ def test_generate_executive_report_dev_creates_files_and_row(db_session, monkeyp
     assert os.path.getsize(row.pdf_path) > 0
 
 
+def test_intent_router_routes_executive_report_phrase():
+    from app.services.copilot.intent_router import route
+    result = route("Generate an executive report for the last 30 days")
+    assert result.tool_name == "generate_executive_report"
+    assert result.pre_resolved_args is not None
+    assert result.pre_resolved_args.get("period") == "Generate an executive report for the last 30 days"
+
+
 def test_generate_executive_report_quiet_period_still_generates(db_session):
     from app.services.copilot.tools import generate_executive_report
     from app.models.user import User, UserRole
