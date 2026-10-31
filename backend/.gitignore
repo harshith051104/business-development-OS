@@ -10,5 +10,6 @@ growth.db
 uploads/*
 !uploads/.gitkeep
 backups/
+reports/
 .venv/
 venv/

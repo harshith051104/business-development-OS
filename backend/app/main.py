@@ -68,6 +68,7 @@ import app.models.negotiation  # noqa: F401
 import app.models.task  # noqa: F401
 import app.models.campaign  # noqa: F401
 import app.models.lead_import  # noqa: F401
+import app.models.report  # noqa: F401
 
 logger = logging.getLogger("elly.bd_portal")
 
@@ -245,6 +246,17 @@ try:
                 conn.execute(text("ALTER TABLE meetings ADD COLUMN google_event_id VARCHAR(255)"))
                 meeting_changed = True
             if meeting_changed:
+                conn.commit()
+
+        # Check copilot_messages columns (report agent)
+        cm_result = conn.execute(text("PRAGMA table_info(copilot_messages)"))
+        cm_cols = [row[1] for row in cm_result.fetchall()]
+        if cm_cols:
+            cm_changed = False
+            if "report_ready" not in cm_cols:
+                conn.execute(text("ALTER TABLE copilot_messages ADD COLUMN report_ready TEXT"))
+                cm_changed = True
+            if cm_changed:
                 conn.commit()
 except Exception as e:
     logger.error("Startup schema migration failed — database may be in an inconsistent state: %s", e)
