@@ -45,6 +45,8 @@ export interface CopilotMessage {
   confirmation_status?: 'pending' | 'approved' | 'rejected' | 'expired';
   suggested_followups?: string[];
   created_at?: string;
+  report_id?: number;
+  formats?: string[];
 }
 
 export interface CopilotConversation {
@@ -70,6 +72,8 @@ export interface CopilotChatResponse {
   data_references: DataReference[];
   pending_confirmation?: ConfirmationAction;
   suggested_followups: string[];
+  report_id?: number;
+  formats?: string[];
 }
 
 export interface CopilotConfirmRequest {
