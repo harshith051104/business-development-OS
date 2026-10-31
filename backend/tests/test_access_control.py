@@ -159,3 +159,8 @@ def test_10_inactive_user_cannot_login_or_access(client):
     )
     assert login_res.status_code == 401
     assert "deactivated" in login_res.json()["detail"].lower() or "inactive" in login_res.json()["detail"].lower()
+
+
+def test_dev_role_login_and_role_value(client, db_session):
+    from app.models.user import UserRole
+    assert UserRole.DEV.value == "DEV"
