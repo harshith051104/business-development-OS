@@ -13,3 +13,5 @@ gspread==6.2.1
 openpyxl==3.1.5
 stagehand>=4.0.0
 apscheduler==3.10.4
+python-docx==1.2.0
+reportlab==4.2.5

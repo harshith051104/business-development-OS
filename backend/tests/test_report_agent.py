@@ -75,3 +75,42 @@ def test_gather_report_data_shape(db_session):
     assert isinstance(data.team, list)
     assert isinstance(data.task_stats, dict)
     assert isinstance(data.company_totals, dict)
+
+
+def test_generate_executive_report_refuses_non_dev(db_session):
+    from app.services.copilot.tools import generate_executive_report
+    from app.models.user import User, UserRole
+    from app.models.report import ReportGeneration
+    non_dev = db_session.query(User).filter(User.role == UserRole.BUSINESS_DEVELOPMENT.value).first()
+    count_before = db_session.query(ReportGeneration).count()
+    result = generate_executive_report(db_session, non_dev, period="")
+    assert "report_id" not in result
+    assert db_session.query(ReportGeneration).count() == count_before
+
+
+def test_generate_executive_report_dev_creates_files_and_row(db_session, monkeypatch, tmp_path):
+    from app.services.copilot import tools as tools_module
+    from app.services import report_render_service
+    from app.models.user import User, UserRole
+    monkeypatch.setattr(report_render_service, "_get_llm_router", lambda: (_ for _ in ()).throw(Exception("skip llm in test")))
+    dev_user = db_session.query(User).filter(User.role == UserRole.DEV.value).first()
+    result = tools_module.generate_executive_report(db_session, dev_user, period="last 30 days")
+    assert "report_id" in result
+    assert result["formats"] == ["docx", "pdf"]
+    from app.models.report import ReportGeneration
+    row = db_session.query(ReportGeneration).get(result["report_id"])
+    import os
+    assert os.path.exists(row.docx_path)
+    assert os.path.getsize(row.docx_path) > 0
+    assert os.path.exists(row.pdf_path)
+    assert os.path.getsize(row.pdf_path) > 0
+
+
+def test_generate_executive_report_quiet_period_still_generates(db_session):
+    from app.services.copilot.tools import generate_executive_report
+    from app.models.user import User, UserRole
+    from datetime import datetime, timezone, timedelta
+    dev_user = db_session.query(User).filter(User.role == UserRole.DEV.value).first()
+    far_future_period = (datetime.now(timezone.utc) + timedelta(days=3650)).isoformat()
+    result = generate_executive_report(db_session, dev_user, period="this week")
+    assert "report_id" in result

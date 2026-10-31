@@ -1,11 +1,34 @@
 import json
 import logging
 
+from docx import Document
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+
 from app.services.copilot.engine import _get_llm_router
 from app.services.copilot.llm_router import AllProvidersExhausted
 from app.services.report_agent_service import ReportData
 
 logger = logging.getLogger("elly.bd_portal")
+
+NARRATIVE_SECTION_HEADINGS = (
+    "Overview",
+    "Team Highlights",
+    "Per-Person Summary",
+    "Watch Items",
+)
+
+TEAM_TABLE_HEADERS = (
+    "Name",
+    "Organizations",
+    "Contacts",
+    "Communications",
+    "Meetings",
+    "Opportunities",
+    "Follow-ups",
+)
 
 REPORT_SYSTEM_PROMPT = (
     "You are writing an executive report for a CEO audience. Use plain "
@@ -58,3 +81,74 @@ def _render_template_fallback(data: ReportData) -> str:
     for member in data.team:
         lines.append(f"  {member.name}: {member.model_dump()}")
     return "\n".join(lines)
+
+
+def _team_table_rows(data: ReportData) -> list:
+    rows = [list(TEAM_TABLE_HEADERS)]
+    for member in data.team:
+        rows.append([
+            member.name,
+            member.organizations_added,
+            member.contacts_added,
+            member.communications_logged,
+            member.meetings_completed,
+            member.opportunities_managed,
+            member.followups_completed,
+        ])
+    return rows
+
+
+def render_docx(narrative: str, data: ReportData, path: str) -> None:
+    document = Document()
+    document.add_heading("Executive Report", level=0)
+    document.add_paragraph(f"Period: {data.period_start} to {data.period_end}")
+
+    for line in narrative.splitlines():
+        stripped = line.strip().rstrip(":")
+        if not stripped:
+            continue
+        if stripped in NARRATIVE_SECTION_HEADINGS:
+            document.add_heading(stripped, level=1)
+        else:
+            document.add_paragraph(line)
+
+    document.add_heading("Per-Person Metrics", level=1)
+    rows = _team_table_rows(data)
+    table = document.add_table(rows=len(rows), cols=len(TEAM_TABLE_HEADERS))
+    table.style = "Light Grid Accent 1"
+    for row_idx, row in enumerate(rows):
+        for col_idx, value in enumerate(row):
+            table.cell(row_idx, col_idx).text = str(value)
+
+    document.save(path)
+
+
+def render_pdf(narrative: str, data: ReportData, path: str) -> None:
+    styles = getSampleStyleSheet()
+    doc = SimpleDocTemplate(path, pagesize=letter)
+    flowables = [
+        Paragraph("Executive Report", styles["Title"]),
+        Paragraph(f"Period: {data.period_start} to {data.period_end}", styles["Normal"]),
+        Spacer(1, 12),
+    ]
+
+    for line in narrative.splitlines():
+        stripped = line.strip().rstrip(":")
+        if not stripped:
+            continue
+        if stripped in NARRATIVE_SECTION_HEADINGS:
+            flowables.append(Paragraph(stripped, styles["Heading1"]))
+        else:
+            flowables.append(Paragraph(line, styles["Normal"]))
+
+    flowables.append(Spacer(1, 12))
+    flowables.append(Paragraph("Per-Person Metrics", styles["Heading1"]))
+    rows = _team_table_rows(data)
+    table = Table(rows)
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+    flowables.append(table)
+
+    doc.build(flowables)
