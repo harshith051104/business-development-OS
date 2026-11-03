@@ -1,6 +1,8 @@
+import json
 import logging
+import re
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 import gspread
 from google.oauth2.service_account import Credentials
@@ -8,6 +10,9 @@ from google.oauth2.service_account import Credentials
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+SHEET_URL_RE = re.compile(r"/spreadsheets/d/([a-zA-Z0-9-_]+)")
+BARE_ID_RE = re.compile(r"^[a-zA-Z0-9-_]{20,}$")
 
 # Google Sheets API scopes
 SCOPES = [
@@ -461,3 +466,88 @@ def pull_updates_job() -> None:
             logger.info(f"Google Sheets tracker pull: {result}")
     finally:
         db.close()
+
+
+def extract_spreadsheet_id(url: str) -> Optional[str]:
+    """Pull the spreadsheet ID out of a full Google Sheets URL, or accept
+    a bare ID pasted directly."""
+    match = SHEET_URL_RE.search(url)
+    if match:
+        return match.group(1)
+    stripped = url.strip()
+    if BARE_ID_RE.match(stripped):
+        return stripped
+    return None
+
+
+def get_service_account_email() -> Optional[str]:
+    """Read the configured service-account credentials file and return its
+    client_email, so the frontend can tell the user who to share a sheet with."""
+    creds_file = settings.GOOGLE_SHEETS_CREDENTIALS_FILE
+    if not creds_file:
+        return None
+    try:
+        with open(creds_file, "r") as f:
+            data = json.load(f)
+        return data.get("client_email")
+    except Exception as e:
+        logger.error(f"Could not read service account email: {e}")
+        return None
+
+
+def open_by_url(url: str) -> gspread.Spreadsheet:
+    """Open an arbitrary Google Sheet by its URL (or bare ID), for the
+    lead-import-from-sheet flow. Raises ValueError with a user-facing
+    message on any failure."""
+    client = _get_client()
+    if client is None:
+        raise ValueError("Google Sheets is not configured on this server.")
+
+    spreadsheet_id = extract_spreadsheet_id(url)
+    if not spreadsheet_id:
+        raise ValueError("That doesn't look like a Google Sheets URL.")
+
+    try:
+        return client.open_by_key(spreadsheet_id)
+    except gspread.exceptions.SpreadsheetNotFound:
+        email = get_service_account_email()
+        hint = f" Share it with {email} (Viewer is enough)." if email else ""
+        raise ValueError(f"Sheet not found or not shared with this app.{hint}")
+    except Exception as e:
+        logger.error(f"Could not open Google Sheet {spreadsheet_id}: {e}")
+        raise ValueError("Could not open that Google Sheet. Check the URL and sharing permissions.")
+
+
+def list_worksheet_titles(spreadsheet: gspread.Spreadsheet) -> List[Dict[str, Any]]:
+    return [
+        {"title": ws.title, "row_count": ws.row_count, "col_count": ws.col_count}
+        for ws in spreadsheet.worksheets()
+    ]
+
+
+def read_worksheet_rows(spreadsheet: gspread.Spreadsheet, tab_name: str) -> Tuple[List[str], List[Dict[str, str]]]:
+    """Read a worksheet's values and shape them like lead_import_service.parse_upload:
+    first row is headers, remaining non-empty rows map header -> cell value."""
+    try:
+        worksheet = spreadsheet.worksheet(tab_name)
+    except gspread.exceptions.WorksheetNotFound:
+        raise ValueError(f"Tab '{tab_name}' not found in that sheet.")
+
+    values = worksheet.get_all_values()
+    if not values:
+        return [], []
+
+    raw_headers = [h.strip() for h in values[0]]
+    headers = [h for h in raw_headers if h]
+
+    rows: List[Dict[str, str]] = []
+    for raw_row in values[1:]:
+        if not any(cell.strip() for cell in raw_row):
+            continue
+        row = {}
+        for header, cell in zip(raw_headers, raw_row):
+            if header:
+                row[header] = cell
+        rows.append(row)
+
+    return headers, rows

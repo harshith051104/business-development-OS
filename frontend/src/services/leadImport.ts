@@ -54,6 +54,17 @@ export interface LeadImportBatchRecords {
   contacts: LeadImportBatchContact[]
 }
 
+export interface SheetTab {
+  title: string
+  row_count: number
+  col_count: number
+}
+
+export interface SheetTabsResponse {
+  spreadsheet_title: string
+  tabs: SheetTab[]
+}
+
 export interface LeadImportBatchSummary {
   id: number
   filename: string
@@ -122,5 +133,25 @@ export const leadImportService = {
 
   getBatchRecords: async (batchId: number): Promise<LeadImportBatchRecords> => {
     return api.get<LeadImportBatchRecords>(`/api/business-development/leads/imports/${batchId}/records`)
+  },
+
+  getServiceAccountEmail: async (): Promise<string | null> => {
+    const res = await api.get<{ email: string | null }>(
+      '/api/business-development/leads/sheets/service-account-email'
+    )
+    return res.email
+  },
+
+  getSheetTabs: async (sheetUrl: string): Promise<SheetTabsResponse> => {
+    return api.post<SheetTabsResponse>('/api/business-development/leads/sheets/tabs', {
+      sheet_url: sheetUrl,
+    })
+  },
+
+  previewSheet: async (sheetUrl: string, tabName: string): Promise<LeadUploadPreview> => {
+    return api.post<LeadUploadPreview>('/api/business-development/leads/sheets/preview', {
+      sheet_url: sheetUrl,
+      tab_name: tabName,
+    })
   },
 }

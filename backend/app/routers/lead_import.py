@@ -27,6 +27,15 @@ class ImportConfirmRequest(BaseModel):
     campaign_id: Optional[int] = None
 
 
+class SheetTabsRequest(BaseModel):
+    sheet_url: str
+
+
+class SheetPreviewRequest(BaseModel):
+    sheet_url: str
+    tab_name: str
+
+
 @router.post("/upload")
 async def upload_lead_list(
     file: UploadFile = File(...),
@@ -53,6 +62,69 @@ async def upload_lead_list(
         "total_rows": len(staged["rows"]),
         "preview_rows": staged["rows"][:5],
         "suggested_mapping": lead_import_service.suggest_mapping(staged["headers"]),
+        "target_fields": lead_import_service.TARGET_FIELDS,
+    }
+
+
+@router.get("/sheets/service-account-email")
+def get_sheets_service_account_email(
+    current_user: User = Depends(require_business_development),
+):
+    """Lets the frontend show the 'share your sheet with this address' hint
+    before the user even submits a URL."""
+    from app.services import google_sheets_service
+
+    return {"email": google_sheets_service.get_service_account_email()}
+
+
+@router.post("/sheets/tabs")
+def get_sheet_tabs(
+    payload: SheetTabsRequest,
+    current_user: User = Depends(require_business_development),
+):
+    """Step 1 (sheet variant): open a Google Sheet by URL and list its tabs."""
+    from app.services import google_sheets_service
+
+    try:
+        spreadsheet = google_sheets_service.open_by_url(payload.sheet_url)
+        tabs = google_sheets_service.list_worksheet_titles(spreadsheet)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {"spreadsheet_title": spreadsheet.title, "tabs": tabs}
+
+
+@router.post("/sheets/preview")
+def preview_sheet_tab(
+    payload: SheetPreviewRequest,
+    current_user: User = Depends(require_business_development),
+):
+    """Step 1 (sheet variant): read a chosen tab, stage it, and return the same
+    preview shape as POST /upload so the existing mapping/import flow needs no changes."""
+    from app.services import google_sheets_service
+
+    try:
+        spreadsheet = google_sheets_service.open_by_url(payload.sheet_url)
+        headers, rows = google_sheets_service.read_worksheet_rows(spreadsheet, payload.tab_name)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    if not headers:
+        raise HTTPException(status_code=400, detail="That tab has no header row.")
+
+    upload_id = lead_import_service.stage_parsed(
+        filename=f"{spreadsheet.title} — {payload.tab_name}",
+        headers=headers,
+        rows=rows,
+    )
+
+    return {
+        "upload_id": upload_id,
+        "filename": f"{spreadsheet.title} — {payload.tab_name}",
+        "headers": headers,
+        "total_rows": len(rows),
+        "preview_rows": rows[:5],
+        "suggested_mapping": lead_import_service.suggest_mapping(headers),
         "target_fields": lead_import_service.TARGET_FIELDS,
     }
 

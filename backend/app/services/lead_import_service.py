@@ -128,6 +128,17 @@ def stage_upload(filename: str, file_bytes: bytes) -> str:
     return upload_id
 
 
+def stage_parsed(filename: str, headers: List[str], rows: List[Dict[str, str]]) -> str:
+    """Like stage_upload, but for data already parsed elsewhere (e.g. a Google Sheet
+    tab) -- skips the CSV/XLSX parse step. Returns upload_id."""
+    _ensure_staging_dir()
+    upload_id = uuid.uuid4().hex
+    staged_path = os.path.join(STAGING_DIR, f"{upload_id}.json")
+    with open(staged_path, "w", encoding="utf-8") as f:
+        json.dump({"filename": filename, "headers": headers, "rows": rows}, f)
+    return upload_id
+
+
 def load_staged_upload(upload_id: str) -> Dict[str, Any]:
     staged_path = os.path.join(STAGING_DIR, f"{upload_id}.json")
     if not os.path.exists(staged_path):

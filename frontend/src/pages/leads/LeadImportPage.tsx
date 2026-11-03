@@ -6,12 +6,23 @@ import type {
   LeadImportResult,
   LeadImportBatchSummary,
   LeadImportBatchRecords,
+  SheetTab,
 } from '../../services/leadImport'
 import { campaignService } from '../../services/campaigns'
 import type { Campaign } from '../../types/campaign'
-import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History, X } from 'lucide-react'
+import {
+  UploadCloud,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  History,
+  X,
+  FileSpreadsheet,
+} from 'lucide-react'
 
 type Step = 'upload' | 'map' | 'result'
+type UploadSource = 'file' | 'sheet'
 
 export const LeadImportPage: React.FC = () => {
   const [step, setStep] = useState<Step>('upload')
@@ -29,9 +40,19 @@ export const LeadImportPage: React.FC = () => {
   const [batchRecords, setBatchRecords] = useState<LeadImportBatchRecords | null>(null)
   const [batchRecordsLoading, setBatchRecordsLoading] = useState(false)
 
+  const [uploadSource, setUploadSource] = useState<UploadSource>('file')
+  const [serviceAccountEmail, setServiceAccountEmail] = useState<string | null>(null)
+  const [sheetUrl, setSheetUrl] = useState('')
+  const [sheetTitle, setSheetTitle] = useState<string | null>(null)
+  const [sheetTabs, setSheetTabs] = useState<SheetTab[]>([])
+  const [selectedTab, setSelectedTab] = useState('')
+  const [loadingSheetTabs, setLoadingSheetTabs] = useState(false)
+  const [loadingSheetPreview, setLoadingSheetPreview] = useState(false)
+
   useEffect(() => {
     leadImportService.listImports().then(setHistory).catch(() => {})
     campaignService.list({ status: 'Active' }).then(setCampaigns).catch(() => {})
+    leadImportService.getServiceAccountEmail().then(setServiceAccountEmail).catch(() => {})
   }, [])
 
   const openBatchRecords = async (batchId: number) => {
@@ -69,6 +90,41 @@ export const LeadImportPage: React.FC = () => {
     }
   }
 
+  const handleLoadSheetTabs = async () => {
+    if (!sheetUrl.trim()) return
+    setLoadingSheetTabs(true)
+    setError(null)
+    setSheetTabs([])
+    setSelectedTab('')
+    setSheetTitle(null)
+    try {
+      const data = await leadImportService.getSheetTabs(sheetUrl.trim())
+      setSheetTitle(data.spreadsheet_title)
+      setSheetTabs(data.tabs)
+      if (data.tabs.length > 0) setSelectedTab(data.tabs[0].title)
+    } catch (err: any) {
+      setError(err?.message || 'Could not load that Google Sheet.')
+    } finally {
+      setLoadingSheetTabs(false)
+    }
+  }
+
+  const handleUseSheet = async () => {
+    if (!sheetUrl.trim() || !selectedTab) return
+    setLoadingSheetPreview(true)
+    setError(null)
+    try {
+      const data = await leadImportService.previewSheet(sheetUrl.trim(), selectedTab)
+      setPreview(data)
+      setMapping(data.suggested_mapping)
+      setStep('map')
+    } catch (err: any) {
+      setError(err?.message || 'Could not read that sheet tab.')
+    } finally {
+      setLoadingSheetPreview(false)
+    }
+  }
+
   const handleImport = async () => {
     if (!preview) return
     setImporting(true)
@@ -92,6 +148,11 @@ export const LeadImportPage: React.FC = () => {
     setResult(null)
     setError(null)
     setSelectedCampaignId(null)
+    setUploadSource('file')
+    setSheetUrl('')
+    setSheetTitle(null)
+    setSheetTabs([])
+    setSelectedTab('')
   }
 
   return (
@@ -117,26 +178,112 @@ export const LeadImportPage: React.FC = () => {
         )}
 
         {step === 'upload' && (
-          <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
-            {uploading ? (
-              <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
-            ) : (
-              <UploadCloud className="w-8 h-8 text-gray-500" />
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setUploadSource('file')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  uploadSource === 'file'
+                    ? 'bg-sky-600 text-white'
+                    : 'bg-[#131127]/60 border border-white/10 text-gray-400 hover:text-white'
+                }`}
+              >
+                <UploadCloud className="w-4 h-4" />
+                Upload File
+              </button>
+              <button
+                onClick={() => setUploadSource('sheet')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  uploadSource === 'sheet'
+                    ? 'bg-sky-600 text-white'
+                    : 'bg-[#131127]/60 border border-white/10 text-gray-400 hover:text-white'
+                }`}
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                Google Sheet
+              </button>
+            </div>
+
+            {uploadSource === 'file' && (
+              <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
+                {uploading ? (
+                  <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
+                ) : (
+                  <UploadCloud className="w-8 h-8 text-gray-500" />
+                )}
+                <span className="text-sm text-gray-400">
+                  {uploading ? 'Parsing file…' : 'Click to choose a .csv or .xlsx lead list (max 10MB)'}
+                </span>
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xlsm"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleFile(file)
+                  }}
+                />
+              </label>
             )}
-            <span className="text-sm text-gray-400">
-              {uploading ? 'Parsing file…' : 'Click to choose a .csv or .xlsx lead list (max 10MB)'}
-            </span>
-            <input
-              type="file"
-              accept=".csv,.xlsx,.xlsm"
-              className="hidden"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleFile(file)
-              }}
-            />
-          </label>
+
+            {uploadSource === 'sheet' && (
+              <div className="space-y-4 p-6 rounded-2xl border border-white/10 bg-[#131127]/60">
+                {serviceAccountEmail && (
+                  <p className="text-xs text-gray-400">
+                    Share your sheet (Viewer is enough) with{' '}
+                    <span className="font-mono text-sky-400">{serviceAccountEmail}</span> before loading it.
+                  </p>
+                )}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={sheetUrl}
+                    onChange={(e) => setSheetUrl(e.target.value)}
+                    placeholder="Paste a Google Sheets URL…"
+                    className="flex-1 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
+                  />
+                  <button
+                    onClick={handleLoadSheetTabs}
+                    disabled={loadingSheetTabs || !sheetUrl.trim()}
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-all whitespace-nowrap"
+                  >
+                    {loadingSheetTabs ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Load Sheet
+                  </button>
+                </div>
+
+                {sheetTabs.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-end gap-2">
+                    <div className="flex-1">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5 block">
+                        {sheetTitle} — choose a tab
+                      </label>
+                      <select
+                        value={selectedTab}
+                        onChange={(e) => setSelectedTab(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
+                      >
+                        {sheetTabs.map((t) => (
+                          <option key={t.title} value={t.title}>
+                            {t.title} ({t.row_count} rows)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={handleUseSheet}
+                      disabled={loadingSheetPreview || !selectedTab}
+                      className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-all whitespace-nowrap"
+                    >
+                      {loadingSheetPreview ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                      Use this sheet
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         )}
 
         {step === 'map' && preview && (
