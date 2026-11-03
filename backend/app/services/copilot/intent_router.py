@@ -59,6 +59,12 @@ SIMPLE_INTENTS: list[tuple[str, re.Pattern, str, Optional[callable]]] = [
      "get_stage_organizations",
      lambda m: {"stage": m.group(2)}),
 
+    # Executive report ("Generate an executive report", "CEO report")
+    ("generate_executive_report", re.compile(
+        r"\b(executive report|ceo report|leadership report)\b",
+        re.I),
+     "generate_executive_report", None),
+
     # Funnel reports
     ("funnel_reports", re.compile(
         r"\b(funnel|commercial report|full report)\b",
@@ -131,11 +137,11 @@ SIMPLE_INTENTS: list[tuple[str, re.Pattern, str, Optional[callable]]] = [
         re.I),
      "search_proposals", None),
 
-    # Campaigns
-    ("campaigns", re.compile(
-        r"\b(campaign|campaigns|outreach campaign|sequence)\b",
+    # Campaign ROI (must precede generic "campaigns" pattern below)
+    ("campaign_roi", re.compile(
+        r"\b(campaign roi|campaign report|campaign funnel|campaign performance)\b",
         re.I),
-     "search_campaigns", None),
+     "get_campaign_roi", None),
 
     # Campaign replies
     ("campaign_replies", re.compile(
@@ -143,11 +149,11 @@ SIMPLE_INTENTS: list[tuple[str, re.Pattern, str, Optional[callable]]] = [
         re.I),
      "get_campaign_replies", None),
 
-    # Campaign ROI
-    ("campaign_roi", re.compile(
-        r"\b(campaign roi|campaign report|campaign funnel|campaign performance)\b",
+    # Campaigns
+    ("campaigns", re.compile(
+        r"\b(campaign|campaigns|outreach campaign|sequence)\b",
         re.I),
-     "get_campaign_roi", None),
+     "search_campaigns", None),
 
     # Next best action
     ("next_best_action", re.compile(
@@ -309,6 +315,10 @@ def route(message: str, context: Optional[dict] = None) -> RouteResult:
                     args["time_filter"] = "past"
                 else:
                     args["time_filter"] = "upcoming"
+
+            # Extract period for executive report
+            if intent_name == "generate_executive_report":
+                args["period"] = msg
 
             # Extract overdue for followups
             if intent_name == "followups_list":

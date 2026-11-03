@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const isAdmin = user?.role === 'ADMIN'
-  const isBDUser = user?.role === 'BUSINESS_DEVELOPMENT' || isAdmin
+  const isBDUser = user?.role === 'BUSINESS_DEVELOPMENT' || user?.role === 'DEV' || isAdmin
 
   return (
     <AuthContext.Provider

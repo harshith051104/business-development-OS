@@ -82,10 +82,10 @@ def require_role(required_role: Union[UserRole, str]) -> Callable[[User], User]:
 def require_business_development(current_user: User = Depends(get_current_user)) -> User:
     """Ensure user is authorized for Business Development portal access (BD or ADMIN)."""
     user_role = current_user.role.value if isinstance(current_user.role, UserRole) else str(current_user.role)
-    if user_role not in [UserRole.BUSINESS_DEVELOPMENT.value, UserRole.ADMIN.value]:
+    if user_role not in [UserRole.BUSINESS_DEVELOPMENT.value, UserRole.ADMIN.value, UserRole.DEV.value]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Access denied. Required role: BUSINESS_DEVELOPMENT or ADMIN, current role: {user_role}.",
+            detail=f"Access denied. Required role: BUSINESS_DEVELOPMENT, ADMIN, or DEV, current role: {user_role}.",
         )
     return current_user
 

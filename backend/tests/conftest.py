@@ -88,6 +88,15 @@ def seed_test_data(db):
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         ),
+        User(
+            name="Dev User",
+            email="dev@elly.test",
+            password_hash=hash_password("password123"),
+            role=UserRole.DEV.value,
+            is_active=True,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        ),
     ]
     db.add_all(users)
 

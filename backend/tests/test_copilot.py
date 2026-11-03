@@ -337,3 +337,65 @@ def test_18_copilot_rbac_security(client: TestClient):
         json={"message": "Hello"}
     )
     assert res_forbidden.status_code == 403
+
+
+def get_dev_token(client: TestClient) -> str:
+    res = client.post(
+        "/auth/login",
+        json={"email": "dev@elly.test", "password": "password123"},
+    )
+    assert res.status_code == 200
+    return res.json()["access_token"]
+
+
+def test_copilot_engine_dispatches_generate_executive_report(client: TestClient, monkeypatch):
+    from app.services.copilot import agent_tools
+    orig_func = agent_tools.TOOL_REGISTRY.get("generate_executive_report")
+    agent_tools.TOOL_REGISTRY["generate_executive_report"] = lambda db, **kwargs: {
+        "report_id": 1, "formats": ["docx", "pdf"], "period_start": "x", "period_end": "y"
+    }
+    try:
+        token = get_dev_token(client)
+        res = client.post(
+            "/api/business-development/copilot/chat",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"message": "Generate an executive report for the last 30 days"}
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["report_id"] == 1
+        assert data["formats"] == ["docx", "pdf"]
+    finally:
+        if orig_func is not None:
+            agent_tools.TOOL_REGISTRY["generate_executive_report"] = orig_func
+
+
+def test_llm_agent_path_sets_report_ready_when_tool_called(client: TestClient, monkeypatch):
+    from app.services.copilot import agent_tools, engine
+    from app.services.copilot.llm_router import LLMResponse
+
+    orig_func = agent_tools.TOOL_REGISTRY.get("generate_executive_report")
+    agent_tools.TOOL_REGISTRY["generate_executive_report"] = lambda db, **kwargs: {
+        "report_id": 7, "formats": ["docx", "pdf"], "period_start": "x", "period_end": "y"
+    }
+
+    class StubRouter:
+        def chat_with_tools(self, messages, tools, tool_executor, max_rounds=5, task_type=None):
+            tool_executor("generate_executive_report", {"period": ""})
+            return LLMResponse(content="Here is your report.")
+
+    monkeypatch.setattr(engine, "_get_llm_router", lambda: StubRouter())
+    try:
+        token = get_dev_token(client)
+        res = client.post(
+            "/api/business-development/copilot/chat",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"message": "zzz nonsense phrase matching no intent regex at all"}
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["report_id"] == 7
+        assert data["formats"] == ["docx", "pdf"]
+    finally:
+        if orig_func is not None:
+            agent_tools.TOOL_REGISTRY["generate_executive_report"] = orig_func

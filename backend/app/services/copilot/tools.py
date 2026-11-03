@@ -2448,3 +2448,56 @@ def send_funding_outreach(
     )
     return result
 
+
+# ─────────────────────────────────────────────────────────────
+# EXECUTIVE REPORT (DEV only)
+# ─────────────────────────────────────────────────────────────
+
+def generate_executive_report(db: Session, user: User, period: str = "") -> Dict[str, Any]:
+    if user.role != UserRole.DEV.value:
+        return {"error": "Executive report generation is restricted to DEV users."}
+
+    import os
+    from app.models.report import ReportGeneration
+    from app.services.report_agent_service import resolve_period, gather_report_data
+    from app.services.report_render_service import render_narrative, render_docx, render_pdf
+
+    period_start, period_end = resolve_period(period)
+    data = gather_report_data(db, period_start, period_end)
+    narrative = render_narrative(data)
+
+    row = ReportGeneration(
+        requested_by_id=user.id,
+        period_start=period_start,
+        period_end=period_end,
+        docx_path="",
+        pdf_path="",
+    )
+    db.add(row)
+    db.commit()
+
+    reports_dir = os.path.join(os.getcwd(), "reports")
+    docx_path = os.path.join(reports_dir, f"{row.id}_report.docx")
+    pdf_path = os.path.join(reports_dir, f"{row.id}_report.pdf")
+
+    try:
+        os.makedirs(reports_dir, exist_ok=True)
+        render_docx(narrative, data, docx_path)
+        render_pdf(narrative, data, pdf_path)
+    except Exception as exc:
+        logger.error("Executive report rendering failed: %s", exc)
+        db.delete(row)
+        db.commit()
+        return {"error": "Failed to generate executive report."}
+
+    row.docx_path = docx_path
+    row.pdf_path = pdf_path
+    db.commit()
+
+    return {
+        "report_id": row.id,
+        "period_start": period_start.isoformat(),
+        "period_end": period_end.isoformat(),
+        "formats": ["docx", "pdf"],
+    }
+

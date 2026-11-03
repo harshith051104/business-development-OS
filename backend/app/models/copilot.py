@@ -39,10 +39,19 @@ class CopilotMessage(Base):
     data_references = Column(JSON, nullable=True)  # Links to orgs, contacts, meetings, opportunities
     pending_confirmation = Column(JSON, nullable=True)  # Action requiring confirmation
     confirmation_status = Column(String(20), nullable=True)  # 'pending', 'confirmed', 'cancelled'
-    
+    report_ready = Column(JSON, nullable=True)  # {"report_id": int, "formats": [str]} when a report was generated
+
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     conversation = relationship("CopilotConversation", back_populates="messages")
+
+    @property
+    def report_id(self):
+        return self.report_ready.get("report_id") if self.report_ready else None
+
+    @property
+    def formats(self):
+        return self.report_ready.get("formats") if self.report_ready else None
 
     def __repr__(self):
         return f"<CopilotMessage id={self.id} conversation_id={self.conversation_id} sender='{self.sender}'>"

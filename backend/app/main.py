@@ -45,6 +45,7 @@ from app.routers.signals import router as signals_router
 from app.routers.knowledge_base import router as knowledge_base_router
 from app.routers.whatsapp_automation import router as whatsapp_automation_router
 from app.routers.linkedin_automation import router as linkedin_automation_router
+from app.routers.reports import router as reports_router
 
 import app.models.user  # noqa: F401
 import app.models.organization  # noqa: F401
@@ -68,6 +69,7 @@ import app.models.negotiation  # noqa: F401
 import app.models.task  # noqa: F401
 import app.models.campaign  # noqa: F401
 import app.models.lead_import  # noqa: F401
+import app.models.report  # noqa: F401
 
 logger = logging.getLogger("elly.bd_portal")
 
@@ -246,6 +248,17 @@ try:
                 meeting_changed = True
             if meeting_changed:
                 conn.commit()
+
+        # Check copilot_messages columns (report agent)
+        cm_result = conn.execute(text("PRAGMA table_info(copilot_messages)"))
+        cm_cols = [row[1] for row in cm_result.fetchall()]
+        if cm_cols:
+            cm_changed = False
+            if "report_ready" not in cm_cols:
+                conn.execute(text("ALTER TABLE copilot_messages ADD COLUMN report_ready TEXT"))
+                cm_changed = True
+            if cm_changed:
+                conn.commit()
 except Exception as e:
     logger.error("Startup schema migration failed — database may be in an inconsistent state: %s", e)
 
@@ -388,6 +401,7 @@ app.include_router(signals_router)
 app.include_router(knowledge_base_router)
 app.include_router(whatsapp_automation_router)
 app.include_router(linkedin_automation_router)
+app.include_router(reports_router)
 
 # Background job scheduler (in-process, no Celery/Redis needed at this scale)
 from apscheduler.triggers.cron import CronTrigger

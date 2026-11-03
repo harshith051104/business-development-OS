@@ -45,8 +45,8 @@ class AdminUserCreate(BaseModel):
     @classmethod
     def validate_role(cls, v: str) -> str:
         upper = v.strip().upper()
-        if upper not in ["ADMIN", "BUSINESS_DEVELOPMENT"]:
-            raise ValueError("Role must be either ADMIN or BUSINESS_DEVELOPMENT.")
+        if upper not in ["ADMIN", "BUSINESS_DEVELOPMENT", "DEV"]:
+            raise ValueError("Role must be one of ADMIN, BUSINESS_DEVELOPMENT, or DEV.")
         return upper
 
 
@@ -62,8 +62,8 @@ class AdminUserUpdate(BaseModel):
         if v is None:
             return None
         upper = v.strip().upper()
-        if upper not in ["ADMIN", "BUSINESS_DEVELOPMENT"]:
-            raise ValueError("Role must be either ADMIN or BUSINESS_DEVELOPMENT.")
+        if upper not in ["ADMIN", "BUSINESS_DEVELOPMENT", "DEV"]:
+            raise ValueError("Role must be one of ADMIN, BUSINESS_DEVELOPMENT, or DEV.")
         return upper
 
 
@@ -72,14 +72,14 @@ class AdminUserStatusUpdate(BaseModel):
 
 
 class AdminUserRoleUpdate(BaseModel):
-    role: str = Field(..., description="Target role: ADMIN or BUSINESS_DEVELOPMENT")
+    role: str = Field(..., description="Target role: ADMIN, BUSINESS_DEVELOPMENT, or DEV")
 
     @field_validator("role")
     @classmethod
     def validate_role(cls, v: str) -> str:
         upper = v.strip().upper()
-        if upper not in ["ADMIN", "BUSINESS_DEVELOPMENT"]:
-            raise ValueError("Role must be either ADMIN or BUSINESS_DEVELOPMENT.")
+        if upper not in ["ADMIN", "BUSINESS_DEVELOPMENT", "DEV"]:
+            raise ValueError("Role must be one of ADMIN, BUSINESS_DEVELOPMENT, or DEV.")
         return upper
 
 
