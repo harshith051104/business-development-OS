@@ -16,7 +16,7 @@ export const TaskDashboardWidget: React.FC = () => {
 
   return (
     <div
-      onClick={() => navigate('/business-development/tasks')}
+      onClick={() => navigate('/business-development/calendar')}
       className="bg-[#110B2E]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl cursor-pointer hover:border-slate-700 transition"
     >
       <div className="flex items-center space-x-2 mb-3">

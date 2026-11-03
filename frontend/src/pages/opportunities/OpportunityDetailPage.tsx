@@ -33,15 +33,6 @@ import {
   Handshake,
 } from 'lucide-react'
 
-const PIPELINE_STAGES: OpportunityStage[] = [
-  'Potential',
-  'Contacted',
-  'Connected',
-  'Interested',
-  'Meeting',
-  'Discussion',
-  'Partnership',
-]
 
 export const OpportunityDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -106,7 +97,7 @@ export const OpportunityDetailPage: React.FC = () => {
     setIsDeleting(true)
     try {
       await opportunitiesService.deleteOpportunity(opportunity.id)
-      navigate('/business-development/opportunities')
+      navigate(`/business-development/organizations/${opportunity.organization_id}`)
     } catch (err: any) {
       alert(err.detail || err.message || 'Failed to delete opportunity.')
       setIsDeleting(false)
@@ -137,10 +128,10 @@ export const OpportunityDetailPage: React.FC = () => {
             <h3 className="text-base font-bold text-white">Opportunity Not Found</h3>
             <p className="text-xs text-slate-400">{error || 'This opportunity may have been removed.'}</p>
             <Link
-              to="/business-development/opportunities"
+              to="/business-development/organizations"
               className="inline-flex px-4 py-2 rounded-xl bg-violet-600 text-white text-xs font-semibold"
             >
-              Back to Opportunities
+              Back to Organizations
             </Link>
           </div>
         </div>
@@ -148,7 +139,6 @@ export const OpportunityDetailPage: React.FC = () => {
     )
   }
 
-  const currentStageIndex = PIPELINE_STAGES.indexOf(opportunity.stage as OpportunityStage)
 
   return (
     <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
@@ -158,7 +148,7 @@ export const OpportunityDetailPage: React.FC = () => {
       <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <Link
-            to="/business-development/opportunities"
+            to={`/business-development/organizations/${opportunity.organization_id}`}
             className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -219,49 +209,6 @@ export const OpportunityDetailPage: React.FC = () => {
 
       {/* ── Main Content Grid ── */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
-        {/* Stage Progress Funnel Bar */}
-        <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Pipeline Stage Progression
-            </h3>
-            <span className="text-xs font-bold text-violet-400">
-              Stage {currentStageIndex >= 0 ? currentStageIndex + 1 : 1} of 7: {opportunity.stage}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1.5 pt-1">
-            {PIPELINE_STAGES.map((stg, idx) => {
-              const isCompleted = idx < currentStageIndex
-              const isCurrent = idx === currentStageIndex
-              return (
-                <div key={stg} className="space-y-1.5 text-center">
-                  <div
-                    className={`h-2.5 rounded-full transition-all ${
-                      isCompleted
-                        ? 'bg-emerald-500 shadow-sm shadow-emerald-500/50'
-                        : isCurrent
-                        ? 'bg-violet-500 shadow-md shadow-violet-500/50 animate-pulse'
-                        : 'bg-slate-800'
-                    }`}
-                  />
-                  <span
-                    className={`text-[10px] block truncate font-medium ${
-                      isCurrent
-                        ? 'text-violet-300 font-bold'
-                        : isCompleted
-                        ? 'text-slate-300'
-                        : 'text-slate-600'
-                    }`}
-                  >
-                    {stg}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* ── Left 2 Columns ── */}
           <div className="lg:col-span-2 space-y-6">

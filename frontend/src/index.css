@@ -6,58 +6,57 @@
   /* Light mode defaults — these override @theme values at runtime */
   --color-dark-bg: #FAF9FF;
   --color-dark-surface: #FFFFFF;
-  --color-dark-card: #F8F0FF;
-  --color-dark-border: #E9DBFA;
+  --color-dark-card: #F5F3FF;
+  --color-dark-border: #E9E4F5;
 
   --color-light-bg: #FAF9FF;
   --color-light-surface: #FFFFFF;
-  --color-light-card: #F8F0FF;
-  --color-light-border: #E9DBFA;
+  --color-light-card: #F5F3FF;
+  --color-light-border: #E9E4F5;
 
-  --color-text-dark: #17051F;
-  --color-text-light: #17051F;
-  --color-muted-dark: #6F5E82;
-  --color-muted-light: #6F5E82;
+  --color-text-dark: #171329;
+  --color-text-light: #171329;
+  --color-muted-dark: #6F6A82;
+  --color-muted-light: #6F6A82;
 }
 
 .dark {
-  --color-dark-bg: #10012A;
-  --color-dark-surface: #1A0638;
-  --color-dark-card: #240245;
-  --color-dark-border: rgba(122, 49, 189, 0.25);
+  --color-dark-bg: #0B0520;
+  --color-dark-surface: #110B2E;
+  --color-dark-card: #1A1040;
+  --color-dark-border: rgba(139, 92, 246, 0.2);
 
-  --color-light-bg: #10012A;
-  --color-light-surface: #1A0638;
-  --color-light-card: #240245;
-  --color-light-border: rgba(122, 49, 189, 0.25);
+  --color-light-bg: #0B0520;
+  --color-light-surface: #110B2E;
+  --color-light-card: #1A1040;
+  --color-light-border: rgba(139, 92, 246, 0.2);
 
-  --color-text-light: #F7F0FF;
-  --color-muted-dark: #B6A0D4;
+  --color-text-light: #F0ECFF;
+  --color-muted-dark: #B0A8D0;
 }
 
 @theme {
-  /* Brand ramp, anchored to the client-supplied swatch */
-  --color-primary: #7A31BD;
-  --color-primary-deep: #591D98;
-  --color-primary-violet: #9C52DB;
-  --color-primary-light: #C680FD;
-  --color-primary-lavender: #DFACFE;
-  --color-primary-soft: #F7F0FF;
+  --color-primary: #7C3AED;
+  --color-primary-deep: #5B21B6;
+  --color-primary-violet: #8B5CF6;
+  --color-primary-light: #A78BFA;
+  --color-primary-lavender: #C4B5FD;
+  --color-primary-soft: #EDE9FE;
 
-  --color-dark-bg: #10012A;
-  --color-dark-surface: #1A0638;
-  --color-dark-card: #240245;
-  --color-dark-border: rgba(122, 49, 189, 0.25);
+  --color-dark-bg: #0B0520;
+  --color-dark-surface: #110B2E;
+  --color-dark-card: #1A1040;
+  --color-dark-border: rgba(139, 92, 246, 0.2);
 
   --color-light-bg: #FAF9FF;
   --color-light-surface: #FFFFFF;
-  --color-light-card: #F8F0FF;
-  --color-light-border: #E9DBFA;
+  --color-light-card: #F5F3FF;
+  --color-light-border: #E9E4F5;
 
-  --color-text-dark: #17051F;
-  --color-text-light: #F7F0FF;
-  --color-muted-dark: #B6A0D4;
-  --color-muted-light: #6F5E82;
+  --color-text-dark: #171329;
+  --color-text-light: #F8F7FF;
+  --color-muted-dark: #A8A3C0;
+  --color-muted-light: #6F6A82;
 
   --color-success: #10B981;
   --color-warning: #F59E0B;
@@ -65,58 +64,6 @@
   --color-info: #3B82F6;
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-
-  /* Tailwind palette overrides: the whole site's violet/purple/indigo/fuchesia
-     utility classes (bg-violet-600, text-purple-400, etc.) read these, so
-     overriding them reskins every page to the client swatch without
-     touching each component. */
-  --color-violet-50: #F7F0FF;
-  --color-violet-100: #EFDFFE;
-  --color-violet-200: #E2C3FD;
-  --color-violet-300: #DFACFE;
-  --color-violet-400: #C680FD;
-  --color-violet-500: #9C52DB;
-  --color-violet-600: #7A31BD;
-  --color-violet-700: #591D98;
-  --color-violet-800: #3B0E6B;
-  --color-violet-900: #240245;
-  --color-violet-950: #10012A;
-
-  --color-purple-50: #FAF0FF;
-  --color-purple-100: #F4DEFF;
-  --color-purple-200: #ECC2FE;
-  --color-purple-300: #EDABFF;
-  --color-purple-400: #DC7EFF;
-  --color-purple-500: #B44FDE;
-  --color-purple-600: #932EC0;
-  --color-purple-700: #6E1A9B;
-  --color-purple-800: #4B0C6D;
-  --color-purple-900: #300047;
-  --color-purple-950: #17002B;
-
-  --color-indigo-50: #F3F1FE;
-  --color-indigo-100: #E6E0FD;
-  --color-indigo-200: #D2C5FB;
-  --color-indigo-300: #C8AFFB;
-  --color-indigo-400: #A385F8;
-  --color-indigo-500: #7657D6;
-  --color-indigo-600: #5337B7;
-  --color-indigo-700: #372293;
-  --color-indigo-800: #211267;
-  --color-indigo-900: #110542;
-  --color-indigo-950: #050328;
-
-  --color-fuchsia-50: #FFF0FF;
-  --color-fuchsia-100: #FFDEFD;
-  --color-fuchsia-200: #FFC1FB;
-  --color-fuchsia-300: #FFABF2;
-  --color-fuchsia-400: #FF7EF3;
-  --color-fuchsia-500: #E04DD6;
-  --color-fuchsia-600: #C32BBA;
-  --color-fuchsia-700: #9D189A;
-  --color-fuchsia-800: #6F0A6D;
-  --color-fuchsia-900: #470044;
-  --color-fuchsia-950: #27002B;
 }
 
 @layer base {
@@ -134,15 +81,21 @@
     background-color: var(--color-dark-bg);
     color: var(--color-text-light);
   }
+
+  /* Visible keyboard focus everywhere (mouse clicks don't trigger it). */
+  :focus-visible {
+    outline: 2px solid #a78bfa;
+    outline-offset: 2px;
+  }
 }
 
 @layer components {
   .gradient-primary {
-    background: linear-gradient(135deg, #3B0E6B, #7A31BD, #C680FD);
+    background: linear-gradient(135deg, #4C1D95, #7C3AED, #A78BFA);
   }
 
   .glow-purple {
-    box-shadow: 0 0 20px rgba(122, 49, 189, 0.25), 0 0 60px rgba(89, 29, 152, 0.1);
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.25), 0 0 60px rgba(91, 33, 182, 0.1);
   }
 
   .skeleton {
@@ -165,14 +118,14 @@
 
 /* Leaflet Dark Mode Customizations */
 .leaflet-container {
-  background-color: #10012A !important;
+  background-color: #0B0520 !important;
   font-family: inherit;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #1A0638 !important;
-  color: #F7F0FF !important;
-  border: 1px solid rgba(122, 49, 189, 0.35) !important;
+  background: #110B2E !important;
+  color: #F0ECFF !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
   padding: 0 !important;
@@ -184,8 +137,8 @@
 }
 
 .leaflet-popup-tip {
-  background: #1A0638 !important;
-  border: 1px solid rgba(122, 49, 189, 0.35) !important;
+  background: #110B2E !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
 }
 
 .leaflet-popup-close-button {

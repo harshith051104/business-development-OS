@@ -6,6 +6,7 @@ import StatusBadge from '../../components/organizations/StatusBadge'
 import PriorityBadge from '../../components/organizations/PriorityBadge'
 import StatusChangeModal from '../../components/organizations/StatusChangeModal'
 import AddNoteModal from '../../components/organizations/AddNoteModal'
+import FinancialSummaryCard from '../../components/organizations/FinancialSummaryCard'
 import ContactStatusBadge from '../../components/contacts/ContactStatusBadge'
 import DecisionMakerBadge from '../../components/contacts/DecisionMakerBadge'
 import PrimaryContactBadge from '../../components/contacts/PrimaryContactBadge'
@@ -722,6 +723,9 @@ export const OrganizationDetailPage: React.FC = () => {
                   </div>
                 </div>
 
+                {/* 4a. Public financial summary (SEC filings) */}
+                <FinancialSummaryCard organizationId={org.id} />
+
                 {/* 4b. Location Map */}
                 {(org.address || org.city || org.country || org.latitude) && (
                   <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
@@ -854,7 +858,7 @@ export const OrganizationDetailPage: React.FC = () => {
 
                   <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-slate-400 font-medium">Pipeline Stage</span>
+                      <span className="text-xs text-slate-400 font-medium">Connection status</span>
                       <StatusBadge status={org.status} size="md" />
                     </div>
 
@@ -867,7 +871,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       onClick={() => setIsStatusModalOpen(true)}
                       className="w-full mt-2 py-2 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-xs font-medium transition"
                     >
-                      Advance Pipeline Stage
+                      Change connection status
                     </button>
                   </div>
                 </div>

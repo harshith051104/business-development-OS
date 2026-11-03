@@ -69,21 +69,6 @@ async function request<T>(path: string, options?: RequestInit, params?: Record<s
   }
 }
 
-export async function downloadFile(path: string, filename: string): Promise<void> {
-  const token = localStorage.getItem('elly_bd_auth_token')
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  })
-  if (!res.ok) throw new ApiError(res.status, await res.text())
-  const blob = await res.blob()
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
 export const api = {
   get: <T>(path: string, params?: Record<string, any>) => request<T>(path, { method: 'GET' }, params),
   post: <T>(path: string, body?: unknown) =>

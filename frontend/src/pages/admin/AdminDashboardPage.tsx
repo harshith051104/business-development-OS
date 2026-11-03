@@ -1,320 +1,182 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminNavbar from '../../components/layout/AdminNavbar'
 import { adminService } from '../../services/admin'
-import type { AdminDashboardStats } from '../../types/admin'
-import {
-  ShieldCheck,
-  Users,
-  UserCheck,
-  Building2,
-  Target,
-  Handshake,
-  Sparkles,
-  History,
-  Sliders,
-  UserPlus,
-  ArrowRight,
-  RotateCw,
-  Clock,
-  Activity,
-  Layers,
-} from 'lucide-react'
+import { knowledgeBaseService } from '../../services/knowledgeBase'
+import { integrationService, type IntegrationStatus } from '../../services/integrations'
+import { insightsService } from '../../lib/financials'
+import type { AdminDashboardStats, AdminTeamMember } from '../../types/admin'
+import type { KBDocument } from '../../types/knowledgeBase'
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+
+type Load<T> = { data: T | null; error: string | null }
+
+function useLoad<T>(fn: () => Promise<T>): Load<T> {
+  const [state, setState] = useState<Load<T>>({ data: null, error: null })
+  useEffect(() => {
+    fn()
+      .then((data) => setState({ data, error: null }))
+      .catch((err) => setState({ data: null, error: err?.detail || err?.message || 'Unavailable' }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return state
+}
+
+interface Attention {
+  key: string
+  text: string
+  link: string
+  action: string
+}
 
 export const AdminDashboardPage: React.FC = () => {
-  const [stats, setStats] = useState<AdminDashboardStats | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const stats = useLoad<AdminDashboardStats>(() => adminService.getDashboardStats())
+  const inactive = useLoad(() => adminService.listUsers({ page: 1, page_size: 1, is_active: false }))
+  const team = useLoad(() => adminService.getTeam())
+  const kb = useLoad<KBDocument[]>(() => knowledgeBaseService.list())
+  const orgs = useLoad(() => insightsService.list({ owner_scope: 'all' }))
+  const integrations = useLoad<IntegrationStatus[]>(() => integrationService.getStatus())
 
-  useEffect(() => {
-    const loadStats = async () => {
-      setLoading(true)
-      try {
-        const data = await adminService.getDashboardStats()
-        setStats(data)
-      } catch (err: any) {
-        setError(err.detail || err.message || 'Failed to load admin stats.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadStats()
-  }, [])
+  const loading = [stats, inactive, team, kb, orgs].some((s) => !s.data && !s.error)
+  const failed = [
+    ['Users', inactive.error],
+    ['Team', team.error],
+    ['Knowledge Base', kb.error],
+    ['Organizations', orgs.error],
+  ].filter(([, e]) => e)
+
+  const attention: Attention[] = []
+  if (inactive.data && inactive.data.total > 0)
+    attention.push({ key: 'inactive', text: `${inactive.data.total} user account${inactive.data.total === 1 ? ' is' : 's are'} deactivated.`, link: '/admin/users', action: 'Review users' })
+  if (kb.data) {
+    if (kb.data.length === 0) attention.push({ key: 'kb-empty', text: 'The Knowledge Base is empty, so Ask ELLY has no company material to cite.', link: '/admin/knowledge-base', action: 'Add sources' })
+    const broken = kb.data.filter((d) => !d.searchable).length
+    if (broken) attention.push({ key: 'kb-broken', text: `${broken} knowledge source${broken === 1 ? ' is' : 's are'} not searchable.`, link: '/admin/knowledge-base', action: 'Fix sources' })
+    const keyword = kb.data.filter((d) => d.searchable && d.search_mode !== 'semantic_and_keyword').length
+    if (keyword) attention.push({ key: 'kb-keyword', text: `${keyword} knowledge source${keyword === 1 ? ' is' : 's are'} searchable by keyword only (no meaning-based search).`, link: '/admin/knowledge-base', action: 'View status' })
+  }
+  if (orgs.data) {
+    const unassigned = orgs.data.items.filter((o) => !o.owner_id).length
+    if (unassigned) attention.push({ key: 'unassigned', text: `${unassigned} organization${unassigned === 1 ? ' has' : 's have'} no owner, so they don’t appear in anyone’s queue.`, link: '/admin/team', action: 'Assign owners' })
+  }
+  if (team.data) {
+    const cutoff = Date.now() - 30 * 864e5
+    const quiet = team.data.items.filter(
+      (m: AdminTeamMember) => m.is_active && (!m.last_activity_date || new Date(m.last_activity_date).getTime() < cutoff),
+    ).length
+    if (quiet) attention.push({ key: 'quiet', text: `${quiet} active team member${quiet === 1 ? ' has' : 's have'} no recorded activity in 30 days.`, link: '/admin/team', action: 'Open team view' })
+  }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] md:pl-64">
       <AdminNavbar />
+      <main className="p-6 max-w-6xl mx-auto space-y-4">
+        <div>
+          <h1 className="text-xl font-bold text-white">Admin overview</h1>
+          <p className="text-xs text-slate-400 mt-1">What needs attention across the workspace. Team-wide numbers are visible to admins only.</p>
+        </div>
 
-      {/* Subheader */}
-      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 rounded-2xl bg-gradient-to-br from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-600/30">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-base font-bold text-white tracking-tight">
-              Administrative Command Center
-            </h1>
-            <p className="text-xs text-slate-400">
-              System governance, user administration, BD team allocation, and audit monitoring
+        <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-white mb-2">Needs attention</h2>
+          {loading ? (
+            <p className="flex items-center gap-2 text-xs text-slate-400">
+              <Loader2 className="w-4 h-4 animate-spin" /> Checking…
             </p>
-          </div>
-        </div>
+          ) : (
+            <>
+              {attention.length === 0 && failed.length === 0 && (
+                <p className="flex items-center gap-2 text-xs text-emerald-200">
+                  <CheckCircle2 className="w-4 h-4" /> Nothing needs attention right now.
+                </p>
+              )}
+              <ul className="divide-y divide-slate-800/70">
+                {attention.map((a) => (
+                  <li key={a.key} className="flex items-center gap-3 py-2 text-xs">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+                    <span className="flex-1 text-slate-200">{a.text}</span>
+                    <Link to={a.link} className="px-2.5 py-1 rounded-md border border-slate-700 text-slate-200 hover:border-slate-500 shrink-0">
+                      {a.action}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {failed.length > 0 && (
+                <p className="flex items-center gap-2 text-xs text-rose-300 mt-2">
+                  <AlertCircle className="w-4 h-4" /> Couldn’t check: {failed.map(([n]) => n).join(', ')}.
+                </p>
+              )}
+            </>
+          )}
+        </section>
 
-        <div className="flex items-center space-x-2.5">
-          <Link
-            to="/admin/users/new"
-            className="inline-flex items-center space-x-1.5 py-2 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shadow-lg shadow-rose-600/30"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Create User</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
-        {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <RotateCw className="w-8 h-8 animate-spin text-rose-400 mx-auto" />
-            <p className="text-xs text-slate-400">Loading system metrics...</p>
-          </div>
-        ) : error ? (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-            {error}
-          </div>
-        ) : (
-          <>
-            {/* Top Metric Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              <Link
-                to="/admin/users"
-                className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 hover:border-rose-500/40 transition shadow-xl space-y-2 group"
-              >
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-semibold group-hover:text-rose-300 transition">Total Users</span>
-                  <Users className="w-4 h-4 text-rose-400" />
-                </div>
-                <div className="text-2xl font-extrabold text-white font-mono">
-                  {stats?.total_users ?? 0}
-                </div>
-                <div className="text-[11px] text-slate-500">System accounts</div>
-              </Link>
-
-              <Link
-                to="/admin/team"
-                className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 hover:border-rose-500/40 transition shadow-xl space-y-2 group"
-              >
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-semibold group-hover:text-rose-300 transition">BD Team</span>
-                  <UserCheck className="w-4 h-4 text-amber-400" />
-                </div>
-                <div className="text-2xl font-extrabold text-amber-400 font-mono">
-                  {stats?.active_bd_users ?? 0}
-                </div>
-                <div className="text-[11px] text-slate-500">Active BD representatives</div>
-              </Link>
-
-              <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-semibold">Organizations</span>
-                  <Building2 className="w-4 h-4 text-violet-400" />
-                </div>
-                <div className="text-2xl font-extrabold text-violet-400 font-mono">
-                  {stats?.active_organizations ?? 0}
-                </div>
-                <div className="text-[11px] text-slate-500">Target accounts</div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-semibold">Opportunities</span>
-                  <Target className="w-4 h-4 text-indigo-400" />
-                </div>
-                <div className="text-2xl font-extrabold text-indigo-400 font-mono">
-                  {stats?.active_opportunities ?? 0}
-                </div>
-                <div className="text-[11px] text-slate-500">Commercial pipeline</div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-semibold">Partnerships</span>
-                  <Handshake className="w-4 h-4 text-emerald-400" />
-                </div>
-                <div className="text-2xl font-extrabold text-emerald-400 font-mono">
-                  {stats?.active_partnerships ?? 0}
-                </div>
-                <div className="text-[11px] text-slate-500">Active formal alliances</div>
-              </div>
+        <section className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          {[
+            ['Users', stats.data?.total_users],
+            ['Active BD users', stats.data?.active_bd_users],
+            ['Organizations', stats.data?.active_organizations],
+            ['Open opportunities', stats.data?.active_opportunities],
+            ['Active partnerships', stats.data?.active_partnerships],
+          ].map(([label, value]) => (
+            <div key={label as string} className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+              <div className="text-xs text-slate-400">{label}</div>
+              <div className="text-xl font-semibold text-white mt-1 tabular-nums">{stats.error ? '—' : value ?? '…'}</div>
             </div>
+          ))}
+        </section>
 
-            {/* Middle Section: Quick Operations & Recent Audit Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Quick Operation Cards (5 cols) */}
-              <div className="lg:col-span-5 space-y-4">
-                <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
-                    <Activity className="w-4 h-4 text-rose-400" />
-                    <span>Administrative Quick Links</span>
-                  </h2>
-
-                  <div className="space-y-2 text-xs">
-                    <Link
-                      to="/admin/users"
-                      className="p-3 rounded-2xl bg-[#1A1040] hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between group"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
-                          <Users className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-white group-hover:text-rose-300 transition">
-                            Manage Users & Roles
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            Create, deactivate, and assign user permissions
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
-                    </Link>
-
-                    <Link
-                      to="/admin/team"
-                      className="p-3 rounded-2xl bg-[#1A1040] hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between group"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-                          <UserCheck className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-white group-hover:text-amber-300 transition">
-                            BD Team Workload
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            Portfolio allocations and bulk ownership reassignment
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
-                    </Link>
-
-                    <Link
-                      to="/admin/showcase"
-                      className="p-3 rounded-2xl bg-[#1A1040] hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between group"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
-                          <Sparkles className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-white group-hover:text-indigo-300 transition">
-                            Project Showcase Governance
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            Approve, publish, or archive showcase projects
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
-                    </Link>
-
-                    <Link
-                      to="/admin/audit-logs"
-                      className="p-3 rounded-2xl bg-[#1A1040] hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between group"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
-                          <History className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-white group-hover:text-cyan-300 transition">
-                            Audit & Security Logs
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            Review system transitions, edits, and access history
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
-                    </Link>
-
-                    <Link
-                      to="/admin/settings"
-                      className="p-3 rounded-2xl bg-[#1A1040] hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between group"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400">
-                          <Sliders className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-white group-hover:text-violet-300 transition">
-                            System Configuration
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            Customize safe parameters and taxonomy
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent System Activity (7 cols) */}
-              <div className="lg:col-span-7 space-y-4">
-                <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
-                      <History className="w-4 h-4 text-rose-400" />
-                      <span>Recent System Activity</span>
-                    </h2>
-                    <Link
-                      to="/admin/audit-logs"
-                      className="text-xs text-rose-400 hover:text-rose-300 font-semibold transition"
-                    >
-                      View All Logs →
-                    </Link>
-                  </div>
-
-                  {!stats?.recent_system_activity || stats.recent_system_activity.length === 0 ? (
-                    <div className="py-8 text-center text-xs text-slate-500 italic">
-                      No audit activity found.
-                    </div>
-                  ) : (
-                    <div className="space-y-2.5">
-                      {stats.recent_system_activity.map((act) => (
-                        <div
-                          key={act.id}
-                          className="p-3 rounded-2xl bg-[#1A1040] border border-slate-800/80 flex items-center justify-between text-xs hover:border-slate-700 transition"
-                        >
-                          <div className="space-y-0.5">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-bold text-white">{act.action}</span>
-                              <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
-                                {act.resource_type} {act.resource_id ? `#${act.resource_id}` : ''}
-                              </span>
-                            </div>
-                            <div className="text-[11px] text-slate-400 font-mono">
-                              By: {act.user_email || 'System'}
-                            </div>
-                          </div>
-                          {act.timestamp && (
-                            <span className="text-[10px] text-slate-500 font-mono">
-                              {new Date(act.timestamp).toLocaleTimeString()}
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-white">Integrations</h2>
             </div>
-          </>
-        )}
+            <p className="text-[11px] text-slate-500">
+              Gmail is connected per person (profile menu → Gmail connection). The inbound connectors below are interfaces for
+              lead ingestion; ELLY doesn’t track live connection health for them.
+            </p>
+            {integrations.error ? (
+              <p className="text-xs text-rose-300">{integrations.error}</p>
+            ) : !integrations.data ? (
+              <p className="text-xs text-slate-400">Loading…</p>
+            ) : (
+              <ul className="divide-y divide-slate-800/70 text-xs">
+                {integrations.data.map((i) => (
+                  <li key={i.system_name} className="flex items-center justify-between py-2">
+                    <span className="text-slate-200">{i.system_name}</span>
+                    <span className="text-slate-400">{i.total_ingested_leads} leads received</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-white">Recent activity log</h2>
+              <Link to="/admin/audit-logs" className="text-xs text-violet-300 hover:text-violet-200">
+                Open Audit Logs
+              </Link>
+            </div>
+            {stats.error ? (
+              <p className="text-xs text-rose-300">{stats.error}</p>
+            ) : !stats.data ? (
+              <p className="text-xs text-slate-400">Loading…</p>
+            ) : stats.data.recent_system_activity.length === 0 ? (
+              <p className="text-xs text-slate-400">No recorded actions yet.</p>
+            ) : (
+              <ul className="divide-y divide-slate-800/70 text-xs">
+                {stats.data.recent_system_activity.slice(0, 8).map((a) => (
+                  <li key={a.id} className="py-1.5">
+                    <div className="text-slate-200">{a.action.replace(/_/g, ' ').toLowerCase()}</div>
+                    <div className="text-[11px] text-slate-500">
+                      {a.user_email || 'system'} · {a.resource_type}
+                      {a.resource_id ? ` #${a.resource_id}` : ''} · {a.timestamp ? new Date(a.timestamp).toLocaleString() : ''}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       </main>
     </div>
   )

@@ -5,8 +5,6 @@ import type {
   LeadTrackerTeamProgress,
   LeadTrackerRow,
   LeadTrackerTimelineEvent,
-  TrackerUser,
-  CreateLeadPayload,
 } from '../types/leadTracker';
 
 const BASE = '/api/business-development/lead-tracker';
@@ -20,8 +18,6 @@ export const leadTrackerService = {
   getBoard: (params?: {
     campaign_id?: number;
     assigned_user_id?: number;
-    assigned_user?: string;
-    status?: string;
     search?: string;
     page?: number;
     page_size?: number;
@@ -45,34 +41,4 @@ export const leadTrackerService = {
       `${BASE}/sync/pull`,
       {}
     ),
-
-  triggerPullSync: () =>
-    api.post<{ success: boolean; reason?: string; checked: number; updated: number; message?: string }>(
-      `${BASE}/sync/pull`,
-      {}
-    ),
-
-  triggerPushSync: () =>
-    api.post<{ success: boolean; message: string; pushed: number }>(
-      `${BASE}/sync/push`,
-      {}
-    ),
-
-  getUsers: () => api.get<TrackerUser[]>(`${BASE}/users`),
-
-  createUser: (data: { name: string; display_name?: string; email: string; password?: string; role?: string }) =>
-    api.post<TrackerUser>(`${BASE}/users`, data),
-
-  updateUser: (userId: string | number, updates: { name?: string; display_name?: string; email?: string; role?: string }) =>
-    api.patch<TrackerUser>(`${BASE}/users/${userId}`, updates),
-
-  deleteUser: (userId: string | number) =>
-    api.delete<{ message: string }>(`${BASE}/users/${userId}`),
-
-  createLead: (data: CreateLeadPayload) =>
-    api.post<LeadTrackerRow>(`${BASE}/leads`, data),
-
-  deleteLead: (id: number) =>
-    api.delete<{ message: string }>(`${BASE}/${id}`),
 };
-

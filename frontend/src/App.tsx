@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
@@ -19,9 +19,7 @@ import MeetingsListPage from './pages/meetings/MeetingsListPage'
 import MeetingNewPage from './pages/meetings/MeetingNewPage'
 import MeetingDetailPage from './pages/meetings/MeetingDetailPage'
 import MeetingEditPage from './pages/meetings/MeetingEditPage'
-import ConnectionsBoardPage from './pages/connections/ConnectionsBoardPage'
-import OpportunitiesListPage from './pages/opportunities/OpportunitiesListPage'
-import OpportunityNewPage from './pages/opportunities/OpportunityNewPage'
+import FollowUpsListPage from './pages/followups/FollowUpsListPage'
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage'
 import OpportunityEditPage from './pages/opportunities/OpportunityEditPage'
 import CommunicationsListPage from './pages/communications/CommunicationsListPage'
@@ -32,9 +30,7 @@ import AnalyticsPage from './pages/analytics/AnalyticsPage'
 import DiscoveryPage from './pages/discovery/DiscoveryPage'
 import DiscoveryDetailPage from './pages/discovery/DiscoveryDetailPage'
 import OutreachWorkspacePage from './pages/outreach/OutreachWorkspacePage'
-import OutreachTrackerPage from './pages/outreach/OutreachTrackerPage'
 import OutreachDraftsListPage from './pages/outreach/OutreachDraftsListPage'
-import GmailSetupPage from './pages/outreach/GmailSetupPage'
 import PartnershipsListPage from './pages/partnerships/PartnershipsListPage'
 import PartnershipNewPage from './pages/partnerships/PartnershipNewPage'
 import PartnershipDetailPage from './pages/partnerships/PartnershipDetailPage'
@@ -56,7 +52,6 @@ import { ActiveMeetingLauncher } from './components/meetings/ActiveMeetingLaunch
 import { DemosView } from './pages/DemosView'
 import { ProposalsView } from './pages/ProposalsView'
 import { NegotiationsView } from './pages/NegotiationsView'
-import { TasksView } from './pages/TasksView'
 import { CustomersView } from './pages/CustomersView'
 import { CallsView } from './pages/CallsView'
 import CalendarPage from './pages/CalendarPage'
@@ -67,6 +62,11 @@ import CampaignDetailPage from './pages/campaigns/CampaignDetailPage'
 import FundingPage from './pages/funding/FundingPage'
 import LeadImportPage from './pages/leads/LeadImportPage'
 import LeadTrackerPage from './pages/leads/LeadTrackerPage'
+
+function TasksRedirect() {
+  const { search } = useLocation()
+  return <Navigate to={`/business-development/calendar${search}`} replace />
+}
 
 export default function App() {
   return (
@@ -229,31 +229,22 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/business-development/followups"
+          element={
+            <ProtectedRoute>
+              <FollowUpsListPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Phase 7: Connection Pipeline Board & Opportunity Management */}
-        <Route
-          path="/business-development/connections"
-          element={
-            <ProtectedRoute>
-              <ConnectionsBoardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/business-development/opportunities"
-          element={
-            <ProtectedRoute>
-              <OpportunitiesListPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/business-development/opportunities/new"
-          element={
-            <ProtectedRoute>
-              <OpportunityNewPage />
-            </ProtectedRoute>
-          }
-        />
+        {/* Removed from the UI; old links land on the closest current page. */}
+        <Route path="/business-development/connections" element={<Navigate to="/business-development/organizations" replace />} />
+        {/* Removed from the UI; old links land on the closest current page. */}
+        <Route path="/business-development/opportunities" element={<Navigate to="/business-development/organizations" replace />} />
+        {/* Removed from the UI; old links land on the closest current page. */}
+        <Route path="/business-development/opportunities/new" element={<Navigate to="/business-development/organizations" replace />} />
         <Route
           path="/business-development/opportunities/:id"
           element={
@@ -314,6 +305,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/business-development/analytics/financials"
+          element={
+            <ProtectedRoute>
+              <AnalyticsPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Phase 11: Organization Discovery & Lead Sourcing */}
         <Route
@@ -342,6 +341,9 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        {/* Removed from the UI; old links land on the closest current page. */}
+        <Route path="/business-development/funding/campaigns" element={<Navigate to="/business-development/campaigns" replace />} />
+
         {/* Lead list upload — flexible column mapping, syncs into CRM + Google Sheets */}
         <Route
           path="/business-development/leads/import"
@@ -369,14 +371,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/business-development/outreach/tracker"
-          element={
-            <ProtectedRoute>
-              <OutreachTrackerPage />
-            </ProtectedRoute>
-          }
-        />
+        {/* Outreach Tracker was removed from the UI; old links land on Outreach. */}
+        <Route path="/business-development/outreach/tracker" element={<Navigate to="/business-development/outreach" replace />} />
         <Route
           path="/business-development/outreach/drafts"
           element={
@@ -385,14 +381,11 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/business-development/gmail-setup"
-          element={
-            <ProtectedRoute>
-              <GmailSetupPage />
-            </ProtectedRoute>
-          }
-        />
+        {/* Removed from the UI; old links land on the closest current page. */}
+        <Route path="/business-development/gmail-setup" element={<Navigate to="/business-development?gmail=manage" replace />} />
+        {/* The standalone Settings page was removed: Gmail is in the profile menu; admins configure the platform in /admin. */}
+        <Route path="/business-development/settings/integrations" element={<Navigate to="/business-development?gmail=manage" replace />} />
+        <Route path="/business-development/settings/*" element={<Navigate to="/business-development" replace />} />
 
         {/* Phase 13: Partnership Management */}
         <Route
@@ -453,14 +446,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/business-development/tasks"
-          element={
-            <ProtectedRoute>
-              <TasksView />
-            </ProtectedRoute>
-          }
-        />
+        {/* Tasks are managed in Calendar; /tasks?task=ID opens that task there. */}
+        <Route path="/business-development/tasks" element={<TasksRedirect />} />
         <Route
           path="/business-development/customers"
           element={
@@ -477,6 +464,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        {/* Removed from the UI; old links land on the closest current page. */}
+        <Route path="/business-development/reports" element={<Navigate to="/business-development/organizations" replace />} />
         <Route
           path="/business-development/calendar"
           element={

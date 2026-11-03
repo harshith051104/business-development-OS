@@ -27,6 +27,7 @@ export const AdminAuditLogsPage: React.FC = () => {
   const [userEmail, setUserEmail] = useState<string>('')
   const [startDate, setStartDate] = useState<string>('')
   const [endDate, setEndDate] = useState<string>('')
+  const [action, setAction] = useState<string>('')
 
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +45,7 @@ export const AdminAuditLogsPage: React.FC = () => {
         user_email: userEmail.trim() || undefined,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
+        action: action.trim() || undefined,
       })
       setLogs(res.items)
       setTotal(res.total)
@@ -53,14 +55,14 @@ export const AdminAuditLogsPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [page, pageSize, search, resourceType, userEmail, startDate, endDate])
+  }, [page, pageSize, search, resourceType, userEmail, startDate, endDate, action])
 
   useEffect(() => {
     fetchLogs()
   }, [fetchLogs])
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col md:pl-64">
       <AdminNavbar />
 
       <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -127,15 +129,17 @@ export const AdminAuditLogsPage: React.FC = () => {
                 }}
                 className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
               >
-                <option value="">All Resource Types</option>
-                <option value="USER">USER</option>
-                <option value="ORGANIZATION">ORGANIZATION</option>
-                <option value="OPPORTUNITY">OPPORTUNITY</option>
-                <option value="PARTNERSHIP">PARTNERSHIP</option>
-                <option value="PROJECT">PROJECT</option>
-                <option value="MEETING">MEETING</option>
-                <option value="SETTINGS">SETTINGS</option>
-                <option value="ASSIGNMENTS">ASSIGNMENTS</option>
+                <option value="">All record types</option>
+                <option value="USER">Users</option>
+                <option value="ORGANIZATION">Organizations</option>
+                <option value="CONTACT">Contacts</option>
+                <option value="OPPORTUNITY">Opportunities</option>
+                <option value="PARTNERSHIP">Partnerships</option>
+                <option value="MEETING">Meetings</option>
+                <option value="TASK">Tasks</option>
+                <option value="PROJECT">Showcase projects</option>
+                <option value="SETTINGS">System settings</option>
+                <option value="ASSIGNMENTS">Owner assignments</option>
               </select>
             </div>
 
@@ -155,6 +159,8 @@ export const AdminAuditLogsPage: React.FC = () => {
             <div className="sm:col-span-2">
               <input
                 type="date"
+                aria-label="From date"
+                title="From date"
                 value={startDate}
                 onChange={(e) => {
                   setStartDate(e.target.value)
@@ -163,6 +169,50 @@ export const AdminAuditLogsPage: React.FC = () => {
                 className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none font-mono"
               />
             </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+            <label className="flex items-center gap-1.5">
+              Action contains
+              <input
+                type="text"
+                value={action}
+                onChange={(e) => {
+                  setAction(e.target.value)
+                  setPage(1)
+                }}
+                placeholder="e.g. LOGIN_FAILED"
+                className="px-3 py-1.5 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500"
+              />
+            </label>
+            <label className="flex items-center gap-1.5">
+              To date
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value)
+                  setPage(1)
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs font-mono"
+              />
+            </label>
+            {(search || resourceType || userEmail || startDate || endDate || action) && (
+              <button
+                onClick={() => {
+                  setSearch('')
+                  setResourceType('')
+                  setUserEmail('')
+                  setStartDate('')
+                  setEndDate('')
+                  setAction('')
+                  setPage(1)
+                }}
+                className="text-violet-300 hover:text-violet-200"
+              >
+                Clear filters
+              </button>
+            )}
+            <span className="ml-auto">{total} recorded actions match</span>
           </div>
         </div>
 

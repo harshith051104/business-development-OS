@@ -8,9 +8,11 @@ export interface DiscoveredContact {
   business_relevance?: string | null
 
   email?: string | null
-  email_status: 'unverified' | 'enriched' | 'unavailable'
+  // verified | publicly_found | guessed | unverified | not_found (older rows: enriched, predicted, unavailable)
+  email_status: string
   phone?: string | null
   linkedin_url?: string | null
+  source_url?: string | null // public page the person was found on; required for CRM import
 
   fit_level: 'High' | 'Medium' | 'Low'
   fit_reason?: string | null
@@ -68,6 +70,7 @@ export interface PaginatedDiscovery {
   page: number
   page_size: number
   total_pages: number
+  notices?: string[] // sources that failed during the search, e.g. AI research unavailable
 }
 
 export interface DiscoverySearchQuery {

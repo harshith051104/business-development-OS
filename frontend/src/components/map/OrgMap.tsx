@@ -3,13 +3,11 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import { Link } from 'react-router-dom'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MapPin, Globe, Plus, Users, Check, Sparkles, ExternalLink, RefreshCw, Box, Map as MapIcon } from 'lucide-react'
+import { MapPin, Globe, Plus, Users, Check, Sparkles, ExternalLink, RefreshCw } from 'lucide-react'
 import { geocodingService } from '../../services/geocoding'
 import type { MapData } from '../../services/geocoding'
-import { discoveryService } from '../../services/discovery'
 import type { DiscoveredOrganization } from '../../types/discovery'
 import { resolveCoordinates } from '../../utils/cityCoordinates'
-import OrgGlobe from './OrgGlobe'
 
 // Fix default marker icon asset paths with bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -36,7 +34,6 @@ export interface MappedEntity {
   contactsCount: number
   originalItem?: DiscoveredOrganization
   location_precision?: string | null
-  isSuggested?: boolean
 }
 
 function getMarkerColor(score: number, priority: string): { bg: string; glow: string; border: string } {
@@ -62,12 +59,9 @@ function getMarkerColor(score: number, priority: string): { bg: string; glow: st
 }
 
 function createGlowingMarker(org: MappedEntity) {
-  const { bg, glow, border } = org.isSuggested
-    ? { bg: '#eab308', glow: 'rgba(234, 179, 8, 0.45)', border: '#fde047' }
-    : getMarkerColor(org.fit_score, org.priority)
-  const label = org.isSuggested ? '+' : org.fit_score > 0 ? org.fit_score : org.name.charAt(0)
-  const isApproximate = !org.isSuggested && org.location_precision === 'APPROXIMATE'
-  const isDashed = org.isSuggested || isApproximate
+  const { bg, glow, border } = getMarkerColor(org.fit_score, org.priority)
+  const label = org.fit_score > 0 ? org.fit_score : org.name.charAt(0)
+  const isApproximate = org.location_precision === 'APPROXIMATE'
 
   return L.divIcon({
     className: 'custom-map-marker',
@@ -97,7 +91,7 @@ function createGlowingMarker(org: MappedEntity) {
           border-radius: 50%;
           background: ${isApproximate ? 'transparent' : bg};
           border: 2px solid ${isApproximate ? '#6366f1' : border};
-          ${isDashed ? 'border-style: dashed;' : ''}
+          ${isApproximate ? 'border-style: dashed;' : ''}
           box-shadow: 0 4px 12px rgba(0,0,0,0.6);
           color: white;
           font-weight: 700;
@@ -168,14 +162,11 @@ export default function OrgMap({
   onSave,
 }: OrgMapProps) {
   const [crmOrgs, setCrmOrgs] = useState<MappedEntity[]>([])
-  const [suggestedTargets, setSuggestedTargets] = useState<MappedEntity[]>([])
-  const [showSuggested, setShowSuggested] = useState(true)
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<string>('All')
   const [search, setSearch] = useState('')
 
   const [mapTheme, setMapTheme] = useState<'dark' | 'standard'>('dark')
-  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d')
 
   // Map discovered items if provided; otherwise fetch CRM map data
   const mappedFromItems: MappedEntity[] = useMemo(() => {
@@ -238,68 +229,7 @@ export default function OrgMap({
       .catch(() => setLoading(false))
   }, [items])
 
-  useEffect(() => {
-    // Suggested targets layer only applies to standalone CRM map mode
-    if (items !== undefined) return
-
-    Promise.all([
-      discoveryService.list({ status: 'discovered', page_size: 100 }),
-      discoveryService.list({ status: 'saved', page_size: 100 }),
-    ])
-      .then(([discovered, saved]) => {
-        const merged = [...discovered.items, ...saved.items]
-          .filter(o => !o.is_existing_duplicate && !o.organization_id)
-          .sort((a, b) => (b.potential_fit_score || 0) - (a.potential_fit_score || 0))
-          .slice(0, 50)
-
-        const mapped: MappedEntity[] = merged
-          .map(item => {
-            const coords = resolveCoordinates(item.address, item.city, item.country, item.id)
-            if (!coords) return null
-            const [lat, lng] = coords
-            return {
-              id: item.id,
-              name: item.name,
-              latitude: lat,
-              longitude: lng,
-              organization_type: item.organization_type || 'Company',
-              city: item.city || '',
-              country: item.country || '',
-              address: item.address || [item.city, item.country].filter(Boolean).join(', '),
-              status: item.status,
-              priority: item.potential_fit || 'Medium',
-              fit_score: item.potential_fit_score || 0,
-              website: item.website || '',
-              description: item.description || '',
-              contactsCount: item.contacts?.length || 0,
-              originalItem: item,
-              location_precision: null,
-              isSuggested: true,
-            }
-          })
-          .filter(Boolean) as MappedEntity[]
-
-        setSuggestedTargets(mapped)
-      })
-      .catch(() => setSuggestedTargets([]))
-  }, [items])
-
-  async function handleAddToCrm(item: DiscoveredOrganization) {
-    if (onAdd) {
-      onAdd(item)
-      return
-    }
-    try {
-      await discoveryService.addToOrganizations(item.id)
-      setSuggestedTargets(prev => prev.filter(o => o.id !== item.id))
-    } catch {
-      // leave marker in place if the add failed; user can retry from the popup
-    }
-  }
-
-  const allOrgs = items !== undefined
-    ? mappedFromItems
-    : showSuggested ? [...crmOrgs, ...suggestedTargets] : crmOrgs
+  const allOrgs = items !== undefined ? mappedFromItems : crmOrgs
 
   const filtered = useMemo(() => {
     return allOrgs.filter(o => {
@@ -378,44 +308,15 @@ export default function OrgMap({
               <span className="w-2 h-2 rounded-full border border-dashed border-indigo-400 inline-block"></span>
               <span>Approx</span>
             </span>
-            {items === undefined && (
-              <span className="flex items-center space-x-1 text-yellow-400 font-medium">
-                <span className="w-2 h-2 rounded-full border border-dashed border-yellow-400 inline-block"></span>
-                <span>Suggested</span>
-              </span>
-            )}
           </div>
 
-          {items === undefined && (
-            <label className="flex items-center space-x-1.5 text-xs px-2.5 py-1 rounded-xl bg-[#1A1040] border border-violet-800/40 text-slate-300 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={showSuggested}
-                onChange={e => setShowSuggested(e.target.checked)}
-                className="accent-violet-500"
-              />
-              <span>Suggested Targets ({suggestedTargets.length})</span>
-            </label>
-          )}
-
           <button
-            onClick={() => setViewMode(v => (v === '2d' ? '3d' : '2d'))}
+            onClick={() => setMapTheme(t => (t === 'dark' ? 'standard' : 'dark'))}
             className="flex items-center space-x-1.5 text-xs px-2.5 py-1 rounded-xl bg-[#1A1040] hover:bg-[#251755] text-slate-300 hover:text-white border border-violet-800/40 transition font-medium"
-            title="Toggle between flat 2D map and 3D globe"
+            title="Toggle between dark mode filter and standard OpenStreetMap colors"
           >
-            {viewMode === '2d' ? <Box className="w-3.5 h-3.5" /> : <MapIcon className="w-3.5 h-3.5" />}
-            <span>{viewMode === '2d' ? '3D Globe' : '2D Map'}</span>
+            <span>{mapTheme === 'dark' ? '🌙 Dark Mode' : '🗺️ Standard OSM'}</span>
           </button>
-
-          {viewMode === '2d' && (
-            <button
-              onClick={() => setMapTheme(t => (t === 'dark' ? 'standard' : 'dark'))}
-              className="flex items-center space-x-1.5 text-xs px-2.5 py-1 rounded-xl bg-[#1A1040] hover:bg-[#251755] text-slate-300 hover:text-white border border-violet-800/40 transition font-medium"
-              title="Toggle between dark mode filter and standard OpenStreetMap colors"
-            >
-              <span>{mapTheme === 'dark' ? '🌙 Dark Mode' : '🗺️ Standard OSM'}</span>
-            </button>
-          )}
 
           <span className="text-xs px-2.5 py-1 rounded-full bg-violet-950/80 border border-violet-800/50 text-violet-300 font-semibold font-mono">
             {filtered.length} leads mapped
@@ -424,9 +325,6 @@ export default function OrgMap({
       </div>
 
       {/* Map Container */}
-      {viewMode === '3d' ? (
-        <OrgGlobe orgs={filtered} height={height} onAdd={handleAddToCrm} />
-      ) : (
       <div className={mapTheme === 'dark' ? 'osm-dark-tiles' : 'osm-standard-tiles'} style={{ height, width: '100%', position: 'relative' }}>
         <MapContainer
           center={defaultCenter}
@@ -453,7 +351,7 @@ export default function OrgMap({
 
           {filtered.map(org => (
             <Marker
-              key={`${org.isSuggested ? 'sug' : 'crm'}-${org.id}`}
+              key={`${org.id}-${org.name}`}
               position={[org.latitude, org.longitude]}
               icon={createGlowingMarker(org)}
             >
@@ -525,9 +423,9 @@ export default function OrgMap({
                       <span>{org.contactsCount ? `${org.contactsCount} Contacts` : 'View Lead'}</span>
                     </Link>
 
-                    {org.originalItem && (onAdd || org.isSuggested) && (
+                    {org.originalItem && onAdd && (
                       <button
-                        onClick={() => handleAddToCrm(org.originalItem!)}
+                        onClick={() => onAdd(org.originalItem!)}
                         className="text-xs py-1.5 px-3 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold transition flex items-center space-x-1 shadow-md shadow-violet-600/30"
                       >
                         <Plus className="w-3 h-3" />
@@ -541,7 +439,6 @@ export default function OrgMap({
           ))}
         </MapContainer>
       </div>
-      )}
 
       <style>{`
         @keyframes pulse-ring {

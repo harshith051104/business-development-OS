@@ -76,8 +76,6 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
   function handleEventClick(event: CalendarEvent) {
     if (onEventClick) {
       onEventClick(event)
-    } else if (event.source === 'task') {
-      navigate('/business-development/tasks')
     } else {
       navigate(`/business-development/meetings/${event.id}`)
     }
@@ -164,16 +162,14 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
                 <div className="space-y-0.5">
                   {dayEvents.slice(0, 3).map(event => (
                     <button
-                      key={`${event.source || 'meeting'}-${event.id}`}
+                      key={event.id}
                       onClick={(e) => {
                         e.stopPropagation()
                         handleEventClick(event)
                       }}
-                      className={`w-full text-left text-[10px] px-1.5 py-0.5 rounded truncate text-white hover:brightness-110 transition ${
-                        event.source === 'task' ? 'bg-fuchsia-600' : STATUS_COLORS[event.status] || 'bg-slate-600'
-                      }`}
+                      className={`w-full text-left text-[10px] px-1.5 py-0.5 rounded truncate text-white hover:brightness-110 transition ${STATUS_COLORS[event.status] || 'bg-slate-600'}`}
                     >
-                      {event.source === 'task' ? '✓ ' : ''}{event.title.substring(0, 18)}
+                      {event.title.substring(0, 18)}
                     </button>
                   ))}
                   {dayEvents.length > 3 && (
@@ -201,13 +197,13 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
             <div className="space-y-2">
               {selectedEvents.map(event => (
                 <button
-                  key={`${event.source || 'meeting'}-${event.id}`}
+                  key={event.id}
                   onClick={() => handleEventClick(event)}
                   className="w-full flex items-start gap-3 text-left p-3 bg-[#1A1040] border border-slate-700 rounded-xl hover:border-violet-500/50 transition"
                 >
-                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${event.source === 'task' ? 'bg-fuchsia-400' : STATUS_DOTS[event.status] || 'bg-slate-500'}`} />
+                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${STATUS_DOTS[event.status] || 'bg-slate-500'}`} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-white font-medium">{event.source === 'task' ? '✓ Task: ' : ''}{event.title}</div>
+                    <div className="text-sm text-white font-medium">{event.title}</div>
                     <div className="text-xs text-slate-400 mt-0.5">
                       {parseMeetingDate(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       {event.end && ` – ${parseMeetingDate(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
@@ -246,11 +242,11 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
           <div className="space-y-1 max-h-48 overflow-y-auto">
             {events.map(event => (
               <button
-                key={`${event.source || 'meeting'}-${event.id}`}
+                key={event.id}
                 onClick={() => handleEventClick(event)}
                 className="w-full flex items-center gap-3 text-left p-2 hover:bg-slate-700 rounded transition"
               >
-                <div className={`w-2 h-2 rounded-full shrink-0 ${event.source === 'task' ? 'bg-fuchsia-400' : STATUS_DOTS[event.status] || 'bg-slate-500'}`} />
+                <div className={`w-2 h-2 rounded-full shrink-0 ${STATUS_DOTS[event.status] || 'bg-slate-500'}`} />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-white truncate">{event.title}</div>
                   <div className="text-xs text-slate-400">

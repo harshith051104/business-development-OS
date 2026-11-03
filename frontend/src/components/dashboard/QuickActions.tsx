@@ -4,9 +4,12 @@ import {
   Search,
   Building,
   UserPlus,
+  Users,
   Sparkles,
+  CalendarPlus,
   ArrowRight,
   Compass,
+  MessageSquare,
 } from 'lucide-react'
 
 export const QuickActions: React.FC = () => {
@@ -33,11 +36,25 @@ export const QuickActions: React.FC = () => {
       color: 'from-teal-600/20 to-teal-600/5 hover:border-teal-500/40 text-teal-400',
     },
     {
+      title: 'View Connections',
+      description: 'Review established outreach & active contacts',
+      icon: Users,
+      path: '/business-development/connections',
+      color: 'from-emerald-600/20 to-emerald-600/5 hover:border-emerald-500/40 text-emerald-400',
+    },
+    {
       title: 'Showcase Our Projects',
       description: 'Present company products to stakeholders',
       icon: Sparkles,
       path: '/business-development/showcase',
       color: 'from-violet-600/20 to-violet-600/5 hover:border-violet-500/40 text-violet-400',
+    },
+    {
+      title: 'Record Communication',
+      description: 'Log outreach emails, phone calls, and direct discussions',
+      icon: MessageSquare,
+      path: '/business-development/communications/new',
+      color: 'from-pink-600/20 to-pink-600/5 hover:border-pink-500/40 text-pink-400',
     },
   ]
 
@@ -53,7 +70,7 @@ export const QuickActions: React.FC = () => {
             <p className="text-xs text-slate-400">Core business development shortcuts and workflows</p>
           </div>
         </div>
-        <span className="text-xs text-slate-400">4 Actions</span>
+        <span className="text-xs text-slate-400">6 Actions</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import { contactsService } from '../../services/contacts'
 import { organizationsService } from '../../services/organizations'
+import { useDropdowns } from '../../hooks/useDropdowns'
 import type {
   ContactCreateInput,
   ContactRelationshipStatus,
@@ -31,6 +32,7 @@ const contactStatuses: ContactRelationshipStatus[] = [
 
 export const ContactNewPage: React.FC = () => {
   const navigate = useNavigate()
+  const { config: dropdowns } = useDropdowns()
   const [searchParams] = useSearchParams()
   const preselectedOrgId = searchParams.get('organization_id')
 
@@ -256,11 +258,15 @@ export const ContactNewPage: React.FC = () => {
                 <input
                   type="text"
                   name="designation"
+                  list="designation-role-options"
                   value={formData.designation || ''}
                   onChange={handleChange}
                   placeholder="e.g. Company Director / Chief Technology Officer"
                   className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
+                <datalist id="designation-role-options">
+                  {(dropdowns?.roles ?? []).filter((r) => r !== 'Other').map((r) => <option key={r} value={r} />)}
+                </datalist>
               </div>
 
               {/* Department */}

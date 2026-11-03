@@ -2,7 +2,7 @@ import { api } from './api';
 import type { BDTask, BDTaskCreate, TaskComment, TaskDashboard } from '../types/task';
 
 export const taskService = {
-  list: (params?: { status?: string; priority?: string; entity_type?: string; entity_id?: number }) =>
+  list: (params?: { status?: string; priority?: string; entity_type?: string; entity_id?: number; limit?: number }) =>
     api.get<BDTask[]>('/api/business-development/tasks', params),
 
   getDashboard: () =>

@@ -1,9 +1,12 @@
+import { usePersistentState } from '../../hooks/usePersistentState'
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import StatusBadge from '../../components/organizations/StatusBadge'
 import PriorityBadge from '../../components/organizations/PriorityBadge'
 import StatusChangeModal from '../../components/organizations/StatusChangeModal'
+import OrganizationFinancialPanel from '../../components/organizations/OrganizationFinancialPanel'
+import OpportunitySummary, { useOpportunitiesByOrg } from '../../components/organizations/OpportunitySummary'
 import { organizationsService } from '../../services/organizations'
 import type {
   Organization,
@@ -72,7 +75,7 @@ export const OrganizationsListPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [viewMode, setViewMode] = usePersistentState<'table' | 'cards'>('elly.orgs.view', 'table', ['table', 'cards'])
 
   // Search and filter states
   const [searchInput, setSearchInput] = useState<string>('')
@@ -87,6 +90,19 @@ export const OrganizationsListPage: React.FC = () => {
   const [statusModalOrg, setStatusModalOrg] = useState<Organization | null>(null)
   const [deleteConfirmOrg, setDeleteConfirmOrg] = useState<Organization | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
+  const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null)
+  const opps = useOpportunitiesByOrg()
+
+  // Chart selection: highlight the matching row/card and bring it into view.
+  const selectOrg = (id: number | null) => {
+    setSelectedOrgId(id)
+    if (id === null) return
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`org-row-${id}`)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el?.focus({ preventScroll: true })
+    })
+  }
 
   // Fetch organizations
   const fetchOrgs = useCallback(async () => {
@@ -188,7 +204,7 @@ export const OrganizationsListPage: React.FC = () => {
           <div className="flex items-center space-x-2.5">
             <Link
               to="/business-development/organizations/new"
-              className="inline-flex items-center space-x-1.5 py-2 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-xs transition shadow-lg shadow-violet-600/25 shrink-0"
+              className="inline-flex items-center space-x-1.5 py-2 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-xs transition shrink-0"
             >
               <Plus className="w-4 h-4" />
               <span>Add Organization</span>
@@ -197,7 +213,7 @@ export const OrganizationsListPage: React.FC = () => {
         </div>
 
         {/* ── Search & Filter Bar ── */}
-        <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-4 shadow-xl space-y-3">
+        <div className="bg-[#110B2E] border border-slate-800/90 rounded-xl p-4 space-y-3">
           {/* Top Search Row */}
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
@@ -317,6 +333,19 @@ export const OrganizationsListPage: React.FC = () => {
           </div>
         </div>
 
+        {/* ── Financial comparison (same search, filters and page as the table) ── */}
+        {!error && (
+          <OrganizationFinancialPanel
+            organizationIds={loading ? [] : organizations.map((o) => o.id)}
+            page={page}
+            totalPages={totalPages}
+            priorityFilter={selectedPriority}
+            onPriorityFilter={setSelectedPriority}
+            selectedId={selectedOrgId}
+            onSelect={selectOrg}
+          />
+        )}
+
         {/* ── Content View: Loading / Error / Empty / List ── */}
         {loading ? (
           <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
@@ -367,17 +396,18 @@ export const OrganizationsListPage: React.FC = () => {
           </div>
         ) : viewMode === 'table' ? (
           /* ── Table Layout ── */
-          <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#110B2E] border border-slate-800/90 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-800/80 bg-[#1A1040]/80 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                     <th className="py-3.5 px-4">Organization</th>
-                    <th className="py-3.5 px-4">Type</th>
+                    <th className="py-3.5 px-4 hidden min-[1400px]:table-cell">Type</th>
                     <th className="py-3.5 px-4">Location</th>
                     <th className="py-3.5 px-4">Priority</th>
                     <th className="py-3.5 px-4">Connection Status</th>
-                    <th className="py-3.5 px-4">Updated</th>
+                    <th className="py-3.5 px-4" title="Count · furthest stage, total estimated value and next action. Full list on the organization page.">Opportunities</th>
+                    <th className="py-3.5 px-4 hidden 2xl:table-cell">Updated</th>
                     <th className="py-3.5 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -385,7 +415,12 @@ export const OrganizationsListPage: React.FC = () => {
                   {organizations.map((org) => (
                     <tr
                       key={org.id}
-                      className="hover:bg-[#1A1040]/40 transition group cursor-pointer"
+                      id={`org-row-${org.id}`}
+                      tabIndex={-1}
+                      aria-selected={selectedOrgId === org.id}
+                      className={`transition group cursor-pointer outline-none ${
+                        selectedOrgId === org.id ? 'bg-violet-600/15 ring-1 ring-inset ring-violet-400/60' : 'hover:bg-[#1A1040]/40'
+                      }`}
                       onClick={() => navigate(`/business-development/organizations/${org.id}`)}
                     >
                       {/* Name & Website */}
@@ -402,7 +437,7 @@ export const OrganizationsListPage: React.FC = () => {
                       </td>
 
                       {/* Category / Type */}
-                      <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap hidden min-[1400px]:table-cell">
                         {org.organization_type}
                       </td>
 
@@ -431,8 +466,13 @@ export const OrganizationsListPage: React.FC = () => {
                         <StatusBadge status={org.status} />
                       </td>
 
+                      {/* Opportunities summary (full list on the organization page) */}
+                      <td className="py-3.5 px-4 text-xs whitespace-nowrap">
+                        <OpportunitySummary opportunities={opps.byOrg.get(org.id)} loading={opps.loading} error={opps.error} />
+                      </td>
+
                       {/* Updated Date */}
-                      <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px] whitespace-nowrap hidden 2xl:table-cell">
                         {new Date(org.updated_at).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -463,9 +503,11 @@ export const OrganizationsListPage: React.FC = () => {
                           <Link
                             to={`/business-development/organizations/${org.id}/edit`}
                             title="Edit Organization"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
+                            aria-label={`Edit ${org.name}`}
+                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition text-xs"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
+                            Edit
                           </Link>
                           <button
                             onClick={() => setDeleteConfirmOrg(org)}
@@ -488,8 +530,12 @@ export const OrganizationsListPage: React.FC = () => {
             {organizations.map((org) => (
               <div
                 key={org.id}
+                id={`org-row-${org.id}`}
+                tabIndex={-1}
                 onClick={() => navigate(`/business-development/organizations/${org.id}`)}
-                className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800/80 hover:border-violet-500/40 transition-all duration-200 cursor-pointer shadow-xl flex flex-col justify-between space-y-4 group"
+                className={`p-5 rounded-xl bg-[#110B2E] border transition-colors cursor-pointer flex flex-col justify-between space-y-4 group outline-none ${
+                  selectedOrgId === org.id ? 'border-violet-400 ring-1 ring-violet-400/60' : 'border-slate-800/80 hover:border-slate-600'
+                }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -509,6 +555,11 @@ export const OrganizationsListPage: React.FC = () => {
 
                   <div className="flex items-center space-x-2 my-3">
                     <StatusBadge status={org.status} size="md" />
+                  </div>
+
+                  <div className="text-xs text-slate-400 mb-2 flex gap-1.5">
+                    <span>Opportunities:</span>
+                    <OpportunitySummary opportunities={opps.byOrg.get(org.id)} loading={opps.loading} error={opps.error} />
                   </div>
 
                   {org.city && (
@@ -536,15 +587,19 @@ export const OrganizationsListPage: React.FC = () => {
                   <div className="flex items-center space-x-1.5">
                     <button
                       onClick={() => setStatusModalOrg(org)}
+                      title="Change Connection Status"
+                      aria-label={`Change connection status for ${org.name}`}
                       className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-violet-500/20 text-slate-400 hover:text-violet-300 border border-slate-800"
                     >
                       <GitFork className="w-3.5 h-3.5" />
                     </button>
                     <Link
                       to={`/business-development/organizations/${org.id}/edit`}
-                      className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800"
+                      aria-label={`Edit ${org.name}`}
+                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
+                      Edit
                     </Link>
                   </div>
                 </div>

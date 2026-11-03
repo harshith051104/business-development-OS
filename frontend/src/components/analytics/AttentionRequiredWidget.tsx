@@ -73,13 +73,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
                     </div>
                   </div>
                   <Link
-                    to={
-                      fol.organization_id
-                        ? `/business-development/organizations/${fol.organization_id}`
-                        : fol.contact_id
-                        ? `/business-development/contacts/${fol.contact_id}`
-                        : '/business-development'
-                    }
+                    to="/business-development/followups"
                     className="text-[11px] text-violet-400 hover:text-white shrink-0"
                   >
                     View

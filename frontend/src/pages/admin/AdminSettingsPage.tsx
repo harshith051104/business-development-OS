@@ -14,11 +14,6 @@ import {
   Handshake,
   Calendar,
   Sparkles,
-  Bell,
-  ToggleLeft,
-  ToggleRight,
-  Sheet,
-  ExternalLink,
 } from 'lucide-react'
 
 export const AdminSettingsPage: React.FC = () => {
@@ -27,10 +22,6 @@ export const AdminSettingsPage: React.FC = () => {
   const [partnershipTypes, setPartnershipTypes] = useState<string[]>([])
   const [meetingTypes, setMeetingTypes] = useState<string[]>([])
   const [projectCategories, setProjectCategories] = useState<string[]>([])
-  const [taskCalendarSyncEnabled, setTaskCalendarSyncEnabled] = useState<boolean>(true)
-  const [taskRemindersEnabled, setTaskRemindersEnabled] = useState<boolean>(true)
-  const [googleSheetsUrl, setGoogleSheetsUrl] = useState<string>('')
-  const [googleSheetsConfigured, setGoogleSheetsConfigured] = useState<boolean>(false)
 
   // Inputs for adding new entries
   const [newOrgType, setNewOrgType] = useState<string>('')
@@ -53,10 +44,6 @@ export const AdminSettingsPage: React.FC = () => {
       setPartnershipTypes(data.partnership_types || [])
       setMeetingTypes(data.meeting_types || [])
       setProjectCategories(data.project_categories || [])
-      setTaskCalendarSyncEnabled(data.task_calendar_sync_enabled ?? true)
-      setTaskRemindersEnabled(data.task_reminders_enabled ?? true)
-      setGoogleSheetsUrl(data.google_sheets_spreadsheet_url || '')
-      setGoogleSheetsConfigured(data.google_sheets_configured ?? false)
     } catch (err: any) {
       setError(err.detail || err.message || 'Failed to load system settings.')
     } finally {
@@ -79,13 +66,8 @@ export const AdminSettingsPage: React.FC = () => {
         partnership_types: partnershipTypes,
         meeting_types: meetingTypes,
         project_categories: projectCategories,
-        task_calendar_sync_enabled: taskCalendarSyncEnabled,
-        task_reminders_enabled: taskRemindersEnabled,
-        google_sheets_spreadsheet_url: googleSheetsUrl.trim(),
       })
       setSettings(updated)
-      setGoogleSheetsUrl(updated.google_sheets_spreadsheet_url || '')
-      setGoogleSheetsConfigured(updated.google_sheets_configured ?? false)
       setSuccessMessage('System configuration saved successfully.')
       setTimeout(() => setSuccessMessage(null), 4000)
     } catch (err: any) {
@@ -104,11 +86,13 @@ export const AdminSettingsPage: React.FC = () => {
   }
 
   const removeTag = (tag: string, list: string[], setList: (l: string[]) => void) => {
+    // Removing only hides the option from future dropdowns; records that already use it keep their value.
+    if (!window.confirm(`Remove "${tag}" from this list? Existing records keep "${tag}"; it just won't be offered for new ones. Nothing changes until you save.`)) return
     setList(list.filter((item) => item !== tag))
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col md:pl-64">
       <AdminNavbar />
 
       <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -177,6 +161,7 @@ export const AdminSettingsPage: React.FC = () => {
                   Organization Types
                 </h2>
               </div>
+              <p className="text-[11px] text-slate-500 -mt-2">Offered when adding or editing an organization and used as a CRM filter. Removing an option doesn’t change existing records.</p>
               <div className="flex flex-wrap gap-2 min-h-24">
                 {orgTypes.map((type) => (
                   <span
@@ -219,6 +204,7 @@ export const AdminSettingsPage: React.FC = () => {
                   Partnership Types
                 </h2>
               </div>
+              <p className="text-[11px] text-slate-500 -mt-2">Offered when recording a partnership in Deals. Removing an option doesn’t change existing records.</p>
               <div className="flex flex-wrap gap-2 min-h-24">
                 {partnershipTypes.map((type) => (
                   <span
@@ -261,6 +247,7 @@ export const AdminSettingsPage: React.FC = () => {
                   Meeting Types
                 </h2>
               </div>
+              <p className="text-[11px] text-slate-500 -mt-2">Offered when scheduling a meeting or demo. Removing an option doesn’t change existing records.</p>
               <div className="flex flex-wrap gap-2 min-h-24">
                 {meetingTypes.map((type) => (
                   <span
@@ -303,6 +290,7 @@ export const AdminSettingsPage: React.FC = () => {
                   Project Categories
                 </h2>
               </div>
+              <p className="text-[11px] text-slate-500 -mt-2">Used to group ELLY Showcase projects. Removing an option doesn’t change existing records.</p>
               <div className="flex flex-wrap gap-2 min-h-24">
                 {projectCategories.map((type) => (
                   <span
@@ -334,95 +322,6 @@ export const AdminSettingsPage: React.FC = () => {
                 >
                   <Plus className="w-4 h-4" />
                 </button>
-              </div>
-            </div>
-
-            {/* 5. Task Automation */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 md:col-span-2">
-              <div className="flex items-center space-x-2 pb-2 border-b border-slate-800">
-                <Bell className="w-4 h-4 text-rose-400" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Task Automation
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setTaskCalendarSyncEnabled((v) => !v)}
-                  className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#1A1040] border border-slate-700 text-left hover:border-slate-600 transition"
-                >
-                  <div>
-                    <p className="text-xs font-bold text-white">Sync Task Due Dates to Calendar</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Show tasks with a due date as events on the Calendar page.</p>
-                  </div>
-                  {taskCalendarSyncEnabled ? (
-                    <ToggleRight className="w-7 h-7 text-emerald-400 shrink-0" />
-                  ) : (
-                    <ToggleLeft className="w-7 h-7 text-slate-500 shrink-0" />
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setTaskRemindersEnabled((v) => !v)}
-                  className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#1A1040] border border-slate-700 text-left hover:border-slate-600 transition"
-                >
-                  <div>
-                    <p className="text-xs font-bold text-white">Task Due/Reminder Notifications</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Notify task owners when a task is due, overdue, or a reminder fires.</p>
-                  </div>
-                  {taskRemindersEnabled ? (
-                    <ToggleRight className="w-7 h-7 text-emerald-400 shrink-0" />
-                  ) : (
-                    <ToggleLeft className="w-7 h-7 text-slate-500 shrink-0" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* 6. Google Sheets Integration */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 md:col-span-2">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div className="flex items-center space-x-2">
-                  <Sheet className="w-4 h-4 text-green-400" />
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Google Sheets Integration
-                  </h2>
-                </div>
-                <span
-                  className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
-                    googleSheetsConfigured
-                      ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-slate-700/30 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  {googleSheetsConfigured ? 'Connected' : 'Not Configured'}
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Paste the full URL of a Google Sheet (or just its spreadsheet ID) to point lead
-                sync, discovery exports, and the lead tracker's push/pull buttons at that sheet.
-                Leave blank to fall back to the server's default configuration. Requires Google
-                service account credentials to already be set up on the server.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={googleSheetsUrl}
-                  onChange={(e) => setGoogleSheetsUrl(e.target.value)}
-                  placeholder="https://docs.google.com/spreadsheets/d/.../edit"
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
-                />
-                {googleSheetsUrl && (
-                  <a
-                    href={googleSheetsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-slate-300 hover:text-white hover:border-slate-600"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
               </div>
             </div>
           </div>

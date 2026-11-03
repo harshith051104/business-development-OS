@@ -49,6 +49,7 @@ const CHANNELS: { type: OutreachChannelType; label: string; icon: any }[] = [
   { type: 'Phone', label: 'Phone', icon: Phone },
   { type: 'LinkedIn', label: 'LinkedIn', icon: Globe },
   { type: 'WhatsApp', label: 'WhatsApp', icon: MessageSquare },
+  { type: 'Other', label: 'Other', icon: Send },
 ]
 
 export const OutreachWorkspacePage: React.FC = () => {
@@ -477,17 +478,21 @@ export const OutreachWorkspacePage: React.FC = () => {
 
         <div className="flex items-center space-x-3">
           {/* Gmail Status Badge */}
-          <Link
-            to="/business-development/gmail-setup"
-            className={`inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl border text-xs font-semibold transition ${
-              gmailStatus?.connected
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
-                : 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
-            }`}
-          >
-            <Mail className="w-3.5 h-3.5" />
-            <span>{gmailStatus?.connected ? `Gmail: ${gmailStatus.sender_email}` : 'Connect Gmail'}</span>
-          </Link>
+          {gmailStatus?.connected ? (
+            <span className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl border text-xs font-semibold bg-emerald-500/10 border-emerald-500/30 text-emerald-300">
+              <Mail className="w-3.5 h-3.5" />
+              <span>Sending as {gmailStatus.sender_email}</span>
+            </span>
+          ) : (
+            <Link
+              to={{ search: '?gmail=manage' }}
+              title="Sending email needs a connected Gmail account"
+              className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl border text-xs font-semibold transition bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Gmail not connected · Connect</span>
+            </Link>
+          )}
 
           <Link
             to="/business-development/outreach/drafts"

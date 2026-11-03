@@ -25,3 +25,36 @@ export interface DailyPrioritiesResponse {
   what_should_i_do_next: string;
   all_priority_items: PriorityItem[];
 }
+
+export interface QueueAction {
+  kind: 'task' | 'followup';
+  id: number;
+  title: string;
+  status: string;
+  priority?: string | null;
+  due_at?: string | null;
+  owner_id?: number | null;
+  owner_name?: string | null;
+  source_url: string;
+}
+
+export interface QueueOrganizationGroup {
+  organization_id: number;
+  organization_name: string;
+  organization_url: string;
+  financial_health?: string | null; // from linked SEC filings; null = not linked
+  actions: QueueAction[];
+}
+
+export interface QueueSection {
+  key: 'overdue' | 'today' | 'upcoming' | 'undated';
+  label: string;
+  organizations: QueueOrganizationGroup[];
+}
+
+export interface OrganizationQueueResponse {
+  scope: string;
+  generated_at: string;
+  total_actions: number;
+  sections: QueueSection[];
+}

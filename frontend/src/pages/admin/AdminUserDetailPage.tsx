@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import AdminNavbar from '../../components/layout/AdminNavbar'
 import { adminService } from '../../services/admin'
+import { Notice, type NoticeState } from '../../components/ui/Dialog'
+import { ASSIGNABLE_ROLES, ROLE_LABELS, roleLabel } from '../../lib/navigation'
 import type { AdminUserDetail } from '../../types/admin'
 import {
   Users,
@@ -23,6 +25,7 @@ import {
 
 export const AdminUserDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
+  const [notice, setNotice] = useState<NoticeState | null>(null)
   const [user, setUser] = useState<AdminUserDetail | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -57,11 +60,14 @@ export const AdminUserDetailPage: React.FC = () => {
 
   const handleToggleStatus = async () => {
     if (!user) return
+    const verb = user.is_active ? 'Deactivate' : 'Activate'
+    if (!window.confirm(`${verb} ${user.name}? ${user.is_active ? 'They will no longer be able to sign in.' : 'They will be able to sign in again.'}`)) return
     try {
       await adminService.updateUserStatus(user.id, !user.is_active)
+      setNotice({ kind: 'success', text: `${user.name} was ${user.is_active ? 'deactivated' : 'activated'}.` })
       fetchUser()
     } catch (err: any) {
-      alert(err.detail || 'Failed to change user status.')
+      setNotice({ kind: 'error', text: err.detail || 'The account status was not changed.' })
     }
   }
 
@@ -72,9 +78,10 @@ export const AdminUserDetailPage: React.FC = () => {
     try {
       await adminService.updateUserRole(user.id, newRole)
       setIsRoleModalOpen(false)
+      setNotice({ kind: 'success', text: `${user.name} is now ${roleLabel(newRole)}.` })
       fetchUser()
     } catch (err: any) {
-      alert(err.detail || 'Failed to update user role.')
+      setNotice({ kind: 'error', text: err.detail || 'The role was not changed.' })
     } finally {
       setIsUpdatingRole(false)
     }
@@ -88,9 +95,9 @@ export const AdminUserDetailPage: React.FC = () => {
       await adminService.updateUser(user.id, { password: newPassword.trim() })
       setIsPasswordModalOpen(false)
       setNewPassword('')
-      alert('Password updated successfully.')
+      setNotice({ kind: 'success', text: 'Password updated.' })
     } catch (err: any) {
-      alert(err.detail || 'Failed to reset password.')
+      setNotice({ kind: 'error', text: err.detail || 'The password was not changed.' })
     } finally {
       setIsUpdatingPassword(false)
     }
@@ -98,7 +105,7 @@ export const AdminUserDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col">
+      <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col">
         <AdminNavbar />
         <div className="flex-1 flex items-center justify-center">
           <RotateCw className="w-8 h-8 animate-spin text-rose-400" />
@@ -109,7 +116,7 @@ export const AdminUserDetailPage: React.FC = () => {
 
   if (error || !user) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col">
+      <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col">
         <AdminNavbar />
         <div className="flex-1 p-8 max-w-4xl mx-auto text-center space-y-4">
           <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
@@ -127,10 +134,11 @@ export const AdminUserDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col md:pl-64">
       <AdminNavbar />
 
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+        <Notice notice={notice} onDismiss={() => setNotice(null)} />
         <div className="flex items-center space-x-2 text-xs text-slate-400">
           <Link to="/admin/users" className="hover:text-white flex items-center gap-1 transition">
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -157,7 +165,7 @@ export const AdminUserDetailPage: React.FC = () => {
                   }`}
                 >
                   {user.role === 'ADMIN' ? <Shield className="w-3 h-3 text-rose-400" /> : <Briefcase className="w-3 h-3 text-amber-400" />}
-                  <span>{user.role}</span>
+                  <span>{roleLabel(user.role)}</span>
                 </span>
                 <span
                   className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
@@ -348,10 +356,11 @@ export const AdminUserDetailPage: React.FC = () => {
                   onChange={(e) => setNewRole(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
                 >
-                  <option value="BUSINESS_DEVELOPMENT">BUSINESS_DEVELOPMENT</option>
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="HEALTHCARE">HEALTHCARE</option>
-                  <option value="USER">USER</option>
+                  {ASSIGNABLE_ROLES.map((v) => (
+                    <option key={v} value={v}>
+                      {ROLE_LABELS[v]}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="pt-3 border-t border-slate-800 flex items-center justify-end space-x-3">

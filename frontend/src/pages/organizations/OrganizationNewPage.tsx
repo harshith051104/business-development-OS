@@ -351,7 +351,7 @@ export const OrganizationNewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 3: BD Classification & Pipeline */}
+          {/* Section 3: BD Classification & Status */}
           <div className="space-y-4 pt-4 border-t border-slate-800">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider text-violet-400">
               3. Business Development Classification
@@ -360,7 +360,7 @@ export const OrganizationNewPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Connection Pipeline Stage
+                  Connection status
                 </label>
                 <select
                   name="status"

@@ -7,6 +7,7 @@ import type {
   OrganizationFilterParams,
   DuplicateCheckResult,
 } from '../types/organization'
+import type { OrganizationFinancials } from '../types/financials'
 
 export const organizationsService = {
   async getOrganizations(params?: OrganizationFilterParams): Promise<PaginatedOrganizations> {
@@ -56,5 +57,21 @@ export const organizationsService = {
     return api.delete<{ status: string; message: string }>(
       `/api/business-development/organizations/${id}`
     )
+  },
+
+  async getFinancials(id: number | string): Promise<OrganizationFinancials> {
+    return api.get<OrganizationFinancials>(`/api/business-development/organizations/${id}/financials`)
+  },
+
+  async linkFinancials(id: number | string, cik: string): Promise<OrganizationFinancials> {
+    return api.put<OrganizationFinancials>(`/api/business-development/organizations/${id}/financials`, { cik })
+  },
+
+  async refreshFinancials(id: number | string): Promise<OrganizationFinancials> {
+    return api.post<OrganizationFinancials>(`/api/business-development/organizations/${id}/financials/refresh`, {})
+  },
+
+  async unlinkFinancials(id: number | string): Promise<OrganizationFinancials> {
+    return api.delete<OrganizationFinancials>(`/api/business-development/organizations/${id}/financials`)
   },
 }

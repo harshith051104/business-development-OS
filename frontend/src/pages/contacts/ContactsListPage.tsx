@@ -1,3 +1,4 @@
+import { usePersistentState } from '../../hooks/usePersistentState'
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
@@ -53,7 +54,7 @@ export const ContactsListPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [viewMode, setViewMode] = usePersistentState<'table' | 'cards'>('elly.contacts.view', 'table', ['table', 'cards'])
 
   // Filter and search states
   const [searchInput, setSearchInput] = useState<string>('')
@@ -476,9 +477,11 @@ export const ContactsListPage: React.FC = () => {
                           <Link
                             to={`/business-development/contacts/${contact.id}/edit`}
                             title="Edit Contact"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
+                            aria-label={`Edit ${contact.first_name} ${contact.last_name || ''}`.trim()}
+                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition text-xs"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
+                            Edit
                           </Link>
                           <button
                             onClick={() => setDeleteConfirmContact(contact)}
@@ -563,9 +566,11 @@ export const ContactsListPage: React.FC = () => {
                     </button>
                     <Link
                       to={`/business-development/contacts/${contact.id}/edit`}
-                      className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800"
+                      aria-label={`Edit ${contact.first_name} ${contact.last_name || ''}`.trim()}
+                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
+                      Edit
                     </Link>
                   </div>
                 </div>

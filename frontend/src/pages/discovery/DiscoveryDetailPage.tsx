@@ -39,6 +39,19 @@ const AVAILABLE_LEADERSHIP_ROLES = [
   'Head of Business Development',
   'Head of Innovation',
   'Head of Partnerships',
+  'COO',
+  'CFO',
+  'Director of Operations',
+  'Founder',
+  'Owner',
+  'Managing Director',
+  'Hospital Administrator',
+  'Chief Medical Officer',
+  'Medical Director',
+  'Chief AI Officer',
+  'Head of Healthcare IT',
+  'Head of Digital Health',
+  'Director of Procurement',
 ]
 
 export const DiscoveryDetailPage: React.FC = () => {
@@ -187,16 +200,7 @@ export const DiscoveryDetailPage: React.FC = () => {
     }
   }
 
-  const handleSave = async () => {
-    if (!item) return
-    try {
-      const updated = await discoveryService.save(item.id)
-      setItem(updated)
-      setToastMessage('Lead saved to bookmarks.')
-    } catch (err) {
-      alert('Failed to save discovery.')
-    }
-  }
+
 
   const handleSkip = async () => {
     if (!item) return
@@ -318,15 +322,6 @@ export const DiscoveryDetailPage: React.FC = () => {
 
                 {/* Status Quick Actions */}
                 <div className="flex items-center space-x-2 shrink-0">
-                  {item.status !== 'saved' && (
-                    <button
-                      onClick={handleSave}
-                      className="py-2 px-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700"
-                    >
-                      <Bookmark className="w-3.5 h-3.5" />
-                      <span>Save</span>
-                    </button>
-                  )}
                   {item.status !== 'skipped' && (
                     <button
                       onClick={handleSkip}

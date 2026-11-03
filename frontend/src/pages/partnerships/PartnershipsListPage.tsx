@@ -290,10 +290,10 @@ export const PartnershipsListPage: React.FC = () => {
             </p>
             <div className="flex items-center justify-center space-x-3 pt-2">
               <Link
-                to="/business-development/opportunities"
+                to="/business-development/organizations"
                 className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
               >
-                View Opportunities
+                View Organizations
               </Link>
               <Link
                 to="/business-development/partnerships/new"

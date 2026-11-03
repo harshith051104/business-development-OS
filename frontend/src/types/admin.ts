@@ -123,10 +123,6 @@ export interface SystemSettings {
   meeting_types: string[]
   priority_levels: string[]
   project_categories: string[]
-  task_calendar_sync_enabled: boolean
-  task_reminders_enabled: boolean
-  google_sheets_spreadsheet_url: string | null
-  google_sheets_configured: boolean
 }
 
 export interface SystemSettingsUpdatePayload {
@@ -134,7 +130,4 @@ export interface SystemSettingsUpdatePayload {
   partnership_types?: string[]
   meeting_types?: string[]
   project_categories?: string[]
-  task_calendar_sync_enabled?: boolean
-  task_reminders_enabled?: boolean
-  google_sheets_spreadsheet_url?: string
 }

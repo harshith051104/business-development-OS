@@ -28,9 +28,6 @@ export interface Contact {
   phone?: string | null
   linkedin_url?: string | null
   location?: string | null
-  organization_city?: string | null
-  organization_state?: string | null
-  organization_country?: string | null
   is_decision_maker: boolean
   is_primary_contact: boolean
   connection_status: ContactRelationshipStatus | string

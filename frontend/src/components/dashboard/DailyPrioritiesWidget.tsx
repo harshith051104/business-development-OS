@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { dailyPrioritiesService } from '../../services/dailyPriorities';
 import type { DailyPrioritiesResponse, PriorityItem } from '../../types/dailyPriorities';
+import { OrganizationQueue } from './OrganizationQueue';
 import { 
   Sparkles, 
   Clock, 
@@ -55,7 +56,8 @@ export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({
   }
 
   if (error || !data) {
-    return null;
+    // The organization queue loads independently, so keep it visible.
+    return <OrganizationQueue />;
   }
 
   const getCategoryIcon = (category: string) => {
@@ -90,6 +92,8 @@ export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({
             <span className="text-slate-300">{data.what_should_i_do_next}</span>
           </div>
         </div>
+
+        <OrganizationQueue />
 
         {/* Priority Items List */}
         <div className="space-y-2">
@@ -184,6 +188,10 @@ export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({
           <span className="font-medium text-teal-300">Recommended Next Move:</span>
           <span className="text-slate-300">{data.what_should_i_do_next}</span>
         </div>
+      </div>
+
+      <div className="mb-6 relative z-10">
+        <OrganizationQueue />
       </div>
 
       {/* Grid of Priorities */}

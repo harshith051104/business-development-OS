@@ -1,4 +1,4 @@
-export type OutreachChannelType = 'Email' | 'Phone' | 'LinkedIn' | 'WhatsApp'
+export type OutreachChannelType = 'Email' | 'Phone' | 'LinkedIn' | 'WhatsApp' | 'Other'
 export type DraftStatusType = 'Draft' | 'Ready' | 'Completed' | 'Cancelled'
 export type TemplateCategoryType =
   | 'Introduction'

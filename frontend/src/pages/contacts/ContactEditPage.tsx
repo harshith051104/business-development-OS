@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import { contactsService } from '../../services/contacts'
 import { organizationsService } from '../../services/organizations'
+import { useDropdowns } from '../../hooks/useDropdowns'
 import type { ContactUpdateInput, ContactRelationshipStatus } from '../../types/contact'
 import type { Organization } from '../../types/organization'
 import {
@@ -25,6 +26,7 @@ const contactStatuses: ContactRelationshipStatus[] = [
 export const ContactEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { config: dropdowns } = useDropdowns()
 
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [formData, setFormData] = useState<ContactUpdateInput>({
@@ -211,10 +213,14 @@ export const ContactEditPage: React.FC = () => {
                     <input
                       type="text"
                       name="designation"
+                      list="designation-role-options"
                       value={formData.designation || ''}
                       onChange={handleChange}
                       className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
+                    <datalist id="designation-role-options">
+                      {(dropdowns?.roles ?? []).filter((r) => r !== 'Other').map((r) => <option key={r} value={r} />)}
+                    </datalist>
                   </div>
 
                   <div>

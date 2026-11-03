@@ -79,15 +79,6 @@ export const CampaignsListPage: React.FC = () => {
     }
   };
 
-  const handleConnectGmail = async () => {
-    try {
-      const { authorization_url } = await gmailService.getAuthUrl();
-      window.location.href = authorization_url;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   // Aggregate stats
   const totalContacts = campaigns.reduce((acc, c) => acc + (c.stats?.total_contacts || 0), 0);
   const totalSent = campaigns.reduce((acc, c) => acc + (c.stats?.sent || 0), 0);
@@ -125,13 +116,14 @@ export const CampaignsListPage: React.FC = () => {
               {syncing ? 'Checking Inbox...' : 'Sync Replies'}
             </button>
             {gmailAccounts.length === 0 ? (
-              <button
-                onClick={handleConnectGmail}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-300 bg-purple-950/40 border border-purple-500/30 rounded-xl hover:bg-purple-900/50 transition-all"
+              <Link
+                to={{ search: '?gmail=manage' }}
+                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-amber-200 bg-amber-950/30 border border-amber-500/30 rounded-xl hover:bg-amber-900/40 transition-all"
+                title="Campaign emails need a connected Gmail account"
               >
-                <Mail className="w-4 h-4 text-purple-400" />
-                Connect Gmail
-              </button>
+                <Mail className="w-3.5 h-3.5" />
+                Gmail not connected · Connect
+              </Link>
             ) : (
               <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 rounded-xl">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />

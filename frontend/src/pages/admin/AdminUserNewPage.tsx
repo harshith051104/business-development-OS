@@ -143,8 +143,8 @@ export const AdminUserNewPage: React.FC = () => {
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
               >
-                <option value="BUSINESS_DEVELOPMENT">BUSINESS_DEVELOPMENT</option>
-                <option value="ADMIN">ADMIN</option>
+                <option value="BUSINESS_DEVELOPMENT">Business Development</option>
+                <option value="ADMIN">Admin</option>
               </select>
             </div>
 

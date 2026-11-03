@@ -373,13 +373,7 @@ export const ContactDetailPage: React.FC = () => {
                       <span className="text-[11px] text-slate-400 block font-medium">Location</span>
                       <div className="text-xs text-slate-200 flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>
-                          {contact.location ||
-                            [contact.organization_city, contact.organization_state, contact.organization_country]
-                              .filter(Boolean)
-                              .join(', ') ||
-                            'Not specified'}
-                        </span>
+                        <span>{contact.location || 'Not specified'}</span>
                       </div>
                     </div>
                   </div>

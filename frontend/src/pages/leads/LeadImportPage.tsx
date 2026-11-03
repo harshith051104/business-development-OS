@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../components/layout/Navbar'
 import { leadImportService, TARGET_FIELD_LABELS } from '../../services/leadImport'
-import type {
-  LeadUploadPreview,
-  LeadImportResult,
-  LeadImportBatchSummary,
-  LeadImportBatchRecords,
-  GoogleSheetTab,
-} from '../../services/leadImport'
-import { campaignService } from '../../services/campaigns'
-import type { Campaign } from '../../types/campaign'
-import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History, X, Sheet } from 'lucide-react'
+import type { LeadUploadPreview, LeadImportResult, LeadImportBatchSummary } from '../../services/leadImport'
+import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History } from 'lucide-react'
 
 type Step = 'upload' | 'map' | 'result'
 
@@ -24,41 +16,10 @@ export const LeadImportPage: React.FC = () => {
   const [result, setResult] = useState<LeadImportResult | null>(null)
   const [history, setHistory] = useState<LeadImportBatchSummary[]>([])
   const [showAllFields, setShowAllFields] = useState(false)
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
-  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null)
-  const [selectedBatchId, setSelectedBatchId] = useState<number | null>(null)
-  const [batchRecords, setBatchRecords] = useState<LeadImportBatchRecords | null>(null)
-  const [batchRecordsLoading, setBatchRecordsLoading] = useState(false)
-
-  const [sheetUrl, setSheetUrl] = useState('')
-  const [sheetTabs, setSheetTabs] = useState<GoogleSheetTab[] | null>(null)
-  const [selectedSheetTabs, setSelectedSheetTabs] = useState<string[]>([])
-  const [sheetLoading, setSheetLoading] = useState(false)
 
   useEffect(() => {
     leadImportService.listImports().then(setHistory).catch(() => {})
-    campaignService.list({ status: 'Active' }).then(setCampaigns).catch(() => {})
   }, [])
-
-  const openBatchRecords = async (batchId: number) => {
-    setSelectedBatchId(batchId)
-    setBatchRecords(null)
-    setBatchRecordsLoading(true)
-    try {
-      const data = await leadImportService.getBatchRecords(batchId)
-      setBatchRecords(data)
-    } catch (err: any) {
-      setError(err?.message || 'Could not load import details.')
-      setSelectedBatchId(null)
-    } finally {
-      setBatchRecordsLoading(false)
-    }
-  }
-
-  const closeBatchRecords = () => {
-    setSelectedBatchId(null)
-    setBatchRecords(null)
-  }
 
   const handleFile = async (file: File) => {
     setUploading(true)
@@ -80,7 +41,7 @@ export const LeadImportPage: React.FC = () => {
     setImporting(true)
     setError(null)
     try {
-      const res = await leadImportService.confirmImport(preview.upload_id, mapping, selectedCampaignId)
+      const res = await leadImportService.confirmImport(preview.upload_id, mapping)
       setResult(res)
       setStep('result')
       leadImportService.listImports().then(setHistory).catch(() => {})
@@ -97,49 +58,6 @@ export const LeadImportPage: React.FC = () => {
     setMapping({})
     setResult(null)
     setError(null)
-    setSelectedCampaignId(null)
-    setSheetUrl('')
-    setSheetTabs(null)
-    setSelectedSheetTabs([])
-  }
-
-  const handleListSheetTabs = async () => {
-    if (!sheetUrl.trim()) return
-    setSheetLoading(true)
-    setError(null)
-    setSheetTabs(null)
-    setSelectedSheetTabs([])
-    try {
-      const data = await leadImportService.listGoogleSheetTabs(sheetUrl.trim())
-      setSheetTabs(data.tabs)
-      if (data.tabs.length === 1) setSelectedSheetTabs([data.tabs[0].title])
-    } catch (err: any) {
-      setError(err?.message || 'Could not load tabs from that Google Sheet.')
-    } finally {
-      setSheetLoading(false)
-    }
-  }
-
-  const toggleSheetTab = (title: string) => {
-    setSelectedSheetTabs((prev) =>
-      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
-    )
-  }
-
-  const handleLoadSheetRows = async () => {
-    if (!sheetUrl.trim() || selectedSheetTabs.length === 0) return
-    setSheetLoading(true)
-    setError(null)
-    try {
-      const data = await leadImportService.loadGoogleSheetRows(sheetUrl.trim(), selectedSheetTabs)
-      setPreview(data)
-      setMapping(data.suggested_mapping)
-      setStep('map')
-    } catch (err: any) {
-      setError(err?.message || 'Could not load rows from the selected sheet(s).')
-    } finally {
-      setSheetLoading(false)
-    }
   }
 
   return (
@@ -165,107 +83,26 @@ export const LeadImportPage: React.FC = () => {
         )}
 
         {step === 'upload' && (
-          <div className="space-y-5">
-            <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
-              {uploading ? (
-                <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
-              ) : (
-                <UploadCloud className="w-8 h-8 text-gray-500" />
-              )}
-              <span className="text-sm text-gray-400">
-                {uploading ? 'Parsing file…' : 'Click to choose a .csv or .xlsx lead list (max 10MB)'}
-              </span>
-              <input
-                type="file"
-                accept=".csv,.xlsx,.xlsm"
-                className="hidden"
-                disabled={uploading}
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) handleFile(file)
-                }}
-              />
-            </label>
-
-            <div className="flex items-center gap-3 text-xs text-gray-500">
-              <div className="flex-1 border-t border-white/10" />
-              <span>OR</span>
-              <div className="flex-1 border-t border-white/10" />
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#131127]/60 border border-white/5 space-y-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-gray-200">
-                <Sheet className="w-4 h-4 text-emerald-400" />
-                Import from a Google Sheet
-              </div>
-              <p className="text-xs text-gray-500">
-                Paste the sheet's URL (it must be shared with the server's Google service account,
-                or set to "Anyone with the link can view"). You'll then pick which tab(s) to pull leads from.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={sheetUrl}
-                  onChange={(e) => {
-                    setSheetUrl(e.target.value)
-                    setSheetTabs(null)
-                    setSelectedSheetTabs([])
-                  }}
-                  placeholder="https://docs.google.com/spreadsheets/d/.../edit"
-                  className="flex-1 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
-                />
-                <button
-                  onClick={handleListSheetTabs}
-                  disabled={sheetLoading || !sheetUrl.trim()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-all whitespace-nowrap"
-                >
-                  {sheetLoading && !sheetTabs ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  Find Sheets
-                </button>
-              </div>
-
-              {sheetTabs && (
-                <div className="space-y-3 pt-2 border-t border-white/5">
-                  {sheetTabs.length === 0 ? (
-                    <p className="text-xs text-amber-400">No tabs found in that spreadsheet.</p>
-                  ) : (
-                    <>
-                      <p className="text-xs text-gray-400">
-                        Select which tab(s) to import leads from ({sheetTabs.length} found):
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {sheetTabs.map((tab) => (
-                          <label
-                            key={tab.title}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm cursor-pointer hover:border-emerald-500/40"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedSheetTabs.includes(tab.title)}
-                              onChange={() => toggleSheetTab(tab.title)}
-                              className="accent-emerald-500"
-                            />
-                            <span className="flex-1 truncate">{tab.title}</span>
-                            <span className="text-xs text-gray-500">{tab.row_count} rows</span>
-                          </label>
-                        ))}
-                      </div>
-                      <button
-                        onClick={handleLoadSheetRows}
-                        disabled={sheetLoading || selectedSheetTabs.length === 0}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-all"
-                      >
-                        {sheetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-                        {sheetLoading
-                          ? 'Loading rows…'
-                          : `Load ${selectedSheetTabs.length} selected tab(s)`}
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
+            {uploading ? (
+              <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
+            ) : (
+              <UploadCloud className="w-8 h-8 text-gray-500" />
+            )}
+            <span className="text-sm text-gray-400">
+              {uploading ? 'Parsing file…' : 'Click to choose a .csv or .xlsx lead list (max 10MB)'}
+            </span>
+            <input
+              type="file"
+              accept=".csv,.xlsx,.xlsm"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
+              }}
+            />
+          </label>
         )}
 
         {step === 'map' && preview && (
@@ -274,13 +111,6 @@ export const LeadImportPage: React.FC = () => {
               <span className="font-semibold text-white">{preview.filename}</span> — {preview.total_rows} row(s)
               detected. Map each CRM field to a column from your file, or leave it unmapped to skip it.
             </div>
-
-            {preview.warning && (
-              <div className="flex items-start gap-2 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-300">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>{preview.warning}</span>
-              </div>
-            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-[#131127]/60 border border-white/5">
               {preview.target_fields
@@ -315,28 +145,6 @@ export const LeadImportPage: React.FC = () => {
                 + Map more fields ({preview.target_fields.filter((f) => !mapping[f] && f !== 'org_name').length} unmapped)
               </button>
             )}
-
-            <div className="p-5 rounded-2xl bg-[#131127]/60 border border-white/5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5 block">
-                Enroll into Campaign (optional)
-              </label>
-              <select
-                value={selectedCampaignId ?? ''}
-                onChange={(e) => setSelectedCampaignId(e.target.value ? Number(e.target.value) : null)}
-                className="w-full sm:w-80 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
-              >
-                <option value="">— No campaign —</option>
-                {campaigns.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-gray-500 mt-1.5">
-                Every contact created or matched by this import will be enrolled into the selected campaign
-                (duplicates are skipped automatically).
-              </p>
-            </div>
 
             <div className="overflow-x-auto rounded-xl border border-white/5">
               <table className="w-full text-xs">
@@ -399,7 +207,6 @@ export const LeadImportPage: React.FC = () => {
                 ['Orgs Matched', result.organizations_matched],
                 ['Contacts Created', result.contacts_created],
                 ['Skipped', result.skipped_count],
-                ...(result.campaign_id ? [['Enrolled in Campaign', result.contacts_enrolled ?? 0]] : []),
               ].map(([label, value]) => (
                 <div key={label as string} className="p-4 rounded-xl bg-[#131127]/60 border border-white/5 text-center">
                   <div className="text-2xl font-bold">{value}</div>
@@ -442,11 +249,7 @@ export const LeadImportPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {history.map((b) => (
-                    <tr
-                      key={b.id}
-                      onClick={() => openBatchRecords(b.id)}
-                      className="border-t border-white/5 text-gray-300 cursor-pointer hover:bg-white/5 transition-all"
-                    >
+                    <tr key={b.id} className="border-t border-white/5 text-gray-300">
                       <td className="px-3 py-2 whitespace-nowrap">{b.filename}</td>
                       <td className="px-3 py-2">{b.total_rows}</td>
                       <td className="px-3 py-2">{b.organizations_created}</td>
@@ -459,117 +262,6 @@ export const LeadImportPage: React.FC = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-        )}
-
-        {selectedBatchId !== null && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-            onClick={closeBatchRecords}
-          >
-            <div
-              className="w-full max-w-3xl max-h-[80vh] overflow-y-auto rounded-2xl bg-[#131127] border border-white/10 p-6 space-y-5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">
-                  {batchRecords?.filename || 'Import details'}
-                </h2>
-                <button
-                  onClick={closeBatchRecords}
-                  className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {batchRecordsLoading && (
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Loading…
-                </div>
-              )}
-
-              {batchRecords && (
-                <>
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                      Organizations ({batchRecords.organizations.length})
-                    </div>
-                    <div className="overflow-x-auto rounded-xl border border-white/5">
-                      <table className="w-full text-xs">
-                        <thead className="bg-[#0c0a1f]">
-                          <tr>
-                            {['Name', 'Website', 'City', 'State', 'Country', 'Status'].map((h) => (
-                              <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {batchRecords.organizations.map((o) => (
-                            <tr key={o.id} className="border-t border-white/5 text-gray-300">
-                              <td className="px-3 py-2 whitespace-nowrap">{o.name}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{o.website || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{o.city || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{o.state || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{o.country || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{o.status}</td>
-                            </tr>
-                          ))}
-                          {batchRecords.organizations.length === 0 && (
-                            <tr>
-                              <td colSpan={6} className="px-3 py-3 text-center text-gray-500">
-                                No organizations recorded for this import.
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                      Contacts ({batchRecords.contacts.length})
-                    </div>
-                    <div className="overflow-x-auto rounded-xl border border-white/5">
-                      <table className="w-full text-xs">
-                        <thead className="bg-[#0c0a1f]">
-                          <tr>
-                            {['Name', 'Organization', 'Email', 'Phone', 'Designation', 'Location'].map((h) => (
-                              <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {batchRecords.contacts.map((c) => (
-                            <tr key={c.id} className="border-t border-white/5 text-gray-300">
-                              <td className="px-3 py-2 whitespace-nowrap">{c.full_name}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{c.organization_name || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{c.email || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{c.phone || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{c.designation || '—'}</td>
-                              <td className="px-3 py-2 whitespace-nowrap">{c.location || '—'}</td>
-                            </tr>
-                          ))}
-                          {batchRecords.contacts.length === 0 && (
-                            <tr>
-                              <td colSpan={6} className="px-3 py-3 text-center text-gray-500">
-                                No contacts recorded for this import.
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         )}

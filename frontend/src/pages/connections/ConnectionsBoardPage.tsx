@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
-import { useAuth } from '../../context/AuthContext'
 import { connectionsService } from '../../services/connections'
-import { leadTrackerService } from '../../services/leadTracker'
 import type { KanbanBoard, KanbanCard } from '../../types/opportunity'
-import type { TrackerUser } from '../../types/leadTracker'
 import PriorityBadge from '../../components/organizations/PriorityBadge'
 import {
   GitFork,
   Search,
   Building2,
   User,
-  Users,
   Clock3,
   Target,
   RotateCw,
@@ -35,13 +31,9 @@ const PIPELINE_STAGES = [
 ]
 
 export const ConnectionsBoardPage: React.FC = () => {
-  const { user } = useAuth()
   const [board, setBoard] = useState<KanbanBoard | null>(null)
   const [search, setSearch] = useState<string>('')
   const [priorityFilter, setPriorityFilter] = useState<string>('All')
-  const [scope, setScope] = useState<'my' | 'team'>('my')
-  const [selectedMemberId, setSelectedMemberId] = useState<number | 'all'>('all')
-  const [teamMembers, setTeamMembers] = useState<TrackerUser[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,14 +48,6 @@ export const ConnectionsBoardPage: React.FC = () => {
   const [moveNote, setMoveNote] = useState<string>('')
   const [isMoving, setIsMoving] = useState<boolean>(false)
   const [isSyncing, setIsSyncing] = useState<boolean>(false)
-
-  // Fetch team members on mount for the dropdown
-  useEffect(() => {
-    leadTrackerService
-      .getUsers()
-      .then((users) => setTeamMembers(users))
-      .catch(() => {})
-  }, [])
 
   const handleAutoSync = async () => {
     setIsSyncing(true)
@@ -88,17 +72,9 @@ export const ConnectionsBoardPage: React.FC = () => {
     setLoading(true)
     setError(null)
     try {
-      let ownerId: number | undefined = undefined
-      if (scope === 'my') {
-        ownerId = user?.id
-      } else if (selectedMemberId !== 'all') {
-        ownerId = Number(selectedMemberId)
-      }
-
       const data = await connectionsService.getKanbanPipeline({
         search: search.trim() || undefined,
         priority: priorityFilter !== 'All' ? priorityFilter : undefined,
-        owner_id: ownerId,
       })
       setBoard(data)
     } catch (err: any) {
@@ -106,7 +82,7 @@ export const ConnectionsBoardPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [search, priorityFilter, scope, selectedMemberId, user?.id])
+  }, [search, priorityFilter])
 
   useEffect(() => {
     fetchPipeline()
@@ -284,69 +260,9 @@ export const ConnectionsBoardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Scope Toggle & Search / Priority Controls */}
-        <div className="flex items-center flex-wrap gap-2.5">
-          {/* Top Toggle: My Status (Left) vs Team Status (Right) */}
-          <div className="flex items-center p-1 bg-[#160E36] border border-slate-800 rounded-xl shadow-inner">
-            <button
-              type="button"
-              onClick={() => {
-                setScope('my')
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                scope === 'my'
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="Show my organizations and status"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>My Status</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setScope('team')
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                scope === 'team'
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="Show team members' status"
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Team Status</span>
-            </button>
-          </div>
-
-          {/* Beside Toggle: Dropdown to select particular team member */}
-          <div className="relative">
-            <select
-              value={selectedMemberId}
-              onChange={(e) => {
-                const val = e.target.value === 'all' ? 'all' : Number(e.target.value)
-                setSelectedMemberId(val)
-                setScope('team')
-              }}
-              className={`bg-[#1A1040] border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500 transition-all cursor-pointer ${
-                scope === 'team' && selectedMemberId !== 'all'
-                  ? 'border-violet-500/60 ring-1 ring-violet-500/30 text-violet-200'
-                  : 'border-slate-800'
-              }`}
-              title="Select a specific team member to view their status"
-            >
-              <option value="all">👥 All Team Members</option>
-              {teamMembers.map((m) => (
-                <option key={m.id} value={m.id}>
-                  👤 {m.display_name || m.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Search Box */}
-          <div className="relative w-full sm:w-52">
+        {/* Search & Priority Controls */}
+        <div className="flex items-center space-x-3">
+          <div className="relative w-full sm:w-64">
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
@@ -360,7 +276,7 @@ export const ConnectionsBoardPage: React.FC = () => {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer"
+            className="bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
           >
             <option value="All">All Priorities</option>
             <option value="High">High Priority</option>

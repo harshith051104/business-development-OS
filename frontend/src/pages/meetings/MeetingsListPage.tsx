@@ -4,7 +4,6 @@ import { meetingsService } from '../../services/meetings'
 import type { Meeting, MeetingFilters } from '../../types/meeting'
 import MeetingStatusBadge from '../../components/meetings/MeetingStatusBadge'
 import CompleteMeetingModal from '../../components/meetings/CompleteMeetingModal'
-import CalendarView from '../../components/calendar/CalendarView'
 import Navbar from '../../components/layout/Navbar'
 import { parseMeetingDate } from '../../utils/date'
 import {
@@ -40,7 +39,6 @@ const MEETING_STATUSES = ['All', 'Scheduled', 'Completed', 'Rescheduled', 'Cance
 
 export const MeetingsListPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
 
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [total, setTotal] = useState<number>(0)
@@ -135,46 +133,6 @@ export const MeetingsListPage: React.FC = () => {
 
       {/* ── Main Content Area ── */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
-        {/* View Toggle */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-0.5">
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-md text-xs font-medium transition ${
-                viewMode === 'list'
-                  ? 'bg-violet-600 text-white'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5 inline mr-1.5" />
-              Upcoming
-            </button>
-            <button
-              onClick={() => setViewMode('calendar')}
-              className={`px-4 py-2 rounded-md text-xs font-medium transition ${
-                viewMode === 'calendar'
-                  ? 'bg-violet-600 text-white'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5 inline mr-1.5" />
-              Calendar
-              <span className="ml-1.5 px-1.5 py-0.2 rounded-full bg-violet-500/20 text-violet-300 text-[10px]">
-                Google
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {viewMode === 'calendar' ? (
-          <CalendarView
-            onEventClick={(e) => {
-              window.location.href = `/business-development/meetings/${e.id}`
-            }}
-            height="calc(100vh - 300px)"
-          />
-        ) : (
-          <>
             {/* Search & Filters Bar */}
             <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
           <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
@@ -404,8 +362,6 @@ export const MeetingsListPage: React.FC = () => {
               </div>
             )}
           </div>
-        )}
-          </>
         )}
       </main>
 

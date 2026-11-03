@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import { discoveryService } from '../../services/discovery'
@@ -101,13 +101,20 @@ export const DiscoveryPage: React.FC = () => {
   const [stats, setStats] = useState<DiscoveryStats | null>(null)
   const [historyItems, setHistoryItems] = useState<DiscoveryHistoryItem[]>([])
   const [providers, setProviders] = useState<ProviderList | null>(null)
+  const [searchNotices, setSearchNotices] = useState<string[]>([])
+  // null = unknown (health check failed); false = no live web search key configured
+  const [webSearchConfigured, setWebSearchConfigured] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    discoveryService
+      .getProviderHealth()
+      .then((h) => setWebSearchConfigured(Boolean(h.Tavily?.configured || h.Serper?.configured)))
+      .catch(() => setWebSearchConfigured(null))
+  }, [])
 
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isCsvModalOpen, setIsCsvModalOpen] = useState<boolean>(false)
-  // Tracks whether the user has explicitly run an AI discovery search this session.
-  // Until then, the 'search' tab shows already-discovered leads instead of auto-firing a new AI scan.
-  const [hasSearched, setHasSearched] = useState<boolean>(false)
 
   // Single Prompt Natural Language Discovery State
   const [singlePrompt, setSinglePrompt] = useState<string>('')
@@ -127,6 +134,10 @@ export const DiscoveryPage: React.FC = () => {
   const [addNotes, setAddNotes] = useState<string>('')
   const [allowDup, setAllowDup] = useState<boolean>(false)
   const [isAdding, setIsAdding] = useState<boolean>(false)
+  const [addContactIds, setAddContactIds] = useState<number[]>([])
+  const [addError, setAddError] = useState<{ status?: number; message: string } | null>(null)
+  const [addedOrg, setAddedOrg] = useState<{ id: number; name: string } | null>(null)
+  const addInFlight = useRef<boolean>(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   // Fetch summary stats & providers on mount
@@ -147,7 +158,6 @@ export const DiscoveryPage: React.FC = () => {
   const handlePromptDiscovery = async (customPrompt?: string) => {
     const promptToUse = (customPrompt || singlePrompt).trim()
     if (!promptToUse) return
-    setHasSearched(true)
     setIsParsingPrompt(true)
     setError(null)
     try {
@@ -173,6 +183,7 @@ export const DiscoveryPage: React.FC = () => {
         page_size: pageSize,
       })
       setItems(res.items)
+      setSearchNotices(res.notices || [])
       setTotalItems(res.total)
       setTotalPages(res.total_pages)
       setPage(1)
@@ -219,11 +230,13 @@ export const DiscoveryPage: React.FC = () => {
           page_size: pageSize,
         })
         setItems(res.items)
+        setSearchNotices(res.notices || [])
         setTotalItems(res.total)
         setTotalPages(res.total_pages)
       } else if (activeTab === 'saved') {
         const res = await discoveryService.getSaved({ page, page_size: pageSize })
         setItems(res.items)
+        setSearchNotices([])
         setTotalItems(res.total)
         setTotalPages(res.total_pages)
       } else if (activeTab === 'history') {
@@ -237,44 +250,11 @@ export const DiscoveryPage: React.FC = () => {
     }
   }, [activeTab, keyword, location, selectedType, productDescription, targetIcp, discoveryObjective, selectedProvider, page, pageSize])
 
-  // Fast load of already-discovered leads (no AI scan) — used for the 'search' tab
-  // until the user explicitly runs a discovery search.
-  const loadRecent = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await discoveryService.list({ page, page_size: pageSize })
-      setItems(res.items)
-      setTotalItems(res.total)
-      setTotalPages(res.total_pages)
-    } catch (err: any) {
-      setError(err.detail || err.message || 'Failed to load discovered leads.')
-    } finally {
-      setLoading(false)
-    }
-  }, [page, pageSize])
-
   useEffect(() => {
-    if (activeTab === 'search' && !hasSearched) {
-      loadRecent()
-    } else {
-      executeSearch()
-    }
-  }, [activeTab, hasSearched, executeSearch, loadRecent])
+    executeSearch()
+  }, [executeSearch])
 
-  // Save / Bookmark action
-  const handleSave = async (id: number) => {
-    try {
-      await discoveryService.save(id)
-      setItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: 'saved' } : item))
-      )
-      setToastMessage('Lead saved to bookmarks.')
-      discoveryService.getStats().then(setStats)
-    } catch (e: any) {
-      alert(e.message || 'Failed to save discovery.')
-    }
-  }
+
 
   // Skip action
   const handleSkip = async (id: number) => {
@@ -296,29 +276,47 @@ export const DiscoveryPage: React.FC = () => {
     setAddPriority(item.potential_fit === 'High' ? 'High' : 'Medium')
     setAddNotes(`Sourced via AI Discovery (${item.source_name}). Fit Reason: ${item.qualification_reason || ''}`)
     setAllowDup(false)
+    // Every source-backed contact starts selected; people without a cited source cannot be imported.
+    setAddContactIds((item.contacts || []).filter((c) => !!c.source_url).map((c) => c.id))
+    setAddError(null)
+    setAddedOrg(null)
+  }
+
+  const handleCloseAdd = () => {
+    if (addInFlight.current) return
+    setAddingOrg(null)
+    setAddError(null)
+    setAddedOrg(null)
   }
 
   // Confirm Add to ELLY CRM
   const handleConfirmAdd = async () => {
-    if (!addingOrg) return
+    // Ref guard: a fast double click can fire before isAdding re-renders.
+    if (!addingOrg || addInFlight.current) return
+    addInFlight.current = true
     setIsAdding(true)
+    setAddError(null)
     try {
-      await discoveryService.addToOrganizations(addingOrg.id, {
+      const created = await discoveryService.addToOrganizations(addingOrg.id, {
         priority: addPriority,
         notes: addNotes,
         allow_duplicate: allowDup,
+        selected_contact_ids: addContactIds,
       })
-      setItems((prev) =>
-        prev.map((item) =>
-          item.id === addingOrg.id ? { ...item, status: 'added' } : item
-        )
-      )
-      setToastMessage(`"${addingOrg.name}" added to ELLY Connection Pipeline.`)
-      setAddingOrg(null)
-      discoveryService.getStats().then(setStats)
+      const markAdded = (item: DiscoveredOrganization) =>
+        item.id === addingOrg.id ? { ...item, status: 'added' as const, organization_id: created.id } : item
+      setItems((prev) => prev.map(markAdded))
+      setHistoryResults((prev) => prev.map(markAdded))
+      setAddedOrg({ id: created.id, name: created.name })
+      setToastMessage(`"${created.name}" added to ELLY Connection Pipeline.`)
+      discoveryService.getStats().then(setStats).catch(() => {})
     } catch (err: any) {
-      alert(err.detail || err.message || 'Failed to add organization.')
+      setAddError({
+        status: err?.status,
+        message: err?.detail || err?.message || 'Failed to add organization.',
+      })
     } finally {
+      addInFlight.current = false
       setIsAdding(false)
     }
   }
@@ -418,26 +416,6 @@ export const DiscoveryPage: React.FC = () => {
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Discovery Search</span>
-          </button>
-
-          <button
-            onClick={() => {
-              setActiveTab('saved')
-              setPage(1)
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
-              activeTab === 'saved'
-                ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#1A1040]'
-            }`}
-          >
-            <Bookmark className="w-3.5 h-3.5" />
-            <span>Saved Bookmarks</span>
-            {stats && stats.total_saved > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-mono">
-                {stats.total_saved}
-              </span>
-            )}
           </button>
 
           <button
@@ -707,7 +685,6 @@ export const DiscoveryPage: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => {
-                    setHasSearched(true)
                     setPage(1)
                     executeSearch()
                   }}
@@ -747,6 +724,16 @@ export const DiscoveryPage: React.FC = () => {
         </div>
 
         {/* ── Content Views ── */}
+        {!loading && activeTab === 'search' && searchNotices.length > 0 && (
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1">
+            {searchNotices.map((n) => (
+              <div key={n} className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{n}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {loading ? (
           <div className="py-24 text-center space-y-3 bg-[#110B2E] rounded-2xl border border-slate-800">
             <RotateCw className="w-8 h-8 animate-spin text-violet-400 mx-auto" />
@@ -758,7 +745,7 @@ export const DiscoveryPage: React.FC = () => {
             <h4 className="text-sm font-bold text-white">Discovery Query Error</h4>
             <p className="text-xs text-slate-400">{error}</p>
             <button
-              onClick={() => (activeTab === 'search' && !hasSearched ? loadRecent() : executeSearch())}
+              onClick={executeSearch}
               className="px-4 py-1.5 rounded-xl bg-violet-600 text-white text-xs font-semibold"
             >
               Retry
@@ -866,7 +853,6 @@ export const DiscoveryPage: React.FC = () => {
                 height="620px"
                 items={items}
                 onAdd={handleOpenAdd}
-                onSave={handleSave}
                 onSkip={handleSkip}
               />
             ) : (
@@ -875,9 +861,16 @@ export const DiscoveryPage: React.FC = () => {
               <div className="p-16 text-center space-y-3 bg-[#110B2E] rounded-2xl border border-slate-800">
                 <Compass className="w-10 h-10 text-slate-600 mx-auto" />
                 <h4 className="text-sm font-bold text-white">No Organizations Found</h4>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
-                  Try adjusting your location, organization type filter, or broadening your target ICP query.
-                </p>
+                {webSearchConfigured === false ? (
+                  <p className="text-xs text-amber-300 max-w-md mx-auto">
+                    Live web search is not configured (no Tavily or Serper API key), so results can only come from
+                    the built-in directory. Ask an administrator to add a search key, or import a CSV.
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-400 max-w-md mx-auto">
+                    Try adjusting your location, organization type filter, or broadening your target ICP query.
+                  </p>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -885,8 +878,7 @@ export const DiscoveryPage: React.FC = () => {
                   <DiscoveryCard
                     key={item.id}
                     item={item}
-                    onSave={handleSave}
-                    onSkip={handleSkip}
+                        onSkip={handleSkip}
                     onAdd={handleOpenAdd}
                   />
                 ))}
@@ -925,9 +917,27 @@ export const DiscoveryPage: React.FC = () => {
       </main>
 
       {/* ── Add to ELLY CRM Modal ── */}
-      {addingOrg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+      {addingOrg && (() => {
+        const allContacts = addingOrg.contacts || []
+        const contacts = allContacts.filter((c) => !!c.source_url)
+        const unsourcedContacts = allContacts.filter((c) => !c.source_url)
+        const noContactSelected = contacts.length > 0 && addContactIds.length === 0
+        const blockedByDuplicate = !!addingOrg.is_existing_duplicate && !allowDup
+        const sourceHref = addingOrg.source_url
+        const websiteHref = addingOrg.website
+          ? (addingOrg.website.startsWith('http') ? addingOrg.website : `https://${addingOrg.website}`)
+          : null
+        const emailLabel = (c: (typeof contacts)[number]) => {
+          const status = c.email_status
+          if (!c.email || status === 'not_found' || status === 'unavailable') return 'No email found'
+          if (status === 'verified') return `${c.email} (verified by an email-verification service)`
+          if (status === 'publicly_found') return `${c.email} (found on the source page, not verified)`
+          if (status === 'guessed' || status === 'predicted') return `${c.email} (guessed from a name pattern, not verified)`
+          return `${c.email} (unverified)`
+        }
+        return (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
               <h3 className="text-sm font-bold text-white">Add Organization to ELLY CRM</h3>
               <span className="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 text-[10px] font-mono border border-violet-500/20">
@@ -935,38 +945,184 @@ export const DiscoveryPage: React.FC = () => {
               </span>
             </div>
 
+            {addedOrg ? (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs space-y-2">
+                <div className="font-bold flex items-center space-x-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Added to ELLY as “{addedOrg.name}”</span>
+                </div>
+                <p className="text-[11px] text-emerald-200/80">
+                  The server confirmed the new organization. No outreach, tasks or ownership changes were made.
+                </p>
+                <Link
+                  to={`/business-development/organizations/${addedOrg.id}`}
+                  className="inline-block text-violet-300 hover:text-white underline text-[11px] font-medium"
+                >
+                  Open organization
+                </Link>
+              </div>
+            ) : (
             <div className="space-y-3 text-xs">
               <div className="p-3 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
-                <div className="font-bold text-white">{addingOrg.name}</div>
-                <div className="text-slate-400">{addingOrg.organization_type} · {addingOrg.city || addingOrg.country}</div>
-                {addingOrg.qualification_reason && (
-                  <div className="text-slate-300 pt-1 text-[11px] border-t border-slate-800/60 mt-1">
-                    <span className="text-violet-400 font-bold">Fit Reason: </span>
-                    {addingOrg.qualification_reason}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-bold text-white">{addingOrg.name}</div>
+                  {addingOrg.potential_fit && (
+                    <span className="text-[10px] text-slate-300 shrink-0">
+                      Fit: {addingOrg.potential_fit} ({addingOrg.potential_fit_score ?? '—'}/100)
+                    </span>
+                  )}
+                </div>
+                <div className="text-slate-400">
+                  {addingOrg.organization_type} · {addingOrg.city || addingOrg.country || 'Location not recorded'}
+                </div>
+                <div className="text-slate-300 pt-1 text-[11px] border-t border-slate-800/60 mt-1">
+                  <span className="text-violet-400 font-bold">Fit Reason: </span>
+                  {addingOrg.qualification_reason || (
+                    <span className="text-slate-500 italic">No fit explanation was recorded for this organization.</span>
+                  )}
+                </div>
+                <div className="pt-1 text-[11px] text-slate-400 space-y-0.5">
+                  <div>
+                    Source: {addingOrg.source_name || 'Not recorded'}
+                    {sourceHref ? (
+                      <a href={sourceHref} target="_blank" rel="noopener noreferrer" className="ml-1.5 text-violet-400 hover:text-violet-300 underline">
+                        Open source link
+                      </a>
+                    ) : (
+                      <span className="ml-1.5 text-slate-500 italic">No source link recorded</span>
+                    )}
                   </div>
-                )}
+                  <div>
+                    Website:{' '}
+                    {websiteHref ? (
+                      <a href={websiteHref} target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 underline">
+                        {addingOrg.website}
+                      </a>
+                    ) : (
+                      <span className="text-slate-500 italic">Not recorded</span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {addingOrg.is_existing_duplicate && (
+              {addingOrg.is_existing_duplicate ? (
                 <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1.5">
                   <div className="font-bold flex items-center space-x-1.5">
                     <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Possible Existing Organization Detected</span>
+                    <span>Already in ELLY{addingOrg.existing_org_name ? `: ${addingOrg.existing_org_name}` : ''}</span>
                   </div>
                   <p className="text-[11px]">
-                    An organization with a matching name or domain already exists in ELLY.
+                    An organization with a matching name or website already exists. The server will refuse this
+                    addition unless you confirm it is a different organization.
                   </p>
+                  {addingOrg.existing_org_id && (
+                    <Link
+                      to={`/business-development/organizations/${addingOrg.existing_org_id}`}
+                      className="inline-block text-violet-300 hover:text-white underline text-[11px] font-medium"
+                    >
+                      Open existing organization
+                    </Link>
+                  )}
                   <label className="flex items-center space-x-2 pt-1 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={allowDup}
                       onChange={(e) => setAllowDup(e.target.checked)}
+                      disabled={isAdding}
                       className="rounded border-slate-700 bg-slate-800 text-violet-600 focus:ring-0"
                     />
                     <span className="text-slate-200 text-[11px]">Create anyway (allow duplicate)</span>
                   </label>
                 </div>
+              ) : (
+                <div className="text-[11px] text-slate-400 flex items-center space-x-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>No matching organization found in ELLY (checked by name and website).</span>
+                </div>
               )}
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="font-semibold text-slate-300">Contacts to import</label>
+                  {contacts.length > 0 && (
+                    <button
+                      type="button"
+                      disabled={isAdding}
+                      onClick={() =>
+                        setAddContactIds(addContactIds.length === contacts.length ? [] : contacts.map((c) => c.id))
+                      }
+                      className="text-[10px] text-violet-400 hover:text-white underline disabled:opacity-50"
+                    >
+                      {addContactIds.length === contacts.length ? 'Deselect all' : 'Select all'}
+                    </button>
+                  )}
+                </div>
+                {contacts.length === 0 ? (
+                  <p className="text-[11px] text-slate-500 italic">
+                    No source-backed contacts were found for this organization. It will be added without contacts.
+                  </p>
+                ) : (
+                  <ul className="space-y-1 max-h-40 overflow-y-auto">
+                    {contacts.map((c) => (
+                      <li key={c.id} className="p-2 rounded-lg bg-[#1A1040] border border-slate-800">
+                        <label className="flex items-start space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={addContactIds.includes(c.id)}
+                            disabled={isAdding}
+                            onChange={() =>
+                              setAddContactIds((prev) =>
+                                prev.includes(c.id) ? prev.filter((x) => x !== c.id) : [...prev, c.id]
+                              )
+                            }
+                            className="mt-0.5 rounded border-slate-700 bg-slate-800 text-violet-600 focus:ring-0"
+                          />
+                          <div className="min-w-0 text-[11px]">
+                            <div className="text-white font-medium">
+                              {c.full_name}
+                              {c.job_title && <span className="text-slate-400 font-normal"> · {c.job_title}</span>}
+                            </div>
+                            <div className="text-slate-400">{emailLabel(c)}</div>
+                            {c.source_url && (
+                              <a
+                                href={c.source_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-violet-400 hover:text-violet-300 underline"
+                              >
+                                Source page
+                              </a>
+                            )}
+                            <div className="text-slate-500">
+                              {c.phone ? 'Phone listed' : 'No phone'} · {c.linkedin_url ? 'LinkedIn listed' : 'No LinkedIn'}
+                            </div>
+                            {c.is_existing_duplicate && (
+                              <div className="text-amber-300">
+                                Already in CRM{c.existing_contact_name ? ` as ${c.existing_contact_name}` : ''}
+                              </div>
+                            )}
+                          </div>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {noContactSelected && (
+                  <p className="text-[11px] text-amber-300">
+                    Select at least one contact. When none are selected, the add step imports every contact.
+                  </p>
+                )}
+                {unsourcedContacts.length > 0 && (
+                  <p className="text-[11px] text-slate-500">
+                    {unsourcedContacts.length} suggested contact{unsourcedContacts.length === 1 ? '' : 's'} with no
+                    public source {unsourcedContacts.length === 1 ? 'is' : 'are'} not shown and will not be imported.
+                  </p>
+                )}
+                <p className="text-[10px] text-slate-500">
+                  Only people found on a cited public page can be imported. Each email shows how it was obtained;
+                  only "verified" means an email-verification service confirmed it.
+                </p>
+              </div>
 
               <div className="space-y-1">
                 <label className="font-semibold text-slate-300">Initial BD Priority</label>
@@ -990,26 +1146,55 @@ export const DiscoveryPage: React.FC = () => {
                   className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-violet-500"
                 />
               </div>
+
+              {addError && (
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px] space-y-1">
+                  <div className="font-bold flex items-center space-x-1.5">
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>Not added</span>
+                  </div>
+                  <p>{addError.message}</p>
+                  <p className="text-rose-200/80">
+                    {addError.status === 409
+                      ? 'Open the existing organization instead, or tick “Create anyway” if this is a different organization.'
+                      : addError.status === 403 || addError.status === 401
+                      ? 'Your account is not allowed to add organizations. Sign in with a business development account.'
+                      : 'Nothing was saved. Check your connection and try again.'}
+                  </p>
+                </div>
+              )}
             </div>
+            )}
 
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-end space-x-2.5">
               <button
-                onClick={() => setAddingOrg(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmAdd}
+                onClick={handleCloseAdd}
                 disabled={isAdding}
-                className="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition shadow-lg shadow-violet-600/30 disabled:opacity-50 flex items-center space-x-1.5"
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold disabled:opacity-50"
               >
-                {isAdding ? 'Adding...' : 'Confirm & Add to ELLY'}
+                {addedOrg ? 'Close' : 'Cancel'}
               </button>
+              {!addedOrg && (
+                <button
+                  onClick={handleConfirmAdd}
+                  disabled={isAdding || noContactSelected || blockedByDuplicate}
+                  title={
+                    blockedByDuplicate
+                      ? 'This organization already exists. Tick “Create anyway” to add a duplicate.'
+                      : noContactSelected
+                      ? 'Select at least one contact.'
+                      : undefined
+                  }
+                  className="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition shadow-lg shadow-violet-600/30 disabled:opacity-50 flex items-center space-x-1.5"
+                >
+                  {isAdding ? 'Adding...' : addError ? 'Try again' : 'Confirm & Add to ELLY'}
+                </button>
+              )}
             </div>
           </div>
         </div>
-      )}
+        )
+      })()}
 
       {/* ── Search & Objective History Results Modal ── */}
       {isHistoryModalOpen && selectedHistory && (
@@ -1074,8 +1259,7 @@ export const DiscoveryPage: React.FC = () => {
                     <DiscoveryCard
                       key={item.id}
                       item={item}
-                      onSave={handleSave}
-                      onSkip={handleSkip}
+                            onSkip={handleSkip}
                       onAdd={handleOpenAdd}
                     />
                   ))}
@@ -1099,11 +1283,7 @@ export const DiscoveryPage: React.FC = () => {
           onClose={() => setIsCsvModalOpen(false)}
           onSuccess={() => {
             setIsCsvModalOpen(false)
-            if (activeTab === 'search' && !hasSearched) {
-              loadRecent()
-            } else {
-              executeSearch()
-            }
+            executeSearch()
             discoveryService.getStats().then(setStats)
           }}
         />

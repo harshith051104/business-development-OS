@@ -1,43 +1,38 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import AdminNavbar from '../../components/layout/AdminNavbar'
+import { Dialog, Notice, buttonClass, type NoticeState } from '../../components/ui/Dialog'
+import { useAuth } from '../../context/AuthContext'
 import { adminService } from '../../services/admin'
+import { ASSIGNABLE_ROLES, ROLE_LABELS, roleLabel } from '../../lib/navigation'
 import type { AdminUser } from '../../types/admin'
-import {
-  Users,
-  UserPlus,
-  Search,
-  RotateCw,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  Edit2,
-  ChevronLeft,
-  ChevronRight,
-  Shield,
-  Briefcase,
-  Sliders,
-} from 'lucide-react'
+import { UserPlus, Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+
+const ROLE_HELP: Record<string, string> = {
+  ADMIN: 'Full access, including this Admin console and team-wide records.',
+  BUSINESS_DEVELOPMENT: 'BD workspace: organizations, outreach, meetings and deals.',
+  HEALTHCARE: 'Healthcare portal only; no BD workspace access.',
+  USER: 'Basic account with no BD or admin access.',
+}
+
+type Pending = { kind: 'role'; user: AdminUser } | { kind: 'status'; user: AdminUser } | null
 
 export const AdminUsersListPage: React.FC = () => {
+  const { user: me } = useAuth()
   const [users, setUsers] = useState<AdminUser[]>([])
-  const [total, setTotal] = useState<number>(0)
-  const [page, setPage] = useState<number>(1)
-  const [pageSize] = useState<number>(15)
-  const [totalPages, setTotalPages] = useState<number>(1)
-
-  const [search, setSearch] = useState<string>('')
-  const [roleFilter, setRoleFilter] = useState<string>('All')
-  const [statusFilter, setStatusFilter] = useState<string>('All')
-
-  const [loading, setLoading] = useState<boolean>(false)
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const pageSize = 15
+  const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState('')
+  const [roleFilter, setRoleFilter] = useState('All')
+  const [statusFilter, setStatusFilter] = useState('All')
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // Quick Role Edit Modal State
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
-  const [newRole, setNewRole] = useState<string>('BUSINESS_DEVELOPMENT')
-  const [isRoleModalOpen, setIsRoleModalOpen] = useState<boolean>(false)
-  const [isUpdatingRole, setIsUpdatingRole] = useState<boolean>(false)
+  const [notice, setNotice] = useState<NoticeState | null>(null)
+  const [pending, setPending] = useState<Pending>(null)
+  const [newRole, setNewRole] = useState('BUSINESS_DEVELOPMENT')
+  const [saving, setSaving] = useState(false)
 
   const fetchUsers = useCallback(async () => {
     setLoading(true)
@@ -54,314 +49,234 @@ export const AdminUsersListPage: React.FC = () => {
       setTotal(res.total)
       setTotalPages(res.total_pages)
     } catch (err: any) {
-      setError(err.detail || err.message || 'Failed to load users.')
+      setError(err.detail || err.message || 'Users could not be loaded.')
     } finally {
       setLoading(false)
     }
-  }, [page, pageSize, search, roleFilter, statusFilter])
+  }, [page, search, roleFilter, statusFilter])
 
   useEffect(() => {
-    fetchUsers()
+    const t = setTimeout(fetchUsers, 250)
+    return () => clearTimeout(t)
   }, [fetchUsers])
 
-  const handleToggleStatus = async (u: AdminUser) => {
+  const closeDialog = useCallback(() => !saving && setPending(null), [saving])
+
+  const confirm = async () => {
+    if (!pending) return
+    setSaving(true)
+    const u = pending.user
     try {
-      await adminService.updateUserStatus(u.id, !u.is_active)
+      if (pending.kind === 'role') {
+        await adminService.updateUserRole(u.id, newRole)
+        setNotice({ kind: 'success', text: `${u.name} is now ${roleLabel(newRole)}.` })
+      } else {
+        await adminService.updateUserStatus(u.id, !u.is_active)
+        setNotice({ kind: 'success', text: `${u.name} was ${u.is_active ? 'deactivated' : 'activated'}.` })
+      }
+      setPending(null)
       fetchUsers()
     } catch (err: any) {
-      alert(err.detail || 'Failed to update user status.')
+      setNotice({ kind: 'error', text: err.detail || err.message || 'The change was not saved.' })
+      setPending(null)
+    } finally {
+      setSaving(false)
     }
   }
 
-  const handleRoleUpdate = async () => {
-    if (!selectedUser) return
-    setIsUpdatingRole(true)
-    try {
-      await adminService.updateUserRole(selectedUser.id, newRole)
-      setIsRoleModalOpen(false)
-      fetchUsers()
-    } catch (err: any) {
-      alert(err.detail || 'Failed to update user role.')
-    } finally {
-      setIsUpdatingRole(false)
-    }
-  }
+  const select = 'px-3 py-2 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs'
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] md:pl-64">
       <AdminNavbar />
-
-      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 rounded-2xl bg-rose-500/20 text-rose-300 border border-rose-500/30">
-            <Users className="w-5 h-5" />
-          </div>
+      <main className="p-6 max-w-6xl mx-auto space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-base font-bold text-white tracking-tight">
-              User Directory & Role Administration
-            </h1>
-            <p className="text-xs text-slate-400">
-              Manage company accounts, roles, access statuses, and permissions
+            <h1 className="text-xl font-bold text-white">Users & Roles</h1>
+            <p className="text-xs text-slate-400 mt-1">Enroll people, set their role, and turn access on or off. Changes are recorded in the Audit Log.</p>
+          </div>
+          <Link to="/admin/users/new" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold">
+            <UserPlus className="w-4 h-4" /> Create user
+          </Link>
+        </div>
+
+        <Notice notice={notice} onDismiss={() => setNotice(null)} />
+        {error && <Notice notice={{ kind: 'error', text: error }} onDismiss={() => setError(null)} />}
+
+        <div className="flex flex-wrap items-center gap-2 bg-[#110B2E] border border-slate-800 rounded-xl p-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="search"
+              aria-label="Search by name or email"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
+              }}
+              placeholder="Search by name or email"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500"
+            />
+          </div>
+          <select aria-label="Role" className={select} value={roleFilter} onChange={(e) => (setRoleFilter(e.target.value), setPage(1))}>
+            <option value="All">All roles</option>
+            {Object.entries(ROLE_LABELS).map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
+          <select aria-label="Account status" className={select} value={statusFilter} onChange={(e) => (setStatusFilter(e.target.value), setPage(1))}>
+            <option value="All">All statuses</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div className="bg-[#110B2E] border border-slate-800 rounded-xl overflow-hidden">
+          {loading && users.length === 0 ? (
+            <p className="flex items-center justify-center gap-2 text-xs text-slate-400 py-12">
+              <Loader2 className="w-4 h-4 animate-spin" /> Loading users…
             </p>
-          </div>
-        </div>
-
-        <Link
-          to="/admin/users/new"
-          className="inline-flex items-center space-x-1.5 py-2 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shadow-lg shadow-rose-600/30"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Create User</span>
-        </Link>
-      </header>
-
-      <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
-        {error && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Search & Filter Controls */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-            <div className="sm:col-span-6 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value)
-                  setPage(1)
-                }}
-                placeholder="Search user name or email..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
-              />
-            </div>
-
-            <div className="sm:col-span-3">
-              <select
-                value={roleFilter}
-                onChange={(e) => {
-                  setRoleFilter(e.target.value)
-                  setPage(1)
-                }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
-              >
-                <option value="All">All Roles</option>
-                <option value="ADMIN">ADMIN</option>
-                <option value="BUSINESS_DEVELOPMENT">BUSINESS_DEVELOPMENT</option>
-                <option value="HEALTHCARE">HEALTHCARE</option>
-                <option value="USER">USER</option>
-              </select>
-            </div>
-
-            <div className="sm:col-span-3">
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value)
-                  setPage(1)
-                }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
-              >
-                <option value="All">All Statuses</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Users Table */}
-        {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <RotateCw className="w-8 h-8 animate-spin text-rose-400 mx-auto" />
-            <p className="text-xs text-slate-400">Loading user accounts...</p>
-          </div>
-        ) : users.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
-            <Users className="w-10 h-10 text-slate-600 mx-auto" />
-            <h3 className="text-sm font-bold text-white">No users found.</h3>
-            <p className="text-xs text-slate-400">Adjust your search or create a new user account.</p>
-          </div>
-        ) : (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+          ) : users.length === 0 ? (
+            <p className="text-xs text-slate-400 text-center py-12">No users match these filters.</p>
+          ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400 border-b border-slate-800">
+                <thead className="bg-[#1A1040] text-slate-400">
                   <tr>
-                    <th className="p-3.5 font-semibold">User / Email</th>
-                    <th className="p-3.5 font-semibold">Role</th>
-                    <th className="p-3.5 font-semibold">Status</th>
-                    <th className="p-3.5 font-semibold">Created Date</th>
-                    <th className="p-3.5 font-semibold text-right">Actions</th>
+                    <th className="px-4 py-2.5 font-medium">Name</th>
+                    <th className="px-4 py-2.5 font-medium">Role</th>
+                    <th className="px-4 py-2.5 font-medium">Status</th>
+                    <th className="px-4 py-2.5 font-medium">Created</th>
+                    <th className="px-4 py-2.5 font-medium text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-[#1A1040]/40 transition">
-                      <td className="p-3.5">
-                        <Link
-                          to={`/admin/users/${u.id}`}
-                          className="font-bold text-white hover:text-rose-300 transition block truncate"
-                        >
-                          {u.name}
-                        </Link>
-                        <span className="text-[11px] text-slate-400 font-mono block truncate">
-                          {u.email}
-                        </span>
-                      </td>
-
-                      <td className="p-3.5">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
-                            u.role === 'ADMIN'
-                              ? 'bg-rose-500/10 text-rose-300 border-rose-500/30'
-                              : u.role === 'BUSINESS_DEVELOPMENT'
-                              ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                              : 'bg-slate-800 text-slate-300 border-slate-700'
-                          }`}
-                        >
-                          {u.role === 'ADMIN' ? (
-                            <Shield className="w-3 h-3 text-rose-400" />
-                          ) : (
-                            <Briefcase className="w-3 h-3 text-amber-400" />
-                          )}
-                          <span>{u.role}</span>
-                        </span>
-                      </td>
-
-                      <td className="p-3.5">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                            u.is_active
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                          }`}
-                        >
-                          {u.is_active ? (
-                            <CheckCircle2 className="w-2.5 h-2.5" />
-                          ) : (
-                            <XCircle className="w-2.5 h-2.5" />
-                          )}
-                          <span>{u.is_active ? 'Active' : 'Inactive'}</span>
-                        </span>
-                      </td>
-
-                      <td className="p-3.5 text-slate-400 font-mono text-[11px]">
-                        {new Date(u.created_at).toLocaleDateString()}
-                      </td>
-
-                      <td className="p-3.5 text-right space-x-2">
-                        <button
-                          onClick={() => {
-                            setSelectedUser(u)
-                            setNewRole(u.role)
-                            setIsRoleModalOpen(true)
-                          }}
-                          className="py-1 px-2.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs transition"
-                          title="Change Role"
-                        >
-                          Role
-                        </button>
-
-                        <button
-                          onClick={() => handleToggleStatus(u)}
-                          className={`py-1 px-2.5 rounded-lg text-xs font-semibold transition border ${
-                            u.is_active
-                              ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border-rose-500/30'
-                              : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                          }`}
-                        >
-                          {u.is_active ? 'Deactivate' : 'Activate'}
-                        </button>
-
-                        <Link
-                          to={`/admin/users/${u.id}`}
-                          className="py-1 px-2.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 text-xs font-semibold transition"
-                        >
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-slate-800/70">
+                  {users.map((u) => {
+                    const isSelf = me?.id === u.id
+                    return (
+                      <tr key={u.id} className="hover:bg-white/5">
+                        <td className="px-4 py-2.5">
+                          <Link to={`/admin/users/${u.id}`} className="font-medium text-white hover:text-violet-300">
+                            {u.name}
+                          </Link>
+                          {isSelf && <span className="ml-1.5 text-[10px] text-slate-500">(you)</span>}
+                          <div className="text-[11px] text-slate-400">{u.email}</div>
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-200">{roleLabel(u.role)}</td>
+                        <td className="px-4 py-2.5">
+                          <span className="inline-flex items-center gap-1.5 text-slate-200">
+                            <span className={`w-2 h-2 rounded-full ${u.is_active ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                            {u.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-400">{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td className="px-4 py-2.5 text-right whitespace-nowrap space-x-1.5">
+                          <Link to={`/admin/users/${u.id}`} className="inline-block px-2.5 py-1 rounded-md border border-slate-700 text-slate-200 hover:border-slate-500">
+                            View
+                          </Link>
+                          <button
+                            onClick={() => {
+                              setNewRole(u.role)
+                              setPending({ kind: 'role', user: u })
+                            }}
+                            disabled={isSelf}
+                            title={isSelf ? 'You can’t change your own role' : undefined}
+                            className="px-2.5 py-1 rounded-md border border-slate-700 text-slate-200 hover:border-slate-500 disabled:opacity-40"
+                          >
+                            Change role
+                          </button>
+                          <button
+                            onClick={() => setPending({ kind: 'status', user: u })}
+                            disabled={isSelf}
+                            title={isSelf ? 'You can’t deactivate your own account' : undefined}
+                            className={`px-2.5 py-1 rounded-md border disabled:opacity-40 ${
+                              u.is_active ? 'border-rose-500/40 text-rose-200 hover:border-rose-400' : 'border-emerald-500/40 text-emerald-200 hover:border-emerald-400'
+                            }`}
+                          >
+                            {u.is_active ? 'Deactivate' : 'Activate'}
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
-
-            {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-xs text-slate-400 font-mono">
-                  Page {page} of {totalPages} (Total: {total})
-                </span>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+          )}
+          {totalPages > 1 && (
+            <div className="px-4 py-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span>
+                Page {page} of {totalPages} · {total} users
+              </span>
+              <div className="flex gap-1.5">
+                <button aria-label="Previous page" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded-md border border-slate-700 disabled:opacity-40">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button aria-label="Next page" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded-md border border-slate-700 disabled:opacity-40">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </main>
 
-      {/* Role Change Modal */}
-      {isRoleModalOpen && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white">Change User Role</h3>
-            <p className="text-xs text-slate-400">
-              Updating role for <span className="font-bold text-white">{selectedUser.name}</span> ({selectedUser.email})
-            </p>
+      <Dialog
+        open={pending?.kind === 'role'}
+        title={`Change role for ${pending?.user.name ?? ''}`}
+        onClose={closeDialog}
+        footer={
+          <>
+            <button className={buttonClass.secondary} onClick={closeDialog} disabled={saving}>
+              Cancel
+            </button>
+            <button className={buttonClass.primary} onClick={confirm} disabled={saving || newRole === pending?.user.role}>
+              {saving ? 'Saving…' : 'Save role'}
+            </button>
+          </>
+        }
+      >
+        <p>
+          Current role: <span className="text-white">{roleLabel(pending?.user.role)}</span>
+        </p>
+        <fieldset className="space-y-1.5">
+          <legend className="sr-only">New role</legend>
+          {ASSIGNABLE_ROLES.map((v) => (
+            <label key={v} className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer ${newRole === v ? 'border-violet-400 bg-violet-600/10' : 'border-slate-700'}`}>
+              <input type="radio" name="role" value={v} checked={newRole === v} onChange={() => setNewRole(v)} className="mt-0.5" />
+              <span>
+                <span className="block text-white">{ROLE_LABELS[v]}</span>
+                <span className="block text-[11px] text-slate-400">{ROLE_HELP[v]}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+        <p className="text-[11px] text-slate-500">Only these two roles can be assigned. Healthcare and Standard user exist on older accounts only.</p>
+      </Dialog>
 
-            <div className="space-y-2 text-xs">
-              <label className="font-semibold text-slate-300">Select Role</label>
-              <select
-                value={newRole}
-                onChange={(e) => setNewRole(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
-              >
-                <option value="BUSINESS_DEVELOPMENT">BUSINESS_DEVELOPMENT</option>
-                <option value="ADMIN">ADMIN</option>
-                <option value="HEALTHCARE">HEALTHCARE</option>
-                <option value="USER">USER</option>
-              </select>
-            </div>
-
-            <div className="pt-3 border-t border-slate-800 flex items-center justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => setIsRoleModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleRoleUpdate}
-                disabled={isUpdatingRole}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-rose-600/30 disabled:opacity-50"
-              >
-                {isUpdatingRole && <RotateCw className="w-3.5 h-3.5 animate-spin" />}
-                <span>Save Role</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={pending?.kind === 'status'}
+        title={pending?.user.is_active ? `Deactivate ${pending?.user.name}?` : `Activate ${pending?.user.name ?? ''}?`}
+        onClose={closeDialog}
+        footer={
+          <>
+            <button className={buttonClass.secondary} onClick={closeDialog} disabled={saving}>
+              Cancel
+            </button>
+            <button className={pending?.user.is_active ? buttonClass.danger : buttonClass.primary} onClick={confirm} disabled={saving}>
+              {saving ? 'Saving…' : pending?.user.is_active ? 'Deactivate' : 'Activate'}
+            </button>
+          </>
+        }
+      >
+        <p>
+          {pending?.user.is_active
+            ? 'They will no longer be able to sign in. Their records stay in ELLY and you can reactivate them at any time.'
+            : 'They will be able to sign in again with their existing role.'}
+        </p>
+      </Dialog>
     </div>
   )
 }

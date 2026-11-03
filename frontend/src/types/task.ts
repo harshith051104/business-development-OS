@@ -8,7 +8,6 @@ export interface BDTask {
   priority: TaskPriority;
   status: TaskStatus;
   due_date?: string | null;
-  reminder_at?: string | null;
   completed_at?: string | null;
   entity_type?: string | null;
   entity_id?: number | null;
@@ -25,9 +24,9 @@ export interface BDTaskCreate {
   priority?: TaskPriority;
   status?: TaskStatus;
   due_date?: string | null;
-  reminder_at?: string | null;
   entity_type?: string | null;
   entity_id?: number | null;
+  owner_id?: number | null;
 }
 
 export interface TaskComment {

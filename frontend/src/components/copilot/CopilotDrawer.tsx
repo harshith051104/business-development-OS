@@ -25,13 +25,9 @@ import {
   AlertTriangle,
   HelpCircle,
   Lightbulb,
-  BookOpen,
 } from 'lucide-react'
 import { copilotService } from '../../services/copilot'
-import { downloadFile } from '../../services/api'
-import { useAuth } from '../../context/AuthContext'
 import { CopilotMessageContent } from './CopilotMessageContent'
-import { UserManualModal } from './UserManualModal'
 import type {
   CopilotMessage,
   CopilotContext,
@@ -41,10 +37,8 @@ import type {
 } from '../../types/copilot'
 
 export const CopilotDrawer: React.FC = () => {
-  const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [showUserManual, setShowUserManual] = useState(false)
   const [inputMessage, setInputMessage] = useState('')
   const [conversationId, setConversationId] = useState<string | undefined>(undefined)
   const [messages, setMessages] = useState<CopilotMessage[]>([])
@@ -162,8 +156,6 @@ export const CopilotDrawer: React.FC = () => {
         pending_confirmation: res.pending_confirmation,
         confirmation_status: res.pending_confirmation ? 'pending' : undefined,
         suggested_followups: res.suggested_followups,
-        report_id: res.report_id,
-        formats: res.formats,
         created_at: new Date().toISOString(),
       }
 
@@ -279,15 +271,7 @@ export const CopilotDrawer: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setShowUserManual(true)}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-purple-200 hover:text-white bg-purple-900/40 hover:bg-purple-800/60 border border-purple-500/40 rounded-xl transition-all cursor-pointer shadow-sm shadow-purple-900/20"
-                title="Open Official User Manual"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-purple-300" />
-                <span className="text-[11px]">User Manual</span>
-              </button>
+            <div className="flex items-center gap-1">
               <button
                 onClick={handleClearChat}
                 className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
@@ -428,26 +412,6 @@ export const CopilotDrawer: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Executive Report Download Buttons */}
-                  {msg.report_id && msg.formats && (
-                    <div className="mt-2 flex items-center gap-2">
-                      {msg.formats.map((fmt) => (
-                        <button
-                          key={fmt}
-                          onClick={() =>
-                            downloadFile(
-                              `/api/reports/${msg.report_id}/download?format=${fmt}`,
-                              `executive_report_${msg.report_id}.${fmt}`
-                            )
-                          }
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-700 hover:bg-violet-600 text-white font-medium rounded-lg text-xs transition-colors cursor-pointer"
-                        >
-                          Download {fmt.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
                   {/* Data Reference Chips */}
                   {msg.data_references && msg.data_references.length > 0 && (
                     <div className="pt-1.5 border-t border-slate-700/50 flex flex-wrap gap-1.5">
@@ -505,7 +469,7 @@ export const CopilotDrawer: React.FC = () => {
           </div>
 
           {/* Quick Contextual Suggestions (Shown when messages are few) */}
-          {messages.length <= 2 && (suggestions.length > 0 || user?.role === 'DEV') && (
+          {suggestions.length > 0 && messages.length <= 2 && (
             <div className="px-4 py-2 bg-[#0F0A24]/80 border-t border-violet-900/40 overflow-x-auto flex gap-1.5 scrollbar-thin">
               {suggestions.map((s, idx) => (
                 <button
@@ -516,14 +480,6 @@ export const CopilotDrawer: React.FC = () => {
                   <div className="font-medium truncate">{s.prompt}</div>
                 </button>
               ))}
-              {user?.role === 'DEV' && (
-                <button
-                  onClick={() => handleSendMessage('Generate an executive report for the last 30 days')}
-                  className="shrink-0 px-2.5 py-1 bg-[#1A1040] hover:bg-violet-900/40 text-slate-300 hover:text-violet-200 border border-violet-800/40 hover:border-violet-500/40 rounded-lg text-[11px] transition-all cursor-pointer text-left"
-                >
-                  <div className="font-medium truncate">Generate Executive Report</div>
-                </button>
-              )}
             </div>
           )}
 
@@ -556,9 +512,6 @@ export const CopilotDrawer: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* User Manual Modal */}
-      <UserManualModal isOpen={showUserManual} onClose={() => setShowUserManual(false)} />
     </>
   )
 }
