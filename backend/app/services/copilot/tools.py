@@ -2453,18 +2453,19 @@ def send_funding_outreach(
 # EXECUTIVE REPORT (DEV only)
 # ─────────────────────────────────────────────────────────────
 
-def generate_executive_report(db: Session, user: User, period: str = "") -> Dict[str, Any]:
+def generate_executive_report(db: Session, user: User, period: str = "", next_steps: str = "") -> Dict[str, Any]:
     if user.role != UserRole.DEV.value:
         return {"error": "Executive report generation is restricted to DEV users."}
 
     import os
     from app.models.report import ReportGeneration
     from app.services.report_agent_service import resolve_period, gather_report_data
-    from app.services.report_render_service import render_narrative, render_docx, render_pdf
+    from app.services.report_render_service import render_narrative, render_next_steps, render_docx, render_pdf
 
     period_start, period_end = resolve_period(period)
     data = gather_report_data(db, period_start, period_end)
     narrative = render_narrative(data)
+    next_steps_text = render_next_steps(data, next_steps)
 
     row = ReportGeneration(
         requested_by_id=user.id,
@@ -2476,16 +2477,23 @@ def generate_executive_report(db: Session, user: User, period: str = "") -> Dict
     db.add(row)
     db.commit()
 
-    reports_dir = os.path.join(os.getcwd(), "reports")
+    backend_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    reports_dir = os.path.join(backend_root, "reports")
     docx_path = os.path.join(reports_dir, f"{row.id}_report.docx")
     pdf_path = os.path.join(reports_dir, f"{row.id}_report.pdf")
 
     try:
         os.makedirs(reports_dir, exist_ok=True)
-        render_docx(narrative, data, docx_path)
-        render_pdf(narrative, data, pdf_path)
+        render_docx(narrative, data, docx_path, next_steps_text)
+        render_pdf(narrative, data, pdf_path, next_steps_text)
     except Exception as exc:
         logger.error("Executive report rendering failed: %s", exc)
+        for path in (docx_path, pdf_path):
+            try:
+                if os.path.exists(path):
+                    os.remove(path)
+            except OSError:
+                pass
         db.delete(row)
         db.commit()
         return {"error": "Failed to generate executive report."}

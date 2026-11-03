@@ -142,7 +142,12 @@ SYSTEM_PROMPT = (
     "- When the user asks which leads/orgs are showing buying signals or "
     "engagement worth following up on, use get_active_signals.\n"
     "- When the user asks for a leadership/CEO/executive report or summary "
-    "of team activity, use generate_executive_report."
+    "of team activity: first ask the user what the report's Next Steps "
+    "section should say. If they give you next steps, pass them as the "
+    "next_steps argument to generate_executive_report. If they say they "
+    "don't have any or don't respond with specifics, call "
+    "generate_executive_report without next_steps -- it will write that "
+    "section itself from the dashboard data. Never skip asking first."
 )
 
 

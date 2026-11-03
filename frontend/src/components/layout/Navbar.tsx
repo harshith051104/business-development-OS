@@ -26,11 +26,8 @@ import {
   ChevronRight,
   Settings,
   Map,
-  MessageSquare,
-  Network,
   DollarSign,
   UploadCloud,
-  Activity,
   ClipboardList,
   Bell,
 } from 'lucide-react'
@@ -128,7 +125,6 @@ export const Navbar: React.FC = () => {
         { label: 'Campaigns', path: '/business-development/campaigns', icon: Target },
         { label: 'ELLY Showcase', path: '/business-development/showcase', icon: Sparkles },
         { label: 'Outreach', path: '/business-development/outreach', icon: Mail },
-        { label: 'Outreach Tracker', path: '/business-development/outreach/tracker', icon: Activity },
         { label: 'Meetings', path: '/business-development/meetings', icon: Calendar },
         { label: 'Demos', path: '/business-development/demos', icon: Tv },
         ...(user?.role === 'ADMIN' ? [{ label: 'Settings', path: '/admin/settings', icon: Settings }] : []),
@@ -151,8 +147,6 @@ export const Navbar: React.FC = () => {
         { label: 'Analytics', path: '/business-development/analytics', icon: BarChart3 },
         { label: 'Calendar', path: '/business-development/calendar', icon: Calendar },
         { label: 'Map View', path: '/business-development/map', icon: Map },
-        { label: 'Connections', path: '/business-development/connections', icon: Network },
-        { label: 'Communications', path: '/business-development/communications', icon: MessageSquare },
       ],
     },
   ]

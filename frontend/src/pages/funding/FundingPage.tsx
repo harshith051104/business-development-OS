@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
 import { fundingService } from '../../services/funding'
 import type { InvestorSearchResult, InvestorContact } from '../../services/funding'
@@ -13,7 +12,6 @@ import {
   Sparkles,
   Send,
   ExternalLink,
-  ListChecks,
   Download,
 } from 'lucide-react'
 
@@ -156,13 +154,6 @@ export const FundingPage: React.FC = () => {
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               {exporting ? 'Exporting...' : 'Export to Excel (CSV)'}
             </button>
-            <Link
-              to="/business-development/funding/campaigns"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 rounded-xl hover:bg-emerald-900/50 transition-all"
-            >
-              <ListChecks className="w-4 h-4" />
-              View Funding Campaigns
-            </Link>
           </div>
         </div>
 

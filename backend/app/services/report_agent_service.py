@@ -5,7 +5,7 @@ from typing import Dict, List
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.organization import Organization
 from app.models.contact import Contact
 from app.models.communication import Communication
@@ -16,14 +16,30 @@ from app.models.task import BDTask, TaskStatus
 from app.schemas.analytics import TeamMemberPerformanceOut
 
 
+WEDNESDAY = 2  # datetime.weekday(): Monday=0 ... Sunday=6
+
+
+def _current_wed_to_tue_cycle(now: datetime) -> tuple[datetime, datetime]:
+    """The reporting week runs Wednesday 00:00 through the following Tuesday 23:59:59."""
+    days_since_wed = (now.weekday() - WEDNESDAY) % 7
+    start_day = now - timedelta(days=days_since_wed)
+    start = datetime(start_day.year, start_day.month, start_day.day, 0, 0, 0, tzinfo=timezone.utc)
+    end = start + timedelta(days=7) - timedelta(seconds=1)
+    return start, end
+
+
 def resolve_period(period_text: str) -> tuple[datetime, datetime]:
     now = datetime.now(timezone.utc)
     phrase = (period_text or "").strip().lower()
 
-    if "this week" in phrase:
-        start_day = now - timedelta(days=now.weekday())
-        start = datetime(start_day.year, start_day.month, start_day.day, 0, 0, 0, tzinfo=timezone.utc)
-        return start, now
+    if "last week" in phrase:
+        current_start, _ = _current_wed_to_tue_cycle(now)
+        prev_start = current_start - timedelta(days=7)
+        prev_end = current_start - timedelta(seconds=1)
+        return prev_start, prev_end
+    elif "this week" in phrase:
+        start, end = _current_wed_to_tue_cycle(now)
+        return start, min(end, now)
     elif "this month" in phrase:
         start = datetime(now.year, now.month, 1, 0, 0, 0, tzinfo=timezone.utc)
         return start, now
@@ -31,11 +47,18 @@ def resolve_period(period_text: str) -> tuple[datetime, datetime]:
         start = now - timedelta(days=90)
         return start, now
 
-    return now - timedelta(days=30), now
+    # Default: most recently completed Wednesday-to-Tuesday reporting week.
+    current_start, _ = _current_wed_to_tue_cycle(now)
+    prev_start = current_start - timedelta(days=7)
+    prev_end = current_start - timedelta(seconds=1)
+    return prev_start, prev_end
+
+
+WORK_ROLES = (UserRole.BUSINESS_DEVELOPMENT.value, UserRole.HEALTHCARE.value, UserRole.USER.value)
 
 
 def get_team_performance(db: Session, period_start: datetime, period_end: datetime) -> List[TeamMemberPerformanceOut]:
-    users = db.query(User).filter(User.is_active.is_(True)).all()
+    users = db.query(User).filter(User.is_active.is_(True), User.role.in_(WORK_ROLES)).all()
     team_perf: List[TeamMemberPerformanceOut] = []
     for u in users:
         u_name = u.name or u.email
@@ -102,7 +125,7 @@ def gather_report_data(db: Session, period_start: datetime, period_end: datetime
     team = get_team_performance(db, period_start, period_end)
 
     task_stats: Dict[int, dict] = {}
-    users = db.query(User).filter(User.is_active.is_(True)).all()
+    users = db.query(User).filter(User.is_active.is_(True), User.role.in_(WORK_ROLES)).all()
     for u in users:
         completed = db.query(BDTask).filter(
             BDTask.owner_id == u.id,

@@ -41,6 +41,29 @@ REPORT_SYSTEM_PROMPT = (
     "concise and readable."
 )
 
+NEXT_STEPS_SYSTEM_PROMPT = (
+    "You are writing the 'Next Steps' section of an executive report for a "
+    "CEO audience. Based on the team activity data provided (per-person "
+    "metrics, task stats, company totals), write one bullet per team member, "
+    "naming them, with the specific task(s) they should do next -- derived "
+    "from their own metrics and task stats (e.g. overdue tasks to clear, "
+    "activity types they logged zero of, follow-ups to complete). After the "
+    "per-member bullets, add up to 2 short team-wide action items if "
+    "warranted. Plain business English only. Output only a bullet list -- no "
+    "heading, no preamble, no sign-off."
+)
+
+
+_HYPHEN_VARIANTS = str.maketrans({
+    "‐": "-",  # hyphen
+    "‑": "-",  # non-breaking hyphen (missing glyph in report fonts)
+    "‒": "-",  # figure dash
+})
+
+
+def _sanitize_narrative(text: str) -> str:
+    return text.translate(_HYPHEN_VARIANTS)
+
 
 def render_narrative(data: ReportData) -> str:
     try:
@@ -52,10 +75,64 @@ def render_narrative(data: ReportData) -> str:
             ],
             task_type="report_narrative",
         )
-        return response.content
+        return _sanitize_narrative(response.content)
     except Exception as exc:
         logger.error("Report narrative LLM call failed, falling back to template: %s", exc)
         return _render_template_fallback(data)
+
+
+def render_next_steps(data: ReportData, user_next_steps: str = "") -> str:
+    if user_next_steps.strip():
+        return _sanitize_narrative(user_next_steps.strip())
+    try:
+        router = _get_llm_router()
+        response = router.chat(
+            messages=[
+                {"role": "system", "content": NEXT_STEPS_SYSTEM_PROMPT},
+                {"role": "user", "content": _serialize_report_data(data)},
+            ],
+            task_type="report_next_steps",
+        )
+        return _sanitize_narrative(response.content)
+    except Exception as exc:
+        logger.error("Next steps LLM call failed, falling back to template: %s", exc)
+        return _next_steps_template_fallback(data)
+
+
+def _next_steps_template_fallback(data: ReportData) -> str:
+    lines = []
+    for member in data.team:
+        stats = data.task_stats.get(member.user_id, {})
+        overdue = stats.get("overdue") or 0
+        open_tasks = stats.get("open") or 0
+        is_idle = not any([
+            member.organizations_added, member.contacts_added, member.communications_logged,
+            member.meetings_completed, member.opportunities_managed, member.followups_completed,
+        ])
+
+        tasks = []
+        if overdue:
+            tasks.append(f"clear {overdue} overdue task{'s' if overdue != 1 else ''}")
+        elif open_tasks:
+            tasks.append(f"work through {open_tasks} open task{'s' if open_tasks != 1 else ''}")
+        if is_idle:
+            tasks.append("log activity -- no organizations, contacts, communications, meetings, opportunities, or follow-ups recorded this period")
+        else:
+            if not member.followups_completed:
+                tasks.append("complete outstanding follow-ups")
+            if not member.communications_logged:
+                tasks.append("log communications with contacts")
+
+        if not tasks:
+            tasks.append("maintain current pace")
+
+        lines.append(f"- {member.name}: {'; '.join(tasks)}.")
+
+    if not data.company_totals.get("followups_completed"):
+        lines.append("- Team-wide: reinforce the follow-up process -- zero follow-ups were completed this period.")
+    if not lines:
+        lines.append("- Maintain current momentum and continue logging activity consistently.")
+    return "\n".join(lines)
 
 
 def _serialize_report_data(data: ReportData) -> str:
@@ -107,7 +184,17 @@ def _team_table_rows(data: ReportData) -> list:
     return rows
 
 
-def render_docx(narrative: str, data: ReportData, path: str) -> None:
+def _add_markdown_bold_paragraph(document: Document, line: str) -> None:
+    paragraph = document.add_paragraph()
+    parts = re.split(r"\*\*(.+?)\*\*", line)
+    for idx, part in enumerate(parts):
+        if not part:
+            continue
+        run = paragraph.add_run(part)
+        run.bold = bool(idx % 2)
+
+
+def render_docx(narrative: str, data: ReportData, path: str, next_steps: str = "") -> None:
     document = Document()
     document.add_heading("Executive Report", level=0)
     document.add_paragraph(f"Period: {data.period_start} to {data.period_end}")
@@ -119,7 +206,7 @@ def render_docx(narrative: str, data: ReportData, path: str) -> None:
         if normalized in NARRATIVE_SECTION_HEADINGS:
             document.add_heading(normalized, level=1)
         else:
-            document.add_paragraph(line)
+            _add_markdown_bold_paragraph(document, line)
 
     document.add_heading("Per-Person Metrics", level=1)
     rows = _team_table_rows(data)
@@ -129,10 +216,25 @@ def render_docx(narrative: str, data: ReportData, path: str) -> None:
         for col_idx, value in enumerate(row):
             table.cell(row_idx, col_idx).text = str(value)
 
+    if next_steps.strip():
+        document.add_heading("Next Steps", level=1)
+        for line in next_steps.splitlines():
+            if line.strip():
+                _add_markdown_bold_paragraph(document, line)
+
     document.save(path)
 
 
-def render_pdf(narrative: str, data: ReportData, path: str) -> None:
+def _pdf_bold_paragraph(line: str, style) -> Paragraph:
+    parts = line.split("**")
+    escaped = "".join(
+        escape(part) if idx % 2 == 0 else f"<b>{escape(part)}</b>"
+        for idx, part in enumerate(parts)
+    )
+    return Paragraph(escaped, style)
+
+
+def render_pdf(narrative: str, data: ReportData, path: str, next_steps: str = "") -> None:
     styles = getSampleStyleSheet()
     doc = SimpleDocTemplate(path, pagesize=letter)
     flowables = [
@@ -148,7 +250,7 @@ def render_pdf(narrative: str, data: ReportData, path: str) -> None:
         if normalized in NARRATIVE_SECTION_HEADINGS:
             flowables.append(Paragraph(escape(normalized), styles["Heading1"]))
         else:
-            flowables.append(Paragraph(escape(line), styles["Normal"]))
+            flowables.append(_pdf_bold_paragraph(line, styles["Normal"]))
 
     flowables.append(Spacer(1, 12))
     flowables.append(Paragraph("Per-Person Metrics", styles["Heading1"]))
@@ -159,5 +261,12 @@ def render_pdf(narrative: str, data: ReportData, path: str) -> None:
         ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
     flowables.append(table)
+
+    if next_steps.strip():
+        flowables.append(Spacer(1, 12))
+        flowables.append(Paragraph("Next Steps", styles["Heading1"]))
+        for line in next_steps.splitlines():
+            if line.strip():
+                flowables.append(_pdf_bold_paragraph(line, styles["Normal"]))
 
     doc.build(flowables)

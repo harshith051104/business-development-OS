@@ -594,11 +594,12 @@ AGENT_TOOL_SCHEMAS: list[dict] = [
         "type": "function",
         "function": {
             "name": "generate_executive_report",
-            "description": "Generate a CEO-facing executive report (team activity narrative + docx/pdf) covering a given period. Restricted to DEV accounts; non-DEV callers get a friendly refusal.",
+            "description": "Generate a CEO-facing executive report (team activity narrative + docx/pdf) covering a given period, scoped to BUSINESS_DEVELOPMENT/HEALTHCARE/USER role activity only (admin/dev accounts excluded). The reporting week runs Wednesday-to-Tuesday. Restricted to DEV accounts; non-DEV callers get a friendly refusal.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "period": {"type": "string", "description": "Free-text period like 'this week', 'last 30 days', 'this month', 'last quarter'"},
+                    "period": {"type": "string", "description": "Free-text period like 'this week' (current Wed-Tue cycle so far), 'last week' (most recently completed Wed-Tue cycle), 'this month', 'last quarter'. Leave empty for the default: most recently completed Wednesday-to-Tuesday week."},
+                    "next_steps": {"type": "string", "description": "User-specified next steps/action items for the report's 'Next Steps' section, in the user's own words. Ask the user for this before calling the tool; if they don't provide any, omit this field and Elly will write the Next Steps section herself from the report's dashboard data."},
                 },
                 "required": [],
             },
