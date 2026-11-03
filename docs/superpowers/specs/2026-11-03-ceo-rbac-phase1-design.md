@@ -318,11 +318,15 @@ has no server-side session store to revoke against today).
   converts both sides to integer UTC epoch seconds before comparing, so the
   seconds-vs-microseconds precision mismatch between a JWT's integer `iat` and a
   database timestamp's sub-second precision never causes a false result.
-- **Boundary rule:** reject the token if `token_iat < floor(password_changed_at)`.
-  Use strict `<`, not `<=` — a token issued in the *same* second as the password
-  change is treated as issued-before (rejected), since `change-password` sets
-  `password_changed_at` *after* reading the request, so any token whose `iat`
-  could equal that second was necessarily issued before the change completed.
+- **Boundary rule:** reject the token if `token_iat <= floor(password_changed_at)`.
+  Use `<=`, not strict `<` — a token issued in the *same* second as the password
+  change must be rejected too, and `<=` is the only comparison that does that:
+  plain `<` only rejects a token whose `iat` is strictly earlier, so a token
+  stamped with the exact same epoch second as `password_changed_at` would
+  satisfy `token_iat < password_changed_at_epoch` as `False` and incorrectly be
+  accepted. `change-password` sets `password_changed_at` *after* reading the
+  request, so any token whose `iat` falls in or before that second was
+  necessarily issued before the change completed and must not survive it.
   This is the one deliberately conservative edge case in the design: it can very
   rarely reject a token that was technically issued after the change within the
   same wall-clock second, which just forces an extra re-login — acceptable,
@@ -335,10 +339,13 @@ has no server-side session store to revoke against today).
 - This logic lives in one place (`backend/app/core/security.py` or
   `backend/app/auth/deps.py`, wherever `get_current_user` already lives) and is
   unit-tested directly — not only through integration tests — with explicit
-  cases: token issued 1 second before change (rejected), token issued in the
-  same second as change (rejected, per the boundary rule above), token issued 1
-  second after change (accepted), and `password_changed_at IS NULL` (iat check
-  skipped, only `must_change_password` gates).
+  cases: token issued 1 second before change (rejected, `token_iat <
+  password_changed_at_epoch`), token issued in the *same* second as change
+  (rejected, `token_iat == password_changed_at_epoch`, caught by the `<=`
+  specifically — this is the case a plain `<` would get wrong and must be
+  asserted explicitly), token issued 1 second after change (accepted,
+  `token_iat > password_changed_at_epoch`), and `password_changed_at IS NULL`
+  (iat check skipped entirely, only `must_change_password` gates).
 
 ### 4.8 CEO executive dashboard shell
 
@@ -386,7 +393,7 @@ Organizations/Contacts):
 | Existing ADMIN/employee behavior | No regression on pre-existing non-private data for either role |
 | Sharing validation | Reject: unknown `resource_type`, nonexistent/deactivated recipient, recipient role `CEO`, self-share, non-owner caller granting or revoking, duplicate active share |
 | Forced password change | Protected routes return 403 until changed; `/change-password`, `/logout`, `/me` remain reachable; old token rejected (401) immediately after a successful change |
-| JWT `iat` boundary cases | Token issued 1s before password change (rejected), same second (rejected per the conservative boundary rule in §4.7), 1s after (accepted), `password_changed_at IS NULL` (iat check skipped) |
+| JWT `iat` boundary cases | Token issued 1s before password change (rejected), same second — `token_iat == password_changed_at_epoch` (rejected by the `<=` comparison in §4.7, the case plain `<` would wrongly accept), 1s after (accepted), `password_changed_at IS NULL` (iat check skipped) |
 | Privileged-access audit | `ceo_private_access_denied` / `_bulk` entries are written on denied access to a private record, with no field values in the log payload |
 | Provisioning script | Idempotent on second run without `--rotate`; `--rotate` resets password and `must_change_password` |
 | Migration | Existing rows' `is_private` stay `False` after running the migration script; no existing row changes ownership/visibility |
