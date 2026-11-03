@@ -17,6 +17,8 @@ import {
   Bell,
   ToggleLeft,
   ToggleRight,
+  Sheet,
+  ExternalLink,
 } from 'lucide-react'
 
 export const AdminSettingsPage: React.FC = () => {
@@ -27,6 +29,8 @@ export const AdminSettingsPage: React.FC = () => {
   const [projectCategories, setProjectCategories] = useState<string[]>([])
   const [taskCalendarSyncEnabled, setTaskCalendarSyncEnabled] = useState<boolean>(true)
   const [taskRemindersEnabled, setTaskRemindersEnabled] = useState<boolean>(true)
+  const [googleSheetsUrl, setGoogleSheetsUrl] = useState<string>('')
+  const [googleSheetsConfigured, setGoogleSheetsConfigured] = useState<boolean>(false)
 
   // Inputs for adding new entries
   const [newOrgType, setNewOrgType] = useState<string>('')
@@ -51,6 +55,8 @@ export const AdminSettingsPage: React.FC = () => {
       setProjectCategories(data.project_categories || [])
       setTaskCalendarSyncEnabled(data.task_calendar_sync_enabled ?? true)
       setTaskRemindersEnabled(data.task_reminders_enabled ?? true)
+      setGoogleSheetsUrl(data.google_sheets_spreadsheet_url || '')
+      setGoogleSheetsConfigured(data.google_sheets_configured ?? false)
     } catch (err: any) {
       setError(err.detail || err.message || 'Failed to load system settings.')
     } finally {
@@ -75,8 +81,11 @@ export const AdminSettingsPage: React.FC = () => {
         project_categories: projectCategories,
         task_calendar_sync_enabled: taskCalendarSyncEnabled,
         task_reminders_enabled: taskRemindersEnabled,
+        google_sheets_spreadsheet_url: googleSheetsUrl.trim(),
       })
       setSettings(updated)
+      setGoogleSheetsUrl(updated.google_sheets_spreadsheet_url || '')
+      setGoogleSheetsConfigured(updated.google_sheets_configured ?? false)
       setSuccessMessage('System configuration saved successfully.')
       setTimeout(() => setSuccessMessage(null), 4000)
     } catch (err: any) {
@@ -368,6 +377,52 @@ export const AdminSettingsPage: React.FC = () => {
                     <ToggleLeft className="w-7 h-7 text-slate-500 shrink-0" />
                   )}
                 </button>
+              </div>
+            </div>
+
+            {/* 6. Google Sheets Integration */}
+            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 md:col-span-2">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div className="flex items-center space-x-2">
+                  <Sheet className="w-4 h-4 text-green-400" />
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                    Google Sheets Integration
+                  </h2>
+                </div>
+                <span
+                  className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
+                    googleSheetsConfigured
+                      ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
+                      : 'bg-slate-700/30 text-slate-400 border border-slate-700'
+                  }`}
+                >
+                  {googleSheetsConfigured ? 'Connected' : 'Not Configured'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Paste the full URL of a Google Sheet (or just its spreadsheet ID) to point lead
+                sync, discovery exports, and the lead tracker's push/pull buttons at that sheet.
+                Leave blank to fall back to the server's default configuration. Requires Google
+                service account credentials to already be set up on the server.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={googleSheetsUrl}
+                  onChange={(e) => setGoogleSheetsUrl(e.target.value)}
+                  placeholder="https://docs.google.com/spreadsheets/d/.../edit"
+                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                />
+                {googleSheetsUrl && (
+                  <a
+                    href={googleSheetsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-slate-300 hover:text-white hover:border-slate-600"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
               </div>
             </div>
           </div>

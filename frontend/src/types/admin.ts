@@ -125,6 +125,8 @@ export interface SystemSettings {
   project_categories: string[]
   task_calendar_sync_enabled: boolean
   task_reminders_enabled: boolean
+  google_sheets_spreadsheet_url: string | null
+  google_sheets_configured: boolean
 }
 
 export interface SystemSettingsUpdatePayload {
@@ -134,4 +136,5 @@ export interface SystemSettingsUpdatePayload {
   project_categories?: string[]
   task_calendar_sync_enabled?: boolean
   task_reminders_enabled?: boolean
+  google_sheets_spreadsheet_url?: string
 }

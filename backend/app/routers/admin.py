@@ -21,6 +21,12 @@ from app.models.meeting import Meeting, MeetingType
 from app.models.followup import FollowUp
 from app.models.audit import AuditLog
 from app.models.setting import SystemSetting
+from app.services.google_sheets_service import (
+    extract_spreadsheet_id,
+    set_spreadsheet_id_override,
+    get_spreadsheet_url as get_sheets_url,
+    is_configured as sheets_is_configured,
+)
 from app.schemas.admin import (
     AdminUserOut,
     AdminUserCreate,
@@ -933,6 +939,8 @@ def get_system_settings(
         project_categories=proj_cats,
         task_calendar_sync_enabled=sync_enabled,
         task_reminders_enabled=reminders_enabled,
+        google_sheets_spreadsheet_url=get_sheets_url(),
+        google_sheets_configured=sheets_is_configured(),
     )
 
 
@@ -996,7 +1004,24 @@ def update_system_settings(
             s.value_json = payload.task_reminders_enabled
             s.updated_by = current_user.email
 
+    apply_sheets_override = False
+    sheets_spreadsheet_id_to_apply = None
+    if payload.google_sheets_spreadsheet_url is not None:
+        spreadsheet_id = extract_spreadsheet_id(payload.google_sheets_spreadsheet_url)
+        s = db.query(SystemSetting).filter(SystemSetting.key == "google_sheets_spreadsheet_id").first()
+        if not s:
+            s = SystemSetting(key="google_sheets_spreadsheet_id", category="integrations", value_json=spreadsheet_id, updated_by=current_user.email)
+            db.add(s)
+        else:
+            s.value_json = spreadsheet_id
+            s.updated_by = current_user.email
+        apply_sheets_override = True
+        sheets_spreadsheet_id_to_apply = spreadsheet_id
+
     db.commit()
+
+    if apply_sheets_override:
+        set_spreadsheet_id_override(sheets_spreadsheet_id_to_apply)
 
     audit = AuditLog(
         user_id=current_user.id,

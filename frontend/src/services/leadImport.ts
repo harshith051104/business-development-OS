@@ -10,6 +10,7 @@ export interface LeadUploadPreview {
   preview_rows: Record<string, string>[]
   suggested_mapping: Record<string, string | null>
   target_fields: string[]
+  warning?: string | null
 }
 
 export interface LeadImportResult {
@@ -67,6 +68,12 @@ export interface LeadImportBatchSummary {
   created_at: string
 }
 
+export interface GoogleSheetTab {
+  title: string
+  row_count: number
+  col_count: number
+}
+
 export const TARGET_FIELD_LABELS: Record<string, string> = {
   org_name: 'Organization Name (required)',
   org_website: 'Organization Website',
@@ -122,5 +129,18 @@ export const leadImportService = {
 
   getBatchRecords: async (batchId: number): Promise<LeadImportBatchRecords> => {
     return api.get<LeadImportBatchRecords>(`/api/business-development/leads/imports/${batchId}/records`)
+  },
+
+  listGoogleSheetTabs: async (spreadsheetUrl: string): Promise<{ spreadsheet_id: string; tabs: GoogleSheetTab[] }> => {
+    return api.post('/api/business-development/leads/google-sheets/list-tabs', {
+      spreadsheet_url: spreadsheetUrl,
+    })
+  },
+
+  loadGoogleSheetRows: async (spreadsheetUrl: string, sheetNames: string[]): Promise<LeadUploadPreview> => {
+    return api.post<LeadUploadPreview>('/api/business-development/leads/google-sheets/load', {
+      spreadsheet_url: spreadsheetUrl,
+      sheet_names: sheetNames,
+    })
   },
 }

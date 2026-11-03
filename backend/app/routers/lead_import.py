@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, joinedload
@@ -11,6 +11,7 @@ from app.models.organization import Organization
 from app.models.contact import Contact
 from app.models.campaign import Campaign
 from app.services import lead_import_service
+from app.services.google_sheets_service import extract_spreadsheet_id, list_worksheet_tabs, read_worksheet_rows
 
 router = APIRouter(
     prefix="/api/business-development/leads",
@@ -19,12 +20,22 @@ router = APIRouter(
 )
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10MB
+MAX_SHEET_ROWS = 20000
 
 
 class ImportConfirmRequest(BaseModel):
     upload_id: str
     column_mapping: Dict[str, Optional[str]]
     campaign_id: Optional[int] = None
+
+
+class GoogleSheetsListTabsRequest(BaseModel):
+    spreadsheet_url: str
+
+
+class GoogleSheetsLoadRequest(BaseModel):
+    spreadsheet_url: str
+    sheet_names: List[str]
 
 
 @router.post("/upload")
@@ -54,6 +65,82 @@ async def upload_lead_list(
         "preview_rows": staged["rows"][:5],
         "suggested_mapping": lead_import_service.suggest_mapping(staged["headers"]),
         "target_fields": lead_import_service.TARGET_FIELDS,
+    }
+
+
+@router.post("/google-sheets/list-tabs")
+def list_google_sheet_tabs(
+    payload: GoogleSheetsListTabsRequest,
+    current_user: User = Depends(require_business_development),
+):
+    """Step 1 (Google Sheets flow): resolve a pasted Sheets URL and list its tabs to pick from."""
+    spreadsheet_id = extract_spreadsheet_id(payload.spreadsheet_url)
+    if not spreadsheet_id:
+        raise HTTPException(status_code=400, detail="Enter a valid Google Sheets URL.")
+    try:
+        tabs = list_worksheet_tabs(spreadsheet_id)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not open that spreadsheet. Make sure it's shared with the server's Google service account, or shared as 'Anyone with the link'. ({e})")
+
+    return {"spreadsheet_id": spreadsheet_id, "tabs": tabs}
+
+
+@router.post("/google-sheets/load")
+def load_google_sheet_rows(
+    payload: GoogleSheetsLoadRequest,
+    current_user: User = Depends(require_business_development),
+):
+    """Step 2 (Google Sheets flow): pull rows from the selected tab(s) and stage them for mapping."""
+    spreadsheet_id = extract_spreadsheet_id(payload.spreadsheet_url)
+    if not spreadsheet_id:
+        raise HTTPException(status_code=400, detail="Enter a valid Google Sheets URL.")
+    if not payload.sheet_names:
+        raise HTTPException(status_code=400, detail="Select at least one sheet tab to import.")
+
+    all_headers: List[str] = []
+    all_rows = []
+    per_tab_header_sets: List[set] = []
+    for name in payload.sheet_names:
+        try:
+            headers, rows = read_worksheet_rows(spreadsheet_id, name)
+        except RuntimeError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Could not read tab '{name}': {e}")
+        per_tab_header_sets.append(set(headers))
+        for h in headers:
+            if h not in all_headers:
+                all_headers.append(h)
+        all_rows.extend(rows)
+        if len(all_rows) > MAX_SHEET_ROWS:
+            raise HTTPException(status_code=400, detail=f"Selected tab(s) have too many rows (max {MAX_SHEET_ROWS}). Narrow your selection.")
+
+    if not all_rows:
+        raise HTTPException(status_code=400, detail="The selected sheet tab(s) have no data rows.")
+
+    warning = None
+    if len(per_tab_header_sets) > 1 and len(set.intersection(*per_tab_header_sets)) == 0:
+        warning = (
+            "The selected tabs don't share any column names — after you map columns below, "
+            "rows from tabs whose matching column wasn't picked for the mapping will be skipped as missing "
+            "organization name. Consider importing mismatched tabs separately."
+        )
+
+    filename = f"Google Sheet ({', '.join(payload.sheet_names)})"
+    upload_id = lead_import_service.stage_rows(filename, all_headers, all_rows)
+    staged = lead_import_service.load_staged_upload(upload_id)
+
+    return {
+        "upload_id": upload_id,
+        "filename": staged["filename"],
+        "headers": staged["headers"],
+        "total_rows": len(staged["rows"]),
+        "preview_rows": staged["rows"][:5],
+        "suggested_mapping": lead_import_service.suggest_mapping(staged["headers"]),
+        "target_fields": lead_import_service.TARGET_FIELDS,
+        "warning": warning,
     }
 
 

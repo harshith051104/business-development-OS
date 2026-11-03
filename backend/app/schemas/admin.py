@@ -218,6 +218,8 @@ class SystemSettingsOut(BaseModel):
     project_categories: List[str]
     task_calendar_sync_enabled: bool
     task_reminders_enabled: bool
+    google_sheets_spreadsheet_url: Optional[str] = None
+    google_sheets_configured: bool = False
 
 
 class SystemSettingsUpdate(BaseModel):
@@ -227,3 +229,4 @@ class SystemSettingsUpdate(BaseModel):
     project_categories: Optional[List[str]] = None
     task_calendar_sync_enabled: Optional[bool] = None
     task_reminders_enabled: Optional[bool] = None
+    google_sheets_spreadsheet_url: Optional[str] = None

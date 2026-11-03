@@ -1,13 +1,52 @@
 import logging
+import re
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 import gspread
 from google.oauth2.service_account import Credentials
 
 from app.core.config import settings
+from app.core.database import SessionLocal
 
 logger = logging.getLogger(__name__)
+
+_spreadsheet_id_cache: Optional[str] = None
+_cache_loaded = False
+
+
+def extract_spreadsheet_id(raw: Optional[str]) -> Optional[str]:
+    """Pulls a spreadsheet ID out of a pasted Google Sheets URL, or returns a raw ID as-is."""
+    raw = (raw or "").strip()
+    if not raw:
+        return None
+    match = re.search(r"/d/([a-zA-Z0-9-_]+)", raw)
+    return match.group(1) if match else raw
+
+
+def _load_spreadsheet_id_override() -> Optional[str]:
+    from app.models.setting import SystemSetting
+    db = SessionLocal()
+    try:
+        row = db.query(SystemSetting).filter(SystemSetting.key == "google_sheets_spreadsheet_id").first()
+        return row.value_json if row and row.value_json else None
+    finally:
+        db.close()
+
+
+def _get_spreadsheet_id() -> Optional[str]:
+    global _spreadsheet_id_cache, _cache_loaded
+    if not _cache_loaded:
+        _spreadsheet_id_cache = _load_spreadsheet_id_override()
+        _cache_loaded = True
+    return _spreadsheet_id_cache or settings.GOOGLE_SHEETS_SPREADSHEET_ID
+
+
+def set_spreadsheet_id_override(spreadsheet_id: Optional[str]) -> None:
+    """Refreshes the in-process cache right after an admin saves/clears the DB override."""
+    global _spreadsheet_id_cache, _cache_loaded
+    _spreadsheet_id_cache = spreadsheet_id
+    _cache_loaded = True
 
 # Google Sheets API scopes
 SCOPES = [
@@ -55,7 +94,7 @@ def _get_client() -> Optional[gspread.Client]:
 
 
 def _get_or_create_sheet(client: gspread.Client) -> Optional[gspread.Worksheet]:
-    spreadsheet_id = settings.GOOGLE_SHEETS_SPREADSHEET_ID
+    spreadsheet_id = _get_spreadsheet_id()
     if not spreadsheet_id:
         return None
     try:
@@ -172,19 +211,44 @@ CONTACT_HEADERS = [
 ]
 
 
+def list_worksheet_tabs(spreadsheet_id: str) -> List[Dict[str, Any]]:
+    """Lists every tab in an arbitrary (user-pasted) spreadsheet, for the lead-import picker."""
+    client = _get_client()
+    if not client:
+        raise RuntimeError("Google Sheets is not configured on the server (missing service account credentials).")
+    spreadsheet = client.open_by_key(spreadsheet_id)
+    return [
+        {"title": ws.title, "row_count": ws.row_count, "col_count": ws.col_count}
+        for ws in spreadsheet.worksheets()
+    ]
+
+
+def read_worksheet_rows(spreadsheet_id: str, sheet_name: str) -> Tuple[List[str], List[Dict[str, str]]]:
+    """Reads one tab of an arbitrary (user-pasted) spreadsheet as (headers, rows-as-dicts)."""
+    client = _get_client()
+    if not client:
+        raise RuntimeError("Google Sheets is not configured on the server (missing service account credentials).")
+    spreadsheet = client.open_by_key(spreadsheet_id)
+    worksheet = spreadsheet.worksheet(sheet_name)
+    headers = [h.strip() for h in worksheet.row_values(1) if h and h.strip()]
+    records = worksheet.get_all_records(default_blank="")
+    rows = [{k: ("" if v is None else str(v).strip()) for k, v in r.items() if k} for r in records]
+    return headers, rows
+
+
 def is_configured() -> bool:
-    return bool(settings.GOOGLE_SHEETS_CREDENTIALS_FILE and settings.GOOGLE_SHEETS_SPREADSHEET_ID)
+    return bool(settings.GOOGLE_SHEETS_CREDENTIALS_FILE and _get_spreadsheet_id())
 
 
 def get_spreadsheet_url() -> Optional[str]:
-    spreadsheet_id = settings.GOOGLE_SHEETS_SPREADSHEET_ID
+    spreadsheet_id = _get_spreadsheet_id()
     if not spreadsheet_id:
         return None
     return f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}/edit"
 
 
 def _get_or_create_named_sheet(client: gspread.Client, sheet_name: str, headers: List[str]) -> Optional[gspread.Worksheet]:
-    spreadsheet_id = settings.GOOGLE_SHEETS_SPREADSHEET_ID
+    spreadsheet_id = _get_spreadsheet_id()
     if not spreadsheet_id:
         return None
     try:

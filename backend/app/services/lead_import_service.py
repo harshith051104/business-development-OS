@@ -117,15 +117,24 @@ def suggest_mapping(headers: List[str]) -> Dict[str, Optional[str]]:
     return mapping
 
 
-def stage_upload(filename: str, file_bytes: bytes) -> str:
-    """Parses + persists an upload to disk so the confirm step doesn't need a re-upload. Returns upload_id."""
-    headers, rows = parse_upload(filename, file_bytes)
+def _stage(filename: str, headers: List[str], rows: List[Dict[str, str]]) -> str:
     _ensure_staging_dir()
     upload_id = uuid.uuid4().hex
     staged_path = os.path.join(STAGING_DIR, f"{upload_id}.json")
     with open(staged_path, "w", encoding="utf-8") as f:
         json.dump({"filename": filename, "headers": headers, "rows": rows}, f)
     return upload_id
+
+
+def stage_upload(filename: str, file_bytes: bytes) -> str:
+    """Parses + persists an upload to disk so the confirm step doesn't need a re-upload. Returns upload_id."""
+    headers, rows = parse_upload(filename, file_bytes)
+    return _stage(filename, headers, rows)
+
+
+def stage_rows(filename: str, headers: List[str], rows: List[Dict[str, str]]) -> str:
+    """Same staging as stage_upload, but for rows already parsed elsewhere (e.g. a Google Sheet)."""
+    return _stage(filename, headers, rows)
 
 
 def load_staged_upload(upload_id: str) -> Dict[str, Any]:

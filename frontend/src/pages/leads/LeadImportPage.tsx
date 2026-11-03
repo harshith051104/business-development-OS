@@ -6,10 +6,11 @@ import type {
   LeadImportResult,
   LeadImportBatchSummary,
   LeadImportBatchRecords,
+  GoogleSheetTab,
 } from '../../services/leadImport'
 import { campaignService } from '../../services/campaigns'
 import type { Campaign } from '../../types/campaign'
-import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History, X } from 'lucide-react'
+import { UploadCloud, Loader2, CheckCircle2, AlertCircle, ArrowRight, History, X, Sheet } from 'lucide-react'
 
 type Step = 'upload' | 'map' | 'result'
 
@@ -28,6 +29,11 @@ export const LeadImportPage: React.FC = () => {
   const [selectedBatchId, setSelectedBatchId] = useState<number | null>(null)
   const [batchRecords, setBatchRecords] = useState<LeadImportBatchRecords | null>(null)
   const [batchRecordsLoading, setBatchRecordsLoading] = useState(false)
+
+  const [sheetUrl, setSheetUrl] = useState('')
+  const [sheetTabs, setSheetTabs] = useState<GoogleSheetTab[] | null>(null)
+  const [selectedSheetTabs, setSelectedSheetTabs] = useState<string[]>([])
+  const [sheetLoading, setSheetLoading] = useState(false)
 
   useEffect(() => {
     leadImportService.listImports().then(setHistory).catch(() => {})
@@ -92,6 +98,48 @@ export const LeadImportPage: React.FC = () => {
     setResult(null)
     setError(null)
     setSelectedCampaignId(null)
+    setSheetUrl('')
+    setSheetTabs(null)
+    setSelectedSheetTabs([])
+  }
+
+  const handleListSheetTabs = async () => {
+    if (!sheetUrl.trim()) return
+    setSheetLoading(true)
+    setError(null)
+    setSheetTabs(null)
+    setSelectedSheetTabs([])
+    try {
+      const data = await leadImportService.listGoogleSheetTabs(sheetUrl.trim())
+      setSheetTabs(data.tabs)
+      if (data.tabs.length === 1) setSelectedSheetTabs([data.tabs[0].title])
+    } catch (err: any) {
+      setError(err?.message || 'Could not load tabs from that Google Sheet.')
+    } finally {
+      setSheetLoading(false)
+    }
+  }
+
+  const toggleSheetTab = (title: string) => {
+    setSelectedSheetTabs((prev) =>
+      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
+    )
+  }
+
+  const handleLoadSheetRows = async () => {
+    if (!sheetUrl.trim() || selectedSheetTabs.length === 0) return
+    setSheetLoading(true)
+    setError(null)
+    try {
+      const data = await leadImportService.loadGoogleSheetRows(sheetUrl.trim(), selectedSheetTabs)
+      setPreview(data)
+      setMapping(data.suggested_mapping)
+      setStep('map')
+    } catch (err: any) {
+      setError(err?.message || 'Could not load rows from the selected sheet(s).')
+    } finally {
+      setSheetLoading(false)
+    }
   }
 
   return (
@@ -117,26 +165,107 @@ export const LeadImportPage: React.FC = () => {
         )}
 
         {step === 'upload' && (
-          <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
-            {uploading ? (
-              <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
-            ) : (
-              <UploadCloud className="w-8 h-8 text-gray-500" />
-            )}
-            <span className="text-sm text-gray-400">
-              {uploading ? 'Parsing file…' : 'Click to choose a .csv or .xlsx lead list (max 10MB)'}
-            </span>
-            <input
-              type="file"
-              accept=".csv,.xlsx,.xlsm"
-              className="hidden"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleFile(file)
-              }}
-            />
-          </label>
+          <div className="space-y-5">
+            <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
+              {uploading ? (
+                <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
+              ) : (
+                <UploadCloud className="w-8 h-8 text-gray-500" />
+              )}
+              <span className="text-sm text-gray-400">
+                {uploading ? 'Parsing file…' : 'Click to choose a .csv or .xlsx lead list (max 10MB)'}
+              </span>
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xlsm"
+                className="hidden"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleFile(file)
+                }}
+              />
+            </label>
+
+            <div className="flex items-center gap-3 text-xs text-gray-500">
+              <div className="flex-1 border-t border-white/10" />
+              <span>OR</span>
+              <div className="flex-1 border-t border-white/10" />
+            </div>
+
+            <div className="p-5 rounded-2xl bg-[#131127]/60 border border-white/5 space-y-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                <Sheet className="w-4 h-4 text-emerald-400" />
+                Import from a Google Sheet
+              </div>
+              <p className="text-xs text-gray-500">
+                Paste the sheet's URL (it must be shared with the server's Google service account,
+                or set to "Anyone with the link can view"). You'll then pick which tab(s) to pull leads from.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={sheetUrl}
+                  onChange={(e) => {
+                    setSheetUrl(e.target.value)
+                    setSheetTabs(null)
+                    setSelectedSheetTabs([])
+                  }}
+                  placeholder="https://docs.google.com/spreadsheets/d/.../edit"
+                  className="flex-1 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
+                />
+                <button
+                  onClick={handleListSheetTabs}
+                  disabled={sheetLoading || !sheetUrl.trim()}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-all whitespace-nowrap"
+                >
+                  {sheetLoading && !sheetTabs ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Find Sheets
+                </button>
+              </div>
+
+              {sheetTabs && (
+                <div className="space-y-3 pt-2 border-t border-white/5">
+                  {sheetTabs.length === 0 ? (
+                    <p className="text-xs text-amber-400">No tabs found in that spreadsheet.</p>
+                  ) : (
+                    <>
+                      <p className="text-xs text-gray-400">
+                        Select which tab(s) to import leads from ({sheetTabs.length} found):
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {sheetTabs.map((tab) => (
+                          <label
+                            key={tab.title}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm cursor-pointer hover:border-emerald-500/40"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedSheetTabs.includes(tab.title)}
+                              onChange={() => toggleSheetTab(tab.title)}
+                              className="accent-emerald-500"
+                            />
+                            <span className="flex-1 truncate">{tab.title}</span>
+                            <span className="text-xs text-gray-500">{tab.row_count} rows</span>
+                          </label>
+                        ))}
+                      </div>
+                      <button
+                        onClick={handleLoadSheetRows}
+                        disabled={sheetLoading || selectedSheetTabs.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-all"
+                      >
+                        {sheetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                        {sheetLoading
+                          ? 'Loading rows…'
+                          : `Load ${selectedSheetTabs.length} selected tab(s)`}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {step === 'map' && preview && (
@@ -145,6 +274,13 @@ export const LeadImportPage: React.FC = () => {
               <span className="font-semibold text-white">{preview.filename}</span> — {preview.total_rows} row(s)
               detected. Map each CRM field to a column from your file, or leave it unmapped to skip it.
             </div>
+
+            {preview.warning && (
+              <div className="flex items-start gap-2 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-300">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{preview.warning}</span>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-[#131127]/60 border border-white/5">
               {preview.target_fields
