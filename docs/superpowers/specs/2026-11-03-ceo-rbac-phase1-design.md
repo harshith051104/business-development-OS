@@ -28,8 +28,13 @@ will get its own spec once Phase 1 ships and its authorization tests pass.
 
 ## 2. Access policy (confirmed)
 
-1. **CEO** — full organization-wide read access to every employee's records, plus
-   a private workspace for the CEO's own records.
+1. **CEO** — full organization-wide read access to every employee's records,
+   **including records that existed before the CEO role was introduced or
+   before a given user was promoted to CEO** (rule 1 in §4.2 is unconditional
+   and carries no "created after X" qualifier) — plus a private workspace for
+   the CEO's own records. The CEO-private-by-default behavior in §4.3 only
+   governs which of the *CEO's own* records start out private; it never
+   narrows what the CEO themself can see.
 2. **ADMIN** — manages users and system settings, and retains access to all
    non-private company records exactly as today, but can never automatically see
    a CEO-private record.
@@ -37,8 +42,11 @@ will get its own spec once Phase 1 ships and its authorization tests pass.
    them. (This is tightened from current behavior — see §4.2.)
 4. **Explicit sharing** — the CEO can share a specific private record with a named
    admin or employee. Revocation takes effect immediately.
-5. **Audit logging** — every share grant, share revocation, and privileged
-   (shared-record) access is recorded in the existing `AuditLog`.
+5. **Audit logging** — every share grant, share revocation, privileged
+   (shared-record) access, and **denied attempt to access a CEO-private
+   record** is recorded in the existing `AuditLog`. Log entries never contain
+   passwords, tokens, or the record's own field values — only actor, action,
+   resource identifiers, and timestamp/route metadata.
 
 Existing non-CEO data and existing ADMIN/employee behavior must not regress.
 
@@ -99,6 +107,15 @@ their historical records; only records created *after* the promotion, by that CE
 default to private. This is a deliberate non-goal, stated explicitly per the
 "protect existing data" safeguard.
 
+This non-retroactivity rule is about *privacy flags on the promoted user's own
+past records*, not about *what the CEO role can see*. The two are independent:
+a promoted CEO's old `BUSINESS_DEVELOPMENT`-era records stay `is_private=False`
+(so they look exactly as they did before promotion to everyone who could see
+them then) — but the CEO's organization-wide visibility (§4.2 rule 1) already
+covers every existing record in the system, historical or new, private or not,
+from day one of the role existing. Nothing about Phase 1 limits CEO visibility
+to records created after the role was introduced.
+
 ### 4.2 Visibility enforcement — one generic layer, applied everywhere
 
 A single module, `backend/app/core/visibility.py`, exposes:
@@ -127,7 +144,18 @@ Rule, evaluated in this order:
    (toggle between "mine" and "all" when both are already visible to them) and is
    ignored for employee roles — the backend no longer trusts a client-supplied
    scope value to decide visibility for anyone.
-6. Otherwise → not visible.
+6. Otherwise → not visible. If the reason is specifically that `record.is_private
+   is True` (i.e. the request was denied *because* it hit a CEO-private record,
+   not just ordinary non-ownership), `get_visible_or_404` additionally writes
+   `AuditLog(action="ceo_private_access_denied", actor_id, resource_type,
+   resource_id, route)` before raising 404 — a failed privileged-access attempt
+   is itself a signal worth recording. `apply_visibility_filter` does not emit
+   this per-row (it filters silently, as a list query touching N private rows
+   isn't N attack attempts), but logs one `ceo_private_access_denied_bulk` event
+   per request when it actually excluded at least one private row, with a count
+   and no row identifiers. As with every other audit entry in this spec: never
+   log request/response bodies, passwords, tokens, or other record field values
+   — only identifiers, actor, action, and route/timestamp metadata.
 
 This closes the `owner_scope=all` bug as the same change, not a separate patch:
 the new helper is the only code path allowed to decide visibility; the six
@@ -142,6 +170,33 @@ router file touching these 13 models (not just the 6 with `owner_scope` today) a
 a concrete checklist, since this is explicitly called out as a required safeguard,
 not an optional cleanup.
 
+Leakage is not only direct list/detail responses — a private record's existence
+or data can leak through narrower, easy-to-miss surfaces that read the same
+tables but don't look like a "list endpoint." The implementation plan's router
+audit explicitly includes:
+
+- **Dashboard counts/widgets** — any aggregate number (e.g. "12 open
+  opportunities") must be computed from an already-filtered query, not a raw
+  `COUNT(*)`, or a non-CEO's dashboard will indirectly reveal how many private
+  records exist.
+- **Dropdowns / autocomplete / typeahead** — org, contact, and campaign pickers
+  used when creating other records (e.g. "link this task to an organization")
+  must not list CEO-private organizations/contacts to non-CEO users.
+- **Notifications** — any notification payload referencing a record (follow-up
+  due, task assigned) must check visibility before being generated for a
+  non-owning user; a notification is itself a leak if it names a private record.
+- **Nested/embedded responses** — e.g. a `Contact` detail response that embeds
+  its parent `Organization` summary, or a `Meeting` response embedding attendee
+  `Contact` records, must apply the same visibility check to the embedded
+  object, not just the top-level one.
+- **Search suggestions** — "did you mean" / fuzzy-match suggestions must come
+  from the visibility-filtered set, not the full table.
+- **Exports** (already listed above) and **relationship/analytics queries**
+  (already listed above) are repeated here because they're the two surfaces
+  most likely to join across tables and reintroduce an unfiltered subquery.
+
+The expanded testing matrix in §6 adds a row for this category.
+
 ### 4.3 CEO-owned records default private
 
 One helper, `set_ownership_defaults(record, current_user)`, called at every
@@ -154,17 +209,45 @@ change for existing ADMIN/employee creation flows.
 `backend/app/routers/ceo.py` adds:
 
 - `POST /api/ceo/shares` — body `{resource_type, resource_id, shared_with_user_id}`.
-  Server validates: (a) resource exists, (b) `current_user.id == resource.owner_id`
-  (only the owner can share their own record — the CEO, for Phase 1, since CEO is
-  the only role whose records route through this flow in practice; the check is by
-  ownership, not by hardcoding "CEO", so it stays correct if sharing is ever opened
-  to other owners later), (c) no existing *active* share for the same triple (409 if
-  so). Writes `AuditLog(action="share_granted", ...)`.
+  Server validates, in order, rejecting on the first failure:
+  1. `resource_type` is one of the 13 known models (reject unknown types —
+     prevents probing for tables outside this feature's scope).
+  2. The resource exists (404 if not — same "don't confirm existence" posture
+     as `get_visible_or_404`).
+  3. `current_user.id == resource.owner_id` (only the owner can share their own
+     record — the CEO, for Phase 1, since CEO is the only role whose records
+     route through this flow in practice; the check is by ownership, not by
+     hardcoding "CEO", so it stays correct if sharing is ever opened to other
+     owners later). 403 otherwise.
+  4. `shared_with_user_id` refers to a **real, currently active** user account
+     (exists, not soft-deleted/disabled if the codebase has such a flag). 404/
+     422 if not — sharing to a nonexistent or deactivated account is rejected,
+     not silently accepted as a no-op row.
+  5. `shared_with_user_id` holds a role Phase 1 actually supports sharing *to*
+     — i.e. not another `CEO` (a second CEO already has unconditional
+     visibility via rule 1 in §4.2, so a share row would be meaningless and is
+     rejected as 422 rather than silently accepted as dead data).
+  6. `shared_with_user_id != current_user.id` — **self-sharing is rejected**
+     (422): the owner already has unconditional access via rule 2 in §4.2, so
+     a self-share is either a no-op or a client bug, and allowing it would
+     create a confusing, meaningless audit trail entry.
+  7. No existing *active* share for the same `(resource_type, resource_id,
+     shared_with_user_id)` triple (409 if so — prevents duplicate active
+     shares).
+  On success, writes `AuditLog(action="share_granted", actor_id, resource_type,
+  resource_id, shared_with_user_id)`.
 - `DELETE /api/ceo/shares/{share_id}` — only `granted_by_user_id == current_user.id`
-  may revoke. Sets `revoked_at = now()`. Writes `AuditLog(action="share_revoked",
+  may revoke (owner-only, same as granting — 403 otherwise, 404 if the share
+  doesn't exist). Sets `revoked_at = now()`. Writes `AuditLog(action="share_revoked",
   ...)`. Because `apply_visibility_filter`/`get_visible_or_404` check
   `revoked_at IS NULL` live on every request (no caching), revocation is effective
-  immediately on the next request — no separate invalidation step needed.
+  immediately on the next request — no separate invalidation step needed. There
+  is no code path that reads a share row without also checking `revoked_at`, so
+  a revoked share granting access would only be possible through a bug in that
+  check, not a missing invalidation step — this is exactly why the testing plan
+  (§6) requires a dedicated test calling the *same* visibility check twice,
+  before and after revocation, in the same test run, rather than trusting that
+  "revocation exists" implies "revocation works."
 - `GET /api/ceo/shares` — list shares the CEO has granted (and their status).
 
 ### 4.5 CEO role wiring
@@ -221,6 +304,42 @@ has no server-side session store to revoke against today).
 - Login response includes `must_change_password` so the frontend can route
   straight to the change-password screen without an extra round trip.
 
+**Clock precision and timezone handling (must be exact, not "close enough"):**
+
+- `iat` is a standard JWT numeric claim: integer seconds since the Unix epoch,
+  UTC, no timezone component — set as `int(datetime.now(timezone.utc).timestamp())`
+  at token issuance. This matches the JWT spec (RFC 7519 §4.1.6) and avoids any
+  ambiguity about which timezone an `iat` value is "in."
+- `password_changed_at` is stored as a UTC-aware `DateTime` column (the codebase
+  must be checked for whether existing datetime columns are naive-UTC or
+  timezone-aware, and the comparison written to match that convention exactly —
+  mixing naive and aware datetimes is the most common way this kind of check
+  silently always-passes or always-fails). The comparison in `get_current_user`
+  converts both sides to integer UTC epoch seconds before comparing, so the
+  seconds-vs-microseconds precision mismatch between a JWT's integer `iat` and a
+  database timestamp's sub-second precision never causes a false result.
+- **Boundary rule:** reject the token if `token_iat < floor(password_changed_at)`.
+  Use strict `<`, not `<=` — a token issued in the *same* second as the password
+  change is treated as issued-before (rejected), since `change-password` sets
+  `password_changed_at` *after* reading the request, so any token whose `iat`
+  could equal that second was necessarily issued before the change completed.
+  This is the one deliberately conservative edge case in the design: it can very
+  rarely reject a token that was technically issued after the change within the
+  same wall-clock second, which just forces an extra re-login — acceptable,
+  since the alternative (a stale token surviving a password change) is the
+  actual security property being enforced here.
+- A new `User.must_change_password = False`/no password change yet means
+  `password_changed_at IS NULL`; in that case the `iat` check is skipped
+  entirely (nothing to invalidate against) and only the `must_change_password`
+  check applies.
+- This logic lives in one place (`backend/app/core/security.py` or
+  `backend/app/auth/deps.py`, wherever `get_current_user` already lives) and is
+  unit-tested directly — not only through integration tests — with explicit
+  cases: token issued 1 second before change (rejected), token issued in the
+  same second as change (rejected, per the boundary rule above), token issued 1
+  second after change (accepted), and `password_changed_at IS NULL` (iat check
+  skipped, only `must_change_password` gates).
+
 ### 4.8 CEO executive dashboard shell
 
 - `GET /api/ceo/overview` (CEO-only): org-wide counts only — total employees, total
@@ -258,14 +377,20 @@ Organizations/Contacts):
 | Search | Search results respect the same visibility rule, no leakage via query params |
 | Export (CSV/etc.) | Exported rows respect visibility — no private-record leakage through a bulk path |
 | Shared record | Named admin/employee gains access after grant |
-| Revoked share | Access removed immediately after revoke, same session, no caching |
+| Revoked share | Access removed immediately after revoke, same session, no caching — checked via one test that calls the visibility helper before and after revocation |
 | CEO-private record | Owner (CEO) always sees it; ADMIN and employees never see it unless shared |
+| CEO visibility of historical records | A CEO sees records created before the CEO role/account existed, including other users' pre-existing private-irrelevant data, without any "created after" cutoff |
 | Relationship/analytics leakage | Aggregation/insights endpoints that join these 13 tables don't surface private records' data (e.g. counts, names) to someone who shouldn't see the underlying record |
+| Indirect leakage surfaces | Dashboard counts, dropdown/autocomplete pickers, notifications, nested/embedded responses, and search suggestions each respect visibility — a non-CEO's org picker never lists a CEO-private organization, a dashboard count never includes private rows, etc. |
 | `owner_scope=all` regression | Employee sending this param no longer sees other employees' records (confirms the bug is closed) |
 | Existing ADMIN/employee behavior | No regression on pre-existing non-private data for either role |
+| Sharing validation | Reject: unknown `resource_type`, nonexistent/deactivated recipient, recipient role `CEO`, self-share, non-owner caller granting or revoking, duplicate active share |
 | Forced password change | Protected routes return 403 until changed; `/change-password`, `/logout`, `/me` remain reachable; old token rejected (401) immediately after a successful change |
+| JWT `iat` boundary cases | Token issued 1s before password change (rejected), same second (rejected per the conservative boundary rule in §4.7), 1s after (accepted), `password_changed_at IS NULL` (iat check skipped) |
+| Privileged-access audit | `ceo_private_access_denied` / `_bulk` entries are written on denied access to a private record, with no field values in the log payload |
 | Provisioning script | Idempotent on second run without `--rotate`; `--rotate` resets password and `must_change_password` |
 | Migration | Existing rows' `is_private` stay `False` after running the migration script; no existing row changes ownership/visibility |
+| Full regression suite | The existing backend test suite (all pre-Phase-1 tests, not just the new authorization tests above) passes unchanged, confirming no existing ELLY functionality regressed |
 
 ## 7. Non-goals / explicit "do not" constraints carried from the brief
 
@@ -282,3 +407,10 @@ Organizations/Contacts):
   visibility layer, not per-router judgment calls.
 - Do not claim successful external actions without verification — not yet
   applicable in Phase 1 (no external actions here); binding for later phases.
+
+Phase 1 is not "done" on new-test-green alone: the full pre-existing backend
+test suite must also be run and pass before Phase 1 is reported complete (last
+row of §6), since the safeguards above (deleting the six `owner_scope` blocks,
+changing what every role-gated dependency depends on) touch shared code paths
+widely enough that a passing new-test suite alone would not catch an
+unintended behavior change in an unrelated existing test.
