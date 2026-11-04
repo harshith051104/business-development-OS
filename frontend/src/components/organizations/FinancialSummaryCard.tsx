@@ -4,7 +4,7 @@ import { ExternalLink, Landmark, RotateCw, AlertCircle, Unlink } from 'lucide-re
 import { organizationsService } from '../../services/organizations'
 import type { FinancialHealthLabel, FinancialPoint, OrganizationFinancials } from '../../types/financials'
 
-const GAIN = '#8B5CF6'
+const GAIN = '#8B7CC7'
 const LOSS = '#F43F5E'
 
 const HEALTH_TEXT: Record<FinancialHealthLabel, { label: string; className: string }> = {
@@ -36,7 +36,7 @@ function yearLabel(p: FinancialPoint): string {
 function MiniBarChart({ title, points }: { title: string; points: FinancialPoint[] }) {
   if (points.length < 2) {
     return (
-      <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800">
+      <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800">
         <span className="text-[11px] text-slate-400 block font-medium mb-1">{title}</span>
         <p className="text-xs text-slate-500">Fewer than two annual figures reported; no trend to chart.</p>
       </div>
@@ -44,12 +44,12 @@ function MiniBarChart({ title, points }: { title: string; points: FinancialPoint
   }
   const data = points.map((p) => ({ year: yearLabel(p), value: p.value, filed: p.filed, form: p.form }))
   return (
-    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800">
+    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800">
       <span className="text-[11px] text-slate-400 block font-medium mb-2">{title} by fiscal year (USD)</span>
       <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-            <CartesianGrid vertical={false} stroke="#2A2150" />
+            <CartesianGrid vertical={false} stroke="#2A1E4D" />
             <XAxis dataKey="year" tick={{ fill: '#94A3B8', fontSize: 10 }} axisLine={false} tickLine={false} />
             <YAxis
               tickFormatter={money}
@@ -58,10 +58,10 @@ function MiniBarChart({ title, points }: { title: string; points: FinancialPoint
               axisLine={false}
               tickLine={false}
             />
-            <ReferenceLine y={0} stroke="#475569" />
+            <ReferenceLine y={0} stroke="#3a3a52" />
             <Tooltip
               cursor={{ fill: 'rgba(148,163,184,0.08)' }}
-              contentStyle={{ background: '#0B0720', border: '1px solid #334155', borderRadius: 8, fontSize: 12 }}
+              contentStyle={{ background: '#0E0B1D', border: '1px solid #3a3a52', borderRadius: 8, fontSize: 12 }}
               labelStyle={{ color: '#E2E8F0' }}
               itemStyle={{ color: '#CBD5E1' }}
               formatter={(value, _name, item) => [
@@ -123,7 +123,7 @@ export default function FinancialSummaryCard({ organizationId }: { organizationI
   const health = fin?.health && HEALTH_TEXT[fin.health.label]
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-bold text-white uppercase tracking-wider text-violet-400 flex items-center gap-2">
           <Landmark className="w-4 h-4" />
@@ -176,7 +176,7 @@ export default function FinancialSummaryCard({ organizationId }: { organizationI
               value={cik}
               onChange={(e) => setCik(e.target.value)}
               placeholder="SEC CIK, e.g. 320193"
-              className="flex-1 bg-[#1A1040] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500"
+              className="flex-1 bg-[#2A1E4D] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500"
             />
             <button
               type="submit"
@@ -215,7 +215,7 @@ export default function FinancialSummaryCard({ organizationId }: { organizationI
           </div>
 
           {health && (
-            <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1.5">
+            <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1.5">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] text-slate-400 font-medium">Financial health signal</span>
                 <span className={`text-[11px] px-2 py-0.5 rounded-full border ${health.className}`}>{health.label}</span>
@@ -239,7 +239,7 @@ export default function FinancialSummaryCard({ organizationId }: { organizationI
               // Companies sometimes stop tagging a line item; don't let an old figure pass as current.
               const outdated = latest && newestEnd && Date.parse(newestEnd) - Date.parse(latest.period_end) > 400 * 86400000
               return (
-                <div key={key} className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                <div key={key} className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                   <span className="text-[11px] text-slate-400 block font-medium">{label}</span>
                   {latest ? (
                     <>

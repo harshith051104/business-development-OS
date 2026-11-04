@@ -38,7 +38,7 @@ export const RecentCommunicationsSection: React.FC<RecentCommunicationsSectionPr
         <Link
           key={comm.id}
           to={`/business-development/communications/${comm.id}`}
-          className="p-3 rounded-xl bg-[#1A1040]/90 border border-slate-800/80 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 group"
+          className="p-3 rounded-xl bg-[#2A1E4D]/90 border border-slate-800/80 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 group"
         >
           <div className="space-y-1 min-w-0">
             <div className="flex flex-wrap items-center gap-1.5">
@@ -83,7 +83,7 @@ export const RecentCommunicationsSection: React.FC<RecentCommunicationsSectionPr
   }
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -109,7 +109,7 @@ export const RecentCommunicationsSection: React.FC<RecentCommunicationsSectionPr
           </Link>
           <Link
             to="/business-development/communications"
-            className="inline-flex items-center space-x-1 py-1.5 px-3 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition border border-slate-800"
+            className="inline-flex items-center space-x-1 py-1.5 px-3 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition border border-slate-800"
           >
             <span>View All</span>
             <ArrowRight className="w-3.5 h-3.5" />

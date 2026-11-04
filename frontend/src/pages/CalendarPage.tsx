@@ -52,11 +52,11 @@ const writeJson = (key: string, value: unknown) => {
 type Notice = { kind: 'success' | 'error'; text: string } | null
 
 const Section: React.FC<{ title: string; open: boolean; onToggle: () => void; children: React.ReactNode; right?: React.ReactNode }> = ({ title, open, onToggle, children, right }) => (
-  <section className="bg-[#1D1927] rounded-3xl p-4">
+  <section className="bg-[#0E0B1D] rounded-3xl p-4">
     <div className="flex items-center justify-between">
-      <button onClick={onToggle} aria-expanded={open} className="flex-1 flex items-center justify-between text-[15px] font-semibold text-[#EAE7EF] text-left">
+      <button onClick={onToggle} aria-expanded={open} className="flex-1 flex items-center justify-between text-[15px] font-semibold text-[#C9C2E3] text-left">
         {title}
-        {open ? <ChevronUp className="w-4 h-4 text-[#ABA3B7]" /> : <ChevronDown className="w-4 h-4 text-[#ABA3B7]" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#8B7CC7]" /> : <ChevronDown className="w-4 h-4 text-[#8B7CC7]" />}
       </button>
       {right}
     </div>
@@ -65,8 +65,8 @@ const Section: React.FC<{ title: string; open: boolean; onToggle: () => void; ch
 )
 
 const Check: React.FC<{ checked: boolean; onChange: () => void; label: string; dot?: string }> = ({ checked, onChange, label, dot }) => (
-  <label className="flex items-center gap-2.5 text-[13px] text-[#ABA3B7] cursor-pointer py-0.5">
-    <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 accent-[#8B6BB1]" />
+  <label className="flex items-center gap-2.5 text-[13px] text-[#8B7CC7] cursor-pointer py-0.5">
+    <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 accent-[#8B7CC7]" />
     {dot && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: dot }} />}
     {label}
   </label>
@@ -270,20 +270,20 @@ export default function CalendarPage() {
   const railMembers = [...favMembers, ...members.filter((m) => !favorites.includes(m.id))]
 
   const bubble = (m: Member, size = 'w-11 h-11 text-sm') => (
-    <span className={`${size} rounded-full flex items-center justify-center font-semibold text-[#0E0D12] shrink-0`} style={{ backgroundColor: avatarColor(m.id) }} aria-hidden>
+    <span className={`${size} rounded-full flex items-center justify-center font-semibold text-[#0E0B1D] shrink-0`} style={{ backgroundColor: avatarColor(m.id) }} aria-hidden>
       {initials(m.name)}
     </span>
   )
 
   return (
-    <div className="h-screen bg-[#0E0D12] text-[#F0ECFF] md:pl-64 flex flex-col">
+    <div className="h-screen bg-[#0E0B1D] text-[#C9C2E3] md:pl-64 flex flex-col">
       <Navbar />
       <div className="flex-1 min-h-0 flex gap-3 p-3">
         {/* Team rail */}
-        <aside aria-label="Team" className="w-[72px] shrink-0 bg-[#15131C] border border-[#302938] rounded-3xl flex flex-col items-center gap-3 py-3 overflow-y-auto">
+        <aside aria-label="Team" className="w-[72px] shrink-0 bg-[#0E0B1D] border border-[#2a1e4d] rounded-3xl flex flex-col items-center gap-3 py-3 overflow-y-auto">
           <button
             onClick={() => openCreate(view === 'month' ? anchor : new Date(), view === 'month' ? null : 9 * 60, null)}
-            className="w-12 h-12 rounded-2xl bg-[#7A5C9E] text-white flex items-center justify-center hover:brightness-105"
+            className="w-12 h-12 rounded-2xl bg-[#5A3B8C] text-white flex items-center justify-center hover:brightness-105"
             aria-label="Add a task or meeting"
             title="Add a task or meeting"
           >
@@ -291,18 +291,18 @@ export default function CalendarPage() {
           </button>
           <button
             onClick={() => setPanelOpen((v) => !v)}
-            className="w-12 h-12 rounded-2xl bg-[#1D1927] text-white flex items-center justify-center hover:bg-[#262033]"
+            className="w-12 h-12 rounded-2xl bg-[#0E0B1D] text-white flex items-center justify-center hover:bg-[#2a1e4d]"
             aria-label={panelOpen ? 'Hide side panel' : 'Show side panel'}
             aria-expanded={panelOpen}
           >
             {panelOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
           </button>
-          <div className="w-8 border-t border-[#302938] my-1" />
+          <div className="w-8 border-t border-[#2a1e4d] my-1" />
           <button
             onClick={() => setMember(null)}
             aria-pressed={member === null}
             title="Everyone I can see"
-            className={`w-11 h-11 rounded-full text-[11px] font-semibold ${member === null ? 'bg-[#443253] text-[#EAE7EF] ring-1 ring-[#8B6BB1]' : 'bg-[#1D1927] text-[#ABA3B7] hover:bg-[#262033]'}`}
+            className={`w-11 h-11 rounded-full text-[11px] font-semibold ${member === null ? 'bg-[#3a3a52] text-[#C9C2E3] ring-1 ring-[#8B7CC7]' : 'bg-[#0E0B1D] text-[#8B7CC7] hover:bg-[#2a1e4d]'}`}
           >
             All
           </button>
@@ -313,10 +313,10 @@ export default function CalendarPage() {
               aria-pressed={member === m.id}
               aria-label={`Show items assigned to ${m.name}`}
               title={`${m.name}${m.id === user?.id ? ' (you)' : ''}`}
-              className={`relative rounded-full p-0.5 ${member === m.id ? 'ring-2 ring-[#8B6BB1]' : ''}`}
+              className={`relative rounded-full p-0.5 ${member === m.id ? 'ring-2 ring-[#8B7CC7]' : ''}`}
             >
               {bubble(m)}
-              {favorites.includes(m.id) && <Star className="absolute -right-0.5 -top-0.5 w-3.5 h-3.5 text-[#8B6BB1] fill-[#8B6BB1]" />}
+              {favorites.includes(m.id) && <Star className="absolute -right-0.5 -top-0.5 w-3.5 h-3.5 text-[#8B7CC7] fill-[#8B7CC7]" />}
             </button>
           ))}
         </aside>
@@ -324,7 +324,7 @@ export default function CalendarPage() {
         {/* Secondary panel */}
         {panelOpen && (
           <aside aria-label="Calendar options" className="w-[264px] shrink-0 space-y-3 overflow-y-auto pr-1">
-            <section className="bg-[#1D1927] rounded-3xl p-4">
+            <section className="bg-[#0E0B1D] rounded-3xl p-4">
               <MiniMonth
                 selected={anchor}
                 marked={marked}
@@ -340,12 +340,12 @@ export default function CalendarPage() {
               <Check checked={showTasks} onChange={() => setShowTasks((v) => !v)} label="Tasks (due dates)" />
               <Check checked={showCompleted} onChange={() => setShowCompleted((v) => !v)} label="Completed & cancelled tasks" />
               <Check checked={showCancelled} onChange={() => setShowCancelled((v) => !v)} label="Cancelled meetings" />
-              <label className="block text-[11px] text-[#8F879C] mt-2">
+              <label className="block text-[11px] text-[#8B7CC7] mt-2">
                 Meetings shown
                 <select
                   value={meetingScope}
                   onChange={(e) => setMeetingScope(e.target.value as 'mine' | 'all')}
-                  className="mt-1 w-full bg-[#262033] border border-[#302938] rounded-lg px-2 py-1 text-xs text-[#EAE7EF]"
+                  className="mt-1 w-full bg-[#2a1e4d] border border-[#2a1e4d] rounded-lg px-2 py-1 text-xs text-[#C9C2E3]"
                 >
                   <option value="mine">My meetings</option>
                   <option value="all">All meetings I can access</option>
@@ -358,12 +358,12 @@ export default function CalendarPage() {
               open={sections.favorites}
               onToggle={() => setSections((s) => ({ ...s, favorites: !s.favorites }))}
             >
-              <p className="text-[11px] text-[#8F879C] mb-2">Starred teammates appear first in the rail. Saved in this browser only.</p>
+              <p className="text-[11px] text-[#8B7CC7] mb-2">Starred teammates appear first in the rail. Saved in this browser only.</p>
               <ul className="space-y-1">
                 {members.map((m) => (
-                  <li key={m.id} className="flex items-center gap-2 text-[13px] text-[#ABA3B7]">
+                  <li key={m.id} className="flex items-center gap-2 text-[13px] text-[#8B7CC7]">
                     {bubble(m, 'w-6 h-6 text-[10px]')}
-                    <button onClick={() => setMember(member === m.id ? null : m.id)} className="flex-1 text-left truncate hover:text-[#EAE7EF]">
+                    <button onClick={() => setMember(member === m.id ? null : m.id)} className="flex-1 text-left truncate hover:text-[#C9C2E3]">
                       {m.name}
                       {m.id === user?.id ? ' (you)' : ''}
                     </button>
@@ -373,7 +373,7 @@ export default function CalendarPage() {
                       aria-label={favorites.includes(m.id) ? `Unstar ${m.name}` : `Star ${m.name}`}
                       className="p-1"
                     >
-                      <Star className={`w-3.5 h-3.5 ${favorites.includes(m.id) ? 'text-[#8B6BB1] fill-[#8B6BB1]' : 'text-[#8F879C]'}`} />
+                      <Star className={`w-3.5 h-3.5 ${favorites.includes(m.id) ? 'text-[#8B7CC7] fill-[#8B7CC7]' : 'text-[#8B7CC7]'}`} />
                     </button>
                   </li>
                 ))}
@@ -381,11 +381,11 @@ export default function CalendarPage() {
             </Section>
 
             <Section title="Categories" open={sections.categories} onToggle={() => setSections((s) => ({ ...s, categories: !s.categories }))}>
-              <div className="text-[11px] text-[#8F879C] mb-1">Meeting type</div>
+              <div className="text-[11px] text-[#8B7CC7] mb-1">Meeting type</div>
               {meetingTypes.map((type) => (
                 <Check key={type} checked={!hiddenTypes.has(type)} onChange={() => toggleSet(hiddenTypes, type, setHiddenTypes)} label={type} dot={MEETING_TYPE_COLORS[type].dot} />
               ))}
-              <div className="text-[11px] text-[#8F879C] mt-2 mb-1">Task priority</div>
+              <div className="text-[11px] text-[#8B7CC7] mt-2 mb-1">Task priority</div>
               {Object.entries(TASK_PRIORITY_COLORS).map(([p, c]) => (
                 <Check key={p} checked={!hiddenPriorities.has(p)} onChange={() => toggleSet(hiddenPriorities, p, setHiddenPriorities)} label={p} dot={c.dot} />
               ))}
@@ -397,10 +397,10 @@ export default function CalendarPage() {
               onToggle={() => setSections((s) => ({ ...s, unscheduled: !s.unscheduled }))}
             >
               {unscheduled.length === 0 ? (
-                <p className="text-[12px] text-[#8F879C]">Every task has a due date.</p>
+                <p className="text-[12px] text-[#8B7CC7]">Every task has a due date.</p>
               ) : (
                 <>
-                  <p className="text-[11px] text-[#8F879C] mb-2">Drag one onto a day, or open it to set a date.</p>
+                  <p className="text-[11px] text-[#8B7CC7] mb-2">Drag one onto a day, or open it to set a date.</p>
                   <ul className="space-y-1">
                     {unscheduled.map((t) => (
                       <li key={t.id}>
@@ -408,11 +408,11 @@ export default function CalendarPage() {
                           draggable
                           onDragStart={(e) => e.dataTransfer.setData('text/elly-task', String(t.id))}
                           onClick={(e) => setEditor({ target: { mode: 'task', task: t }, anchor: (e.currentTarget as HTMLElement).getBoundingClientRect() })}
-                          className="w-full text-left text-[12px] px-2 py-1.5 rounded-lg bg-[#262033] text-[#EAE7EF] hover:bg-[#302938] truncate"
+                          className="w-full text-left text-[12px] px-2 py-1.5 rounded-lg bg-[#2a1e4d] text-[#C9C2E3] hover:bg-[#2a1e4d] truncate"
                         >
-                          <span className="text-[10px] text-[#8F879C] mr-1">Task</span>
+                          <span className="text-[10px] text-[#8B7CC7] mr-1">Task</span>
                           {t.title}
-                          {t.owner_name && <span className="block text-[10px] text-[#8F879C]">{t.owner_name}</span>}
+                          {t.owner_name && <span className="block text-[10px] text-[#8B7CC7]">{t.owner_name}</span>}
                         </button>
                       </li>
                     ))}
@@ -426,32 +426,32 @@ export default function CalendarPage() {
         {/* Calendar surface */}
         <main
           className="flex-1 min-w-0 rounded-3xl flex flex-col overflow-hidden relative"
-          style={{ background: '#15131C' }}
+          style={{ background: '#0E0B1D' }}
         >
           <div className="flex flex-wrap items-center gap-3 px-5 pt-4 pb-3">
-            <h1 className="text-2xl font-bold text-[#EAE7EF] mr-1">{rangeLabel(view, anchor)}</h1>
-            <button onClick={() => setAnchor(startOfDay(new Date()))} className="px-3.5 py-1 rounded-full bg-[#7A5C9E] hover:bg-[#6B4F8C] text-white text-xs font-semibold">
+            <h1 className="text-2xl font-bold text-[#C9C2E3] mr-1">{rangeLabel(view, anchor)}</h1>
+            <button onClick={() => setAnchor(startOfDay(new Date()))} className="px-3.5 py-1 rounded-full bg-[#5A3B8C] hover:bg-[#5A3B8C] text-white text-xs font-semibold">
               Today
             </button>
-            <button onClick={() => setAnchor(shift(view, anchor, -1))} aria-label={`Previous ${view}`} className="p-1.5 rounded-full text-[#ABA3B7] hover:bg-white/10">
+            <button onClick={() => setAnchor(shift(view, anchor, -1))} aria-label={`Previous ${view}`} className="p-1.5 rounded-full text-[#8B7CC7] hover:bg-white/10">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button onClick={() => setAnchor(shift(view, anchor, 1))} aria-label={`Next ${view}`} className="p-1.5 rounded-full text-[#ABA3B7] hover:bg-white/10">
+            <button onClick={() => setAnchor(shift(view, anchor, 1))} aria-label={`Next ${view}`} className="p-1.5 rounded-full text-[#8B7CC7] hover:bg-white/10">
               <ChevronRight className="w-5 h-5" />
             </button>
-            {loading && <Loader2 className="w-4 h-4 animate-spin text-[#ABA3B7]" aria-label="Loading" />}
-            <span className="text-[11px] text-[#ABA3B7]" title="All times are shown in this browser’s time zone">
+            {loading && <Loader2 className="w-4 h-4 animate-spin text-[#8B7CC7]" aria-label="Loading" />}
+            <span className="text-[11px] text-[#8B7CC7]" title="All times are shown in this browser’s time zone">
               {tz.long} ({tz.short})
             </span>
             <div className="ml-auto flex items-center gap-2">
-              <div role="tablist" aria-label="Calendar view" className="flex bg-[#0E0D12] rounded-full p-1">
+              <div role="tablist" aria-label="Calendar view" className="flex bg-[#0E0B1D] rounded-full p-1">
                 {(['month', 'week', 'day'] as const).map((v) => (
                   <button
                     key={v}
                     role="tab"
                     aria-selected={view === v}
                     onClick={() => setView(v)}
-                    className={`px-4 py-1 rounded-full text-sm ${view === v ? 'bg-[#443253] text-[#EAE7EF] font-semibold' : 'text-[#ABA3B7] hover:text-[#EAE7EF]'}`}
+                    className={`px-4 py-1 rounded-full text-sm ${view === v ? 'bg-[#3a3a52] text-[#C9C2E3] font-semibold' : 'text-[#8B7CC7] hover:text-[#C9C2E3]'}`}
                   >
                     {v[0].toUpperCase() + v.slice(1)}
                   </button>
@@ -459,7 +459,7 @@ export default function CalendarPage() {
               </div>
               <button
                 onClick={() => openCreate(view === 'month' ? anchor : anchor, view === 'month' ? null : 9 * 60, null)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#7A5C9E] hover:bg-[#6B4F8C] text-white text-sm font-semibold"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#5A3B8C] hover:bg-[#5A3B8C] text-white text-sm font-semibold"
               >
                 <Plus className="w-4 h-4" /> Add
               </button>
@@ -469,7 +469,7 @@ export default function CalendarPage() {
           {(member !== null || loadError || tasksTruncated) && (
             <div className="mx-5 mb-2 flex flex-wrap items-center gap-2 text-[12px]">
               {member !== null && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#262033] text-[#EAE7EF]">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2a1e4d] text-[#C9C2E3]">
                   Assigned to {memberName(member)}
                   <button onClick={() => setMember(null)} aria-label="Clear team member filter">
                     <X className="w-3 h-3" />
@@ -477,7 +477,7 @@ export default function CalendarPage() {
                 </span>
               )}
               {memberMeetingsUnknown && showMeetings && (
-                <span className="text-[#ABA3B7]">Meetings are hidden: the meetings API doesn’t say who organises each meeting.</span>
+                <span className="text-[#8B7CC7]">Meetings are hidden: the meetings API doesn’t say who organises each meeting.</span>
               )}
               {tasksTruncated && <span className="text-amber-300">Showing the 100 most recent tasks (the tasks API limit).</span>}
               {loadError && (
@@ -526,7 +526,7 @@ export default function CalendarPage() {
           {notice && (
             <div
               role={notice.kind === 'success' ? 'status' : 'alert'}
-              className={`absolute left-1/2 -translate-x-1/2 bottom-5 z-30 px-4 py-2 rounded-full text-sm shadow-lg ${notice.kind === 'success' ? 'bg-[#1D1927] text-[#EAE7EF] border border-[#302938]' : 'bg-rose-600 text-white'}`}
+              className={`absolute left-1/2 -translate-x-1/2 bottom-5 z-30 px-4 py-2 rounded-full text-sm shadow-lg ${notice.kind === 'success' ? 'bg-[#0E0B1D] text-[#C9C2E3] border border-[#2a1e4d]' : 'bg-rose-600 text-white'}`}
             >
               {notice.text}
             </div>

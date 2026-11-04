@@ -100,7 +100,7 @@ export const DailyPrioritiesWidget: React.FC<DailyPrioritiesWidgetProps> = ({
           {data.all_priority_items.map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#1A1040]/90 hover:bg-[#1A1040] border border-slate-800/80 hover:border-slate-700 rounded-xl p-3 transition duration-200 flex flex-col justify-between group"
+              className="bg-[#2A1E4D]/90 hover:bg-[#2A1E4D] border border-slate-800/80 hover:border-slate-700 rounded-xl p-3 transition duration-200 flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-center justify-between mb-1.5">

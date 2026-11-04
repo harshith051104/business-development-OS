@@ -125,23 +125,23 @@ export function timezoneLabel(): { short: string; long: string } {
 
 /** Card colours by meeting type: muted, dark-tinted fills with soft-white text; the dot is the type's accent (also used as the card's left edge). */
 export const MEETING_TYPE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  Introduction: { bg: '#2f2b42', text: '#EAE7EF', dot: '#9b8fc4' },
-  'Project Showcase': { bg: '#3a2d46', text: '#EAE7EF', dot: '#b08ccc' },
-  'Business Discussion': { bg: '#2c2f45', text: '#EAE7EF', dot: '#8f98c9' },
-  'Partnership Discussion': { bg: '#3b2c3a', text: '#EAE7EF', dot: '#c493b4' },
-  'Technical Discussion': { bg: '#28323e', text: '#EAE7EF', dot: '#86a3bf' },
-  'Follow-up': { bg: '#3a332f', text: '#EAE7EF', dot: '#c4a585' },
-  Other: { bg: '#2b2931', text: '#EAE7EF', dot: '#9a95a3' },
+  Introduction: { bg: '#2a1e4d', text: '#C9C2E3', dot: '#8b7cc7' },
+  'Project Showcase': { bg: '#3a3a52', text: '#C9C2E3', dot: '#8b7cc7' },
+  'Business Discussion': { bg: '#2a1e4d', text: '#C9C2E3', dot: '#8b7cc7' },
+  'Partnership Discussion': { bg: '#3a3a52', text: '#C9C2E3', dot: '#8b7cc7' },
+  'Technical Discussion': { bg: '#2a1e4d', text: '#C9C2E3', dot: '#86a3bf' },
+  'Follow-up': { bg: '#3a3a52', text: '#C9C2E3', dot: '#c4a585' },
+  Other: { bg: '#2a1e4d', text: '#C9C2E3', dot: '#8b7cc7' },
 }
 export const meetingColor = (type?: string) => MEETING_TYPE_COLORS[type || 'Other'] || MEETING_TYPE_COLORS.Other
 
 export const TASK_PRIORITY_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  High: { bg: '#3d2a33', text: '#EAE7EF', dot: '#d08aa5' },
-  Medium: { bg: '#38322a', text: '#EAE7EF', dot: '#c9aa72' },
-  Low: { bg: '#2a333b', text: '#EAE7EF', dot: '#86a8bf' },
+  High: { bg: '#2a1e4d', text: '#C9C2E3', dot: '#d08aa5' },
+  Medium: { bg: '#3a3a52', text: '#C9C2E3', dot: '#c9aa72' },
+  Low: { bg: '#2a333b', text: '#C9C2E3', dot: '#86a8bf' },
 }
 export const taskColor = (t: BDTask) =>
-  t.status === 'Completed' || t.status === 'Cancelled' ? { bg: '#232028', text: '#8F879C', dot: '#5E5869' } : TASK_PRIORITY_COLORS[t.priority] || TASK_PRIORITY_COLORS.Medium
+  t.status === 'Completed' || t.status === 'Cancelled' ? { bg: '#0e0b1d', text: '#8B7CC7', dot: '#5A3B8C' } : TASK_PRIORITY_COLORS[t.priority] || TASK_PRIORITY_COLORS.Medium
 
 export const initials = (name?: string | null) =>
   (name || '?')
@@ -151,5 +151,5 @@ export const initials = (name?: string | null) =>
     .map((p) => p[0]?.toUpperCase())
     .join('') || '?'
 
-const AVATAR_COLORS = ['#9b8fc4', '#b08ccc', '#8f98c9', '#c493b4', '#86a3bf', '#c4a585', '#a99bc0', '#9a95a3']
+const AVATAR_COLORS = ['#8b7cc7', '#8b7cc7', '#8b7cc7', '#8b7cc7', '#86a3bf', '#c4a585', '#8b7cc7', '#8b7cc7']
 export const avatarColor = (id: number | string) => AVATAR_COLORS[Math.abs(Number(String(id).split('').reduce((a, c) => a + c.charCodeAt(0), 0))) % AVATAR_COLORS.length]

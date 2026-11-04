@@ -145,7 +145,7 @@ export const PartnershipDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <RotateCw className="w-8 h-8 animate-spin text-violet-400" />
@@ -156,7 +156,7 @@ export const PartnershipDetailPage: React.FC = () => {
 
   if (error || !partnership) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col">
         <Navbar />
         <div className="flex-1 p-8 max-w-4xl mx-auto text-center space-y-4">
           <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
@@ -174,7 +174,7 @@ export const PartnershipDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
@@ -192,7 +192,7 @@ export const PartnershipDetailPage: React.FC = () => {
         </div>
 
         {/* ── Partnership Header Banner ── */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-start space-x-4">
               <div className="p-3.5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30 shrink-0">
@@ -249,7 +249,7 @@ export const PartnershipDetailPage: React.FC = () => {
 
               <Link
                 to={`/business-development/meetings/new?organization_id=${partnership.organization_id}&contact_id=${partnership.primary_contact_id || ''}`}
-                className="py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition flex items-center space-x-1.5"
+                className="py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition flex items-center space-x-1.5"
               >
                 <CalendarPlus className="w-3.5 h-3.5" />
                 <span>Schedule Meeting</span>
@@ -257,7 +257,7 @@ export const PartnershipDetailPage: React.FC = () => {
 
               <button
                 onClick={() => setIsFollowupModalOpen(true)}
-                className="py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition flex items-center space-x-1.5"
+                className="py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition flex items-center space-x-1.5"
               >
                 <Clock3 className="w-3.5 h-3.5 text-amber-400" />
                 <span>Add Follow-up</span>
@@ -265,21 +265,21 @@ export const PartnershipDetailPage: React.FC = () => {
 
               <button
                 onClick={() => setIsStatusModalOpen(true)}
-                className="py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
+                className="py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
               >
                 Change Status
               </button>
 
               <Link
                 to={`/business-development/partnerships/${partnership.id}/edit`}
-                className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition"
+                className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition"
               >
                 <Edit2 className="w-4 h-4" />
               </Link>
 
               <button
                 onClick={handleDelete}
-                className="p-2 rounded-xl bg-[#1A1040] hover:bg-rose-950/40 border border-slate-700 text-slate-400 hover:text-rose-400 transition"
+                className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-rose-950/40 border border-slate-700 text-slate-400 hover:text-rose-400 transition"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -312,7 +312,7 @@ export const PartnershipDetailPage: React.FC = () => {
           {/* ── Left Column: Specs & Objectives (8 cols) ── */}
           <div className="lg:col-span-8 space-y-6">
             {/* Strategic Objectives */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-3">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
                 <Target className="w-4 h-4 text-emerald-400" />
                 <span>Agreed Business Objectives</span>
@@ -323,13 +323,13 @@ export const PartnershipDetailPage: React.FC = () => {
             </div>
 
             {/* Next Action Banner */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-3">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
                 <Clock3 className="w-4 h-4 text-violet-400" />
                 <span>Next Business Action</span>
               </h3>
               {partnership.next_action ? (
-                <div className="p-4 rounded-2xl bg-[#1A1040] border border-slate-800/80 flex items-center justify-between text-xs">
+                <div className="p-4 rounded-2xl bg-[#2A1E4D] border border-slate-800/80 flex items-center justify-between text-xs">
                   <div className="space-y-0.5">
                     <span className="font-bold text-white block">{partnership.next_action}</span>
                     {partnership.next_action_date && (
@@ -359,7 +359,7 @@ export const PartnershipDetailPage: React.FC = () => {
             </div>
 
             {/* Partnership Description & Internal Notes */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-indigo-400" />
                 <span>Partnership Scope & Internal Notes</span>
@@ -383,7 +383,7 @@ export const PartnershipDetailPage: React.FC = () => {
             </div>
 
             {/* Timeline History Component */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-violet-400" />
                 <span>Relationship Timeline & Activity</span>
@@ -395,7 +395,7 @@ export const PartnershipDetailPage: React.FC = () => {
           {/* ── Right Column: Related Cards & Entity Context (4 cols) ── */}
           <div className="lg:col-span-4 space-y-6">
             {/* Primary Contact Card */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                   <Users className="w-4 h-4 text-violet-400" />
@@ -412,7 +412,7 @@ export const PartnershipDetailPage: React.FC = () => {
               </div>
 
               {partnership.primary_contact_name ? (
-                <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1.5">
+                <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1.5">
                   <div className="font-bold text-white text-sm">{partnership.primary_contact_name}</div>
                   {partnership.primary_contact_designation && (
                     <div className="text-slate-400 text-[11px]">{partnership.primary_contact_designation}</div>
@@ -434,7 +434,7 @@ export const PartnershipDetailPage: React.FC = () => {
             </div>
 
             {/* Showcase Project Card */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                   <Sparkles className="w-4 h-4 text-indigo-400" />
@@ -453,7 +453,7 @@ export const PartnershipDetailPage: React.FC = () => {
               </div>
 
               {partnership.project_name ? (
-                <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1">
+                <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                   <div className="font-bold text-white text-xs">{partnership.project_name}</div>
                   <p className="text-slate-400 text-[11px]">
                     Referenced showcase initiative for partner alignment.
@@ -465,12 +465,12 @@ export const PartnershipDetailPage: React.FC = () => {
             </div>
 
             {/* Internal BD Ownership */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
               <h3 className="font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                 <UserCheck className="w-4 h-4 text-emerald-400" />
                 <span>Internal Ownership</span>
               </h3>
-              <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1">
+              <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                 <div className="font-bold text-white">
                   {partnership.owner_name || 'Unassigned BD Owner'}
                 </div>
@@ -484,7 +484,7 @@ export const PartnershipDetailPage: React.FC = () => {
             </div>
 
             {/* Upcoming Follow-ups (Phase 6) */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                   <Clock3 className="w-4 h-4 text-amber-400" />
@@ -503,7 +503,7 @@ export const PartnershipDetailPage: React.FC = () => {
               ) : (
                 <div className="space-y-2">
                   {followups.slice(0, 4).map((f) => (
-                    <div key={f.id} className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div key={f.id} className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <div className="font-semibold text-slate-200 text-[11px] truncate">{f.title}</div>
                       <div className="text-[10px] text-slate-400 font-mono">
                         Due: {new Date(f.due_at).toLocaleDateString()}
@@ -520,7 +520,7 @@ export const PartnershipDetailPage: React.FC = () => {
       {/* ── Change Status Modal ── */}
       {isStatusModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Update Partnership Status</h3>
             <div className="space-y-3 text-xs">
               <div className="space-y-1">
@@ -528,7 +528,7 @@ export const PartnershipDetailPage: React.FC = () => {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                 >
                   <option value="Active">Active</option>
                   <option value="On Hold">On Hold</option>
@@ -544,7 +544,7 @@ export const PartnershipDetailPage: React.FC = () => {
                   value={statusNote}
                   onChange={(e) => setStatusNote(e.target.value)}
                   placeholder="Reason for status change..."
-                  className="w-full p-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                  className="w-full p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                 />
               </div>
             </div>
@@ -553,7 +553,7 @@ export const PartnershipDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsStatusModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
               >
                 Cancel
               </button>
@@ -574,7 +574,7 @@ export const PartnershipDetailPage: React.FC = () => {
       {/* ── Follow-up Modal ── */}
       {isFollowupModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Create Partnership Follow-up</h3>
             <div className="space-y-3 text-xs">
               <div className="space-y-1">
@@ -584,7 +584,7 @@ export const PartnershipDetailPage: React.FC = () => {
                   value={followupTitle}
                   onChange={(e) => setFollowupTitle(e.target.value)}
                   placeholder="e.g. Conduct quarterly milestone review..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                 />
               </div>
 
@@ -594,7 +594,7 @@ export const PartnershipDetailPage: React.FC = () => {
                   <select
                     value={followupDueDays}
                     onChange={(e) => setFollowupDueDays(Number(e.target.value))}
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                   >
                     <option value={1}>1 Day (Tomorrow)</option>
                     <option value={3}>3 Days</option>
@@ -609,7 +609,7 @@ export const PartnershipDetailPage: React.FC = () => {
                   <select
                     value={followupPriority}
                     onChange={(e) => setFollowupPriority(e.target.value as FollowUpPriority)}
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                   >
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
@@ -623,7 +623,7 @@ export const PartnershipDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsFollowupModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
               >
                 Cancel
               </button>

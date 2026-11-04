@@ -125,20 +125,20 @@ export const CommunicationEditPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0E0B1D] text-white flex items-center justify-center">
         <RotateCw className="w-8 h-8 animate-spin text-violet-400" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex items-center justify-between">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Link
             to={`/business-development/communications/${id}`}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -158,7 +158,7 @@ export const CommunicationEditPage: React.FC = () => {
             </div>
           )}
 
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-300">Contact Person</label>
@@ -167,7 +167,7 @@ export const CommunicationEditPage: React.FC = () => {
                   onChange={(e) =>
                     setSelectedContactId(e.target.value ? Number(e.target.value) : '')
                   }
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- None / General Account Level --</option>
                   {contacts.map((c) => (
@@ -185,7 +185,7 @@ export const CommunicationEditPage: React.FC = () => {
                   onChange={(e) =>
                     setSelectedOppId(e.target.value ? Number(e.target.value) : '')
                   }
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- None / General Outreach --</option>
                   {opportunities.map((opp) => (
@@ -203,7 +203,7 @@ export const CommunicationEditPage: React.FC = () => {
                 <select
                   value={channel}
                   onChange={(e) => setChannel(e.target.value as CommunicationChannel)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   {CHANNELS.map((ch) => (
                     <option key={ch} value={ch}>
@@ -218,7 +218,7 @@ export const CommunicationEditPage: React.FC = () => {
                 <select
                   value={direction}
                   onChange={(e) => setDirection(e.target.value as CommunicationDirection)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="Outgoing">Outgoing</option>
                   <option value="Incoming">Incoming</option>
@@ -233,7 +233,7 @@ export const CommunicationEditPage: React.FC = () => {
                 required
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -244,7 +244,7 @@ export const CommunicationEditPage: React.FC = () => {
                   type="datetime-local"
                   value={commDate}
                   onChange={(e) => setCommDate(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export const CommunicationEditPage: React.FC = () => {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as CommunicationStatus)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="Completed">Completed</option>
                   <option value="Pending">Pending</option>
@@ -268,7 +268,7 @@ export const CommunicationEditPage: React.FC = () => {
                 type="text"
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -278,7 +278,7 @@ export const CommunicationEditPage: React.FC = () => {
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
           </div>

@@ -12,7 +12,7 @@ export const AdminProtectedRoute: React.FC<Props> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0E0B1D] flex items-center justify-center">
         <RotateCw className="w-8 h-8 animate-spin text-violet-500" />
       </div>
     )
@@ -24,8 +24,8 @@ export const AdminProtectedRoute: React.FC<Props> = ({ children }) => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex items-center justify-center p-6">
-        <div className="bg-[#110B2E] border border-rose-500/30 rounded-3xl p-8 max-w-md w-full text-center space-y-4 shadow-2xl">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex items-center justify-center p-6">
+        <div className="bg-[#0E0B1D] border border-rose-500/30 rounded-3xl p-8 max-w-md w-full text-center space-y-4 shadow-2xl">
           <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-400 w-fit mx-auto border border-rose-500/20">
             <ShieldAlert className="w-8 h-8" />
           </div>

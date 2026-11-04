@@ -20,7 +20,7 @@ export const PipelineFunnelChart: React.FC<PipelineFunnelChartProps> = ({ pipeli
   const maxCount = Math.max(...pipeline.map((p) => p.count), 1)
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -52,7 +52,7 @@ export const PipelineFunnelChart: React.FC<PipelineFunnelChartProps> = ({ pipeli
                 </div>
               </div>
 
-              <div className="h-3 w-full bg-[#1A1040] rounded-full overflow-hidden border border-slate-800/80 relative">
+              <div className="h-3 w-full bg-[#2A1E4D] rounded-full overflow-hidden border border-slate-800/80 relative">
                 <div
                   className={`h-full rounded-full bg-gradient-to-r ${gradient} transition-all duration-500`}
                   style={{ width: `${barWidthPercent}%` }}

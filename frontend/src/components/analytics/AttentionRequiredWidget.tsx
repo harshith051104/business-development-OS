@@ -25,7 +25,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
     attention.stale_organizations_count
 
   return (
-    <div className="bg-[#110B2E] border border-amber-500/30 rounded-2xl p-6 shadow-xl space-y-5">
+    <div className="bg-[#0E0B1D] border border-amber-500/30 rounded-2xl p-6 shadow-xl space-y-5">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -47,7 +47,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 1. Overdue Follow-ups */}
-        <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3">
+        <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-bold text-white">
               <Clock3 className="w-4 h-4 text-rose-400" />
@@ -63,7 +63,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
               {attention.overdue_followups.slice(0, 3).map((fol) => (
                 <div
                   key={fol.id}
-                  className="p-2.5 rounded-lg bg-[#110B2E] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-lg bg-[#0E0B1D] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
                 >
                   <div className="truncate">
                     <div className="font-semibold text-slate-200 truncate">{fol.title}</div>
@@ -89,7 +89,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
         </div>
 
         {/* 2. Opportunities Without Next Actions */}
-        <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3">
+        <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-bold text-white">
               <Target className="w-4 h-4 text-amber-400" />
@@ -105,7 +105,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
               {attention.opportunities_no_next_action.slice(0, 3).map((opp) => (
                 <div
                   key={opp.id}
-                  className="p-2.5 rounded-lg bg-[#110B2E] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-lg bg-[#0E0B1D] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
                 >
                   <div className="truncate">
                     <div className="font-semibold text-slate-200 truncate">{opp.name}</div>
@@ -130,7 +130,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
         </div>
 
         {/* 3. Interested Orgs Without Scheduled Meeting */}
-        <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3">
+        <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-bold text-white">
               <Calendar className="w-4 h-4 text-indigo-400" />
@@ -146,7 +146,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
               {attention.interested_no_meeting.slice(0, 3).map((org) => (
                 <div
                   key={org.id}
-                  className="p-2.5 rounded-lg bg-[#110B2E] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-lg bg-[#0E0B1D] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
                 >
                   <div className="truncate">
                     <div className="font-semibold text-slate-200 truncate">{org.name}</div>
@@ -171,7 +171,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
         </div>
 
         {/* 4. Stale Active Accounts (>14 days no contact) */}
-        <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3">
+        <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-bold text-white">
               <Building2 className="w-4 h-4 text-violet-400" />
@@ -187,7 +187,7 @@ export const AttentionRequiredWidget: React.FC<AttentionRequiredWidgetProps> = (
               {attention.stale_organizations.slice(0, 3).map((stale) => (
                 <div
                   key={stale.id}
-                  className="p-2.5 rounded-lg bg-[#110B2E] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-lg bg-[#0E0B1D] border border-slate-800/80 text-xs flex items-center justify-between gap-2"
                 >
                   <div className="truncate">
                     <div className="font-semibold text-slate-200 truncate">{stale.name}</div>

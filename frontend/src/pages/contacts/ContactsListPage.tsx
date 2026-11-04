@@ -181,7 +181,7 @@ export const ContactsListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -211,7 +211,7 @@ export const ContactsListPage: React.FC = () => {
         </div>
 
         {/* ── Search & Filter Bar ── */}
-        <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-4 shadow-xl space-y-3">
+        <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-4 shadow-xl space-y-3">
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -220,7 +220,7 @@ export const ContactsListPage: React.FC = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search by contact name, organization, designation, email, or phone..."
-                className="w-full pl-10 pr-4 py-2 bg-[#1A1040] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                className="w-full pl-10 pr-4 py-2 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
               />
               {searchInput && (
                 <button
@@ -233,7 +233,7 @@ export const ContactsListPage: React.FC = () => {
             </div>
 
             {/* Layout Toggle */}
-            <div className="flex items-center space-x-1 bg-[#1A1040] p-1 rounded-xl border border-slate-800 shrink-0">
+            <div className="flex items-center space-x-1 bg-[#2A1E4D] p-1 rounded-xl border border-slate-800 shrink-0">
               <button
                 onClick={() => setViewMode('table')}
                 className={`p-1.5 rounded-lg transition ${
@@ -261,7 +261,7 @@ export const ContactsListPage: React.FC = () => {
             <select
               value={selectedOrgId}
               onChange={(e) => setSelectedOrgId(e.target.value)}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
             >
               <option value="">All Organizations</option>
               {organizations.map((org) => (
@@ -275,7 +275,7 @@ export const ContactsListPage: React.FC = () => {
             <select
               value={selectedDecisionMaker}
               onChange={(e) => setSelectedDecisionMaker(e.target.value)}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
             >
               <option value="">Decision Maker: All</option>
               <option value="yes">Decision Makers Only</option>
@@ -286,7 +286,7 @@ export const ContactsListPage: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
             >
               <option value="">All Relationship Statuses</option>
               {contactStatuses.map((st) => (
@@ -304,7 +304,7 @@ export const ContactsListPage: React.FC = () => {
                 setSortBy(sb)
                 setSortOrder(so as 'asc' | 'desc')
               }}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-teal-500"
             >
               <option value="created_at-desc">Newest First</option>
               <option value="created_at-asc">Oldest First</option>
@@ -328,12 +328,12 @@ export const ContactsListPage: React.FC = () => {
 
         {/* ── Content View ── */}
         {loading ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
             <RotateCw className="w-6 h-6 animate-spin text-teal-400 mx-auto" />
             <p className="text-xs text-slate-400 font-medium">Loading business contacts...</p>
           </div>
         ) : error ? (
-          <div className="bg-[#110B2E] border border-red-500/20 rounded-2xl p-10 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-red-500/20 rounded-2xl p-10 text-center space-y-3">
             <AlertCircle className="w-8 h-8 text-red-400 mx-auto" />
             <h2 className="text-sm font-bold text-white">Error loading contacts</h2>
             <p className="text-xs text-slate-400 max-w-md mx-auto">{error}</p>
@@ -345,7 +345,7 @@ export const ContactsListPage: React.FC = () => {
             </button>
           </div>
         ) : contacts.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-16 text-center space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-16 text-center space-y-4">
             <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
               <Inbox className="w-7 h-7 stroke-[1.5]" />
             </div>
@@ -376,11 +376,11 @@ export const ContactsListPage: React.FC = () => {
           </div>
         ) : viewMode === 'table' ? (
           /* ── Table Layout ── */
-          <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800/80 bg-[#1A1040]/80 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <tr className="border-b border-slate-800/80 bg-[#2A1E4D]/80 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                     <th className="py-3.5 px-4">Contact</th>
                     <th className="py-3.5 px-4">Organization</th>
                     <th className="py-3.5 px-4">Designation & Department</th>
@@ -393,7 +393,7 @@ export const ContactsListPage: React.FC = () => {
                   {contacts.map((contact) => (
                     <tr
                       key={contact.id}
-                      className="hover:bg-[#1A1040]/40 transition group cursor-pointer"
+                      className="hover:bg-[#2A1E4D]/40 transition group cursor-pointer"
                       onClick={() => navigate(`/business-development/contacts/${contact.id}`)}
                     >
                       {/* Name & Badges */}
@@ -463,14 +463,14 @@ export const ContactsListPage: React.FC = () => {
                           <button
                             onClick={() => setStatusModalContact(contact)}
                             title="Update Relationship Status"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-teal-500/20 text-slate-400 hover:text-teal-300 border border-slate-800 transition"
+                            className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-teal-500/20 text-slate-400 hover:text-teal-300 border border-slate-800 transition"
                           >
                             <GitFork className="w-3.5 h-3.5" />
                           </button>
                           <Link
                             to={`/business-development/contacts/${contact.id}`}
                             title="View Contact Profile"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
+                            className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </Link>
@@ -478,7 +478,7 @@ export const ContactsListPage: React.FC = () => {
                             to={`/business-development/contacts/${contact.id}/edit`}
                             title="Edit Contact"
                             aria-label={`Edit ${contact.first_name} ${contact.last_name || ''}`.trim()}
-                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition text-xs"
+                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition text-xs"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                             Edit
@@ -486,7 +486,7 @@ export const ContactsListPage: React.FC = () => {
                           <button
                             onClick={() => setDeleteConfirmContact(contact)}
                             title="Delete Contact"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-800 transition"
+                            className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-800 transition"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -505,7 +505,7 @@ export const ContactsListPage: React.FC = () => {
               <div
                 key={contact.id}
                 onClick={() => navigate(`/business-development/contacts/${contact.id}`)}
-                className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800/80 hover:border-teal-500/40 transition-all duration-200 cursor-pointer shadow-xl flex flex-col justify-between space-y-4 group"
+                className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800/80 hover:border-teal-500/40 transition-all duration-200 cursor-pointer shadow-xl flex flex-col justify-between space-y-4 group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -560,14 +560,14 @@ export const ContactsListPage: React.FC = () => {
                   <div className="flex items-center space-x-1.5">
                     <button
                       onClick={() => setStatusModalContact(contact)}
-                      className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-teal-500/20 text-slate-400 hover:text-teal-300 border border-slate-800"
+                      className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-teal-500/20 text-slate-400 hover:text-teal-300 border border-slate-800"
                     >
                       <GitFork className="w-3.5 h-3.5" />
                     </button>
                     <Link
                       to={`/business-development/contacts/${contact.id}/edit`}
                       aria-label={`Edit ${contact.first_name} ${contact.last_name || ''}`.trim()}
-                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs"
+                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       Edit
@@ -594,17 +594,17 @@ export const ContactsListPage: React.FC = () => {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-xl bg-[#110B2E] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-xl bg-[#0E0B1D] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1.5 rounded-xl bg-[#110B2E] border border-slate-800 font-mono text-white">
+              <span className="px-3 py-1.5 rounded-xl bg-[#0E0B1D] border border-slate-800 font-mono text-white">
                 {page} / {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-xl bg-[#110B2E] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-xl bg-[#0E0B1D] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -627,7 +627,7 @@ export const ContactsListPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {deleteConfirmContact && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-red-500/30 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-red-500/30 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <div className="flex items-center space-x-2.5 text-red-400">
               <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/20">
                 <Trash2 className="w-5 h-5" />

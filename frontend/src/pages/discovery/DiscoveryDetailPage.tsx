@@ -214,15 +214,15 @@ export const DiscoveryDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex items-center justify-between">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => navigate('/business-development/discover')}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -239,7 +239,7 @@ export const DiscoveryDetailPage: React.FC = () => {
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-[#110B2E] border border-emerald-500/40 text-emerald-300 shadow-2xl flex items-center space-x-2.5 animate-in slide-in-from-bottom duration-200">
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-[#0E0B1D] border border-emerald-500/40 text-emerald-300 shadow-2xl flex items-center space-x-2.5 animate-in slide-in-from-bottom duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span className="text-xs font-semibold">{toastMessage}</span>
         </div>
@@ -253,7 +253,7 @@ export const DiscoveryDetailPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading discovery profile...</p>
           </div>
         ) : error || !item ? (
-          <div className="p-12 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3">
+          <div className="p-12 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3">
             <h3 className="text-sm font-bold text-white">Discovery Record Not Found</h3>
             <p className="text-xs text-slate-400">{error}</p>
             <Link
@@ -289,7 +289,7 @@ export const DiscoveryDetailPage: React.FC = () => {
             )}
 
             {/* Top Profile Card */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
@@ -325,7 +325,7 @@ export const DiscoveryDetailPage: React.FC = () => {
                   {item.status !== 'skipped' && (
                     <button
                       onClick={handleSkip}
-                      className="py-2 px-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-rose-300 text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700"
+                      className="py-2 px-3 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-rose-300 text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700"
                     >
                       <Ban className="w-3.5 h-3.5" />
                       <span>Skip</span>
@@ -336,7 +336,7 @@ export const DiscoveryDetailPage: React.FC = () => {
 
               {/* Explainable Fit Reasoning Card */}
               {item.qualification_reason && (
-                <div className="p-4 rounded-2xl bg-[#1A1040] border border-violet-500/30 space-y-1.5">
+                <div className="p-4 rounded-2xl bg-[#2A1E4D] border border-violet-500/30 space-y-1.5">
                   <div className="flex items-center space-x-1.5 text-xs font-bold text-violet-400 uppercase tracking-wider">
                     <Sparkles className="w-4 h-4 text-violet-400" />
                     <span>AI Fit Reasoning & Strategic Alignment</span>
@@ -349,7 +349,7 @@ export const DiscoveryDetailPage: React.FC = () => {
 
               {/* Public Contact and Overview Info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-800/80">
-                <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1">
+                <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                   <div className="flex items-center space-x-1.5 text-xs text-slate-400">
                     <Globe className="w-3.5 h-3.5 text-slate-500" />
                     <span>Website</span>
@@ -368,7 +368,7 @@ export const DiscoveryDetailPage: React.FC = () => {
                   )}
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1">
+                <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                   <div className="flex items-center space-x-1.5 text-xs text-slate-400">
                     <Mail className="w-3.5 h-3.5 text-slate-500" />
                     <span>Email</span>
@@ -378,7 +378,7 @@ export const DiscoveryDetailPage: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1">
+                <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                   <div className="flex items-center space-x-1.5 text-xs text-slate-400">
                     <Phone className="w-3.5 h-3.5 text-slate-500" />
                     <span>Phone</span>
@@ -391,7 +391,7 @@ export const DiscoveryDetailPage: React.FC = () => {
             </div>
 
             {/* ── Executive Decision-Maker Discovery Studio ── */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
                 <div className="flex items-center space-x-2.5">
                   <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
@@ -437,7 +437,7 @@ export const DiscoveryDetailPage: React.FC = () => {
                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition border ${
                           isSelected
                             ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm'
-                            : 'bg-[#1A1040] text-slate-400 border-slate-800 hover:text-white'
+                            : 'bg-[#2A1E4D] text-slate-400 border-slate-800 hover:text-white'
                         }`}
                       >
                         {isSelected && <span className="mr-1">✓</span>}
@@ -481,8 +481,8 @@ export const DiscoveryDetailPage: React.FC = () => {
                           onClick={() => toggleContactSelection(contact.id)}
                           className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-3 ${
                             isSelected
-                              ? 'bg-[#1A1040] border-teal-500/50 ring-1 ring-teal-500/30'
-                              : 'bg-[#110B2E] border-slate-800/90 opacity-70 hover:opacity-100'
+                              ? 'bg-[#2A1E4D] border-teal-500/50 ring-1 ring-teal-500/30'
+                              : 'bg-[#0E0B1D] border-slate-800/90 opacity-70 hover:opacity-100'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -513,7 +513,7 @@ export const DiscoveryDetailPage: React.FC = () => {
 
                           {/* Contact Fit Reason */}
                           {contact.fit_reason && (
-                            <p className="text-[11px] text-slate-300 bg-[#110B2E] p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+                            <p className="text-[11px] text-slate-300 bg-[#0E0B1D] p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
                               {contact.fit_reason}
                             </p>
                           )}
@@ -574,7 +574,7 @@ export const DiscoveryDetailPage: React.FC = () => {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
-                  className="px-3 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs font-semibold focus:outline-none"
+                  className="px-3 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs font-semibold focus:outline-none"
                 >
                   <option value="High">High Priority</option>
                   <option value="Medium">Medium Priority</option>

@@ -116,10 +116,10 @@ export const FollowUpsListPage: React.FC = () => {
         key={item.id}
         className={`p-4 rounded-2xl border transition shadow-xl space-y-3 ${
           item.is_overdue && item.status === 'Pending'
-            ? 'bg-[#150D1D] border-rose-500/30'
+            ? 'bg-[#0E0B1D] border-rose-500/30'
             : isCompleted
-            ? 'bg-[#0E1520] border-slate-800/80 opacity-80'
-            : 'bg-[#110B2E] border-slate-800 hover:border-slate-700'
+            ? 'bg-[#0E0B1D] border-slate-800/80 opacity-80'
+            : 'bg-[#0E0B1D] border-slate-800 hover:border-slate-700'
         }`}
       >
         <div className="flex items-start justify-between gap-3">
@@ -201,10 +201,10 @@ export const FollowUpsListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
       {/* ── Top Header ── */}
-      <header className="px-6 py-5 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-5 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30">
             <Clock3 className="w-5 h-5" />
@@ -242,7 +242,7 @@ export const FollowUpsListPage: React.FC = () => {
       {/* ── Main Content Area ── */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
         {/* Search & Filter Bar */}
-        <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl flex flex-col sm:flex-row gap-3 items-center justify-between">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -250,7 +250,7 @@ export const FollowUpsListPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search task, organization, contact..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
             />
           </div>
 
@@ -258,7 +258,7 @@ export const FollowUpsListPage: React.FC = () => {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="w-full sm:w-40 bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+              className="w-full sm:w-40 bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
             >
               <option value="All">All Priorities</option>
               <option value="High">High Priority</option>
@@ -283,7 +283,7 @@ export const FollowUpsListPage: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                 activeTab === tab.id
                   ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
-                  : 'bg-[#110B2E] text-slate-400 hover:text-white border border-slate-800'
+                  : 'bg-[#0E0B1D] text-slate-400 hover:text-white border border-slate-800'
               }`}
             >
               <span>{tab.label}</span>
@@ -308,7 +308,7 @@ export const FollowUpsListPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading follow-ups queue...</p>
           </div>
         ) : error ? (
-          <div className="p-8 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3">
+          <div className="p-8 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h3 className="text-sm font-bold text-white">Error Loading Tasks</h3>
             <p className="text-xs text-slate-400">{error}</p>
@@ -321,7 +321,7 @@ export const FollowUpsListPage: React.FC = () => {
           </div>
         ) : totalPending === 0 && activeTab !== 'completed' ? (
           /* Empty State */
-          <div className="p-16 rounded-2xl bg-[#110B2E] border border-slate-800 text-center space-y-4 shadow-xl">
+          <div className="p-16 rounded-2xl bg-[#0E0B1D] border border-slate-800 text-center space-y-4 shadow-xl">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
               <CheckCircle2 className="w-7 h-7" />
             </div>
@@ -398,14 +398,14 @@ export const FollowUpsListPage: React.FC = () => {
       {/* Add Follow-up Modal with Org Selector */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-4">
             <h2 className="text-sm font-bold text-white">Select Organization for Follow-up</h2>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300">Target Organization</label>
               <select
                 value={selectedOrgIdForModal || ''}
                 onChange={(e) => setSelectedOrgIdForModal(Number(e.target.value))}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500"
               >
                 {organizations.map((org) => (
                   <option key={org.id} value={org.id}>

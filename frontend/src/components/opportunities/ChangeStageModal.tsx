@@ -50,7 +50,7 @@ export const ChangeStageModal: React.FC<ChangeStageModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -81,7 +81,7 @@ export const ChangeStageModal: React.FC<ChangeStageModalProps> = ({
             <select
               value={stage}
               onChange={(e) => setStage(e.target.value)}
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
             >
               {STAGES.map((s) => (
                 <option key={s} value={s}>
@@ -98,7 +98,7 @@ export const ChangeStageModal: React.FC<ChangeStageModalProps> = ({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Reason for stage change, key developments..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
 

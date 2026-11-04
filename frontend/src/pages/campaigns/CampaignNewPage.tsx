@@ -187,7 +187,7 @@ Best regards,
   );
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-5xl mx-auto space-y-6">
         {/* Top bar */}
@@ -207,7 +207,7 @@ Best regards,
         </div>
 
         {/* Wizard Steps Nav */}
-        <div className="grid grid-cols-4 gap-2 p-1.5 rounded-2xl bg-[#131127] border border-white/5">
+        <div className="grid grid-cols-4 gap-2 p-1.5 rounded-2xl bg-[#0e0b1d] border border-white/5">
           {[
             { id: 'details', label: '1. Campaign Details' },
             { id: 'contacts', label: `2. Target Contacts (${selectedContactIds.length})` },
@@ -230,7 +230,7 @@ Best regards,
 
         {/* TAB 1: DETAILS */}
         {activeTab === 'details' && (
-          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 space-y-5">
+          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 space-y-5">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <Layers className="w-5 h-5 text-purple-400" />
               Campaign Basic Information
@@ -244,7 +244,7 @@ Best regards,
                   placeholder="e.g. Q3 Enterprise AI Outreach - CTOs"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
 
@@ -255,7 +255,7 @@ Best regards,
                   placeholder="Describe target ICP, commercial goals, and primary value angle..."
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
 
@@ -267,7 +267,7 @@ Best regards,
                     placeholder="e.g. Healthcare, SaaS, FinTech, Manufacturing"
                     value={form.target_industry}
                     onChange={(e) => setForm({ ...form, target_industry: e.target.value })}
-                    className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
                   />
                 </div>
 
@@ -279,7 +279,7 @@ Best regards,
                       const sel = gmailAccounts.find(g => g.id === e.target.value);
                       setForm({ ...form, gmail_account_id: e.target.value, sender_email: sel ? sel.email : '' });
                     }}
-                    className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500"
                   >
                     {gmailAccounts.length === 0 ? (
                       <option value="">Primary Gmail (Default System Sender)</option>
@@ -306,7 +306,7 @@ Best regards,
 
         {/* TAB 2: TARGET CONTACTS */}
         {activeTab === 'contacts' && (
-          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -328,7 +328,7 @@ Best regards,
               placeholder="Search contacts by name, designation, or hospital/organization..."
               value={contactSearch}
               onChange={(e) => setContactSearch(e.target.value)}
-              className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
             />
 
             <div className="max-h-96 overflow-y-auto space-y-2 pr-1">
@@ -341,7 +341,7 @@ Best regards,
                     className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
                       isSelected
                         ? 'bg-purple-950/30 border-purple-500/50 shadow-sm'
-                        : 'bg-[#0D0B1E]/60 border-white/5 hover:border-white/20'
+                        : 'bg-[#0E0B1D]/60 border-white/5 hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -400,7 +400,7 @@ Best regards,
             </div>
 
             {sequenceSteps.map((step, idx) => (
-              <div key={idx} className="p-6 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 space-y-4">
+              <div key={idx} className="p-6 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">
@@ -410,7 +410,7 @@ Best regards,
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5 bg-[#0D0B1E] px-3 py-1 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-1.5 bg-[#0E0B1D] px-3 py-1 rounded-lg border border-white/10">
                       <span className="text-xs text-gray-400">Delay:</span>
                       <input
                         type="number"
@@ -440,7 +440,7 @@ Best regards,
                       type="text"
                       value={step.subject_template || ''}
                       onChange={(e) => handleUpdateStep(idx, 'subject_template', e.target.value)}
-                      className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                      className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
                     />
                   </div>
 
@@ -465,7 +465,7 @@ Best regards,
                       rows={6}
                       value={step.body_template}
                       onChange={(e) => handleUpdateStep(idx, 'body_template', e.target.value)}
-                      className="w-full bg-[#0D0B1E] font-mono text-xs border border-white/10 rounded-xl p-4 text-gray-200 focus:outline-none focus:border-purple-500 leading-relaxed"
+                      className="w-full bg-[#0E0B1D] font-mono text-xs border border-white/10 rounded-xl p-4 text-gray-200 focus:outline-none focus:border-purple-500 leading-relaxed"
                     />
                   </div>
                 </div>
@@ -491,21 +491,21 @@ Best regards,
 
         {/* TAB 4: REVIEW & LAUNCH */}
         {activeTab === 'review' && (
-          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 space-y-6">
+          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 space-y-6">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-400" />
               Campaign Review & Activation
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#0D0B1E] border border-white/5 space-y-2">
+              <div className="p-4 rounded-xl bg-[#0E0B1D] border border-white/5 space-y-2">
                 <div className="text-xs text-gray-400 uppercase font-semibold">Campaign Name</div>
                 <div className="text-base font-bold text-white">{form.name || 'Untitled Campaign'}</div>
                 <div className="text-xs text-gray-400">{form.description || 'No description provided.'}</div>
                 <div className="text-xs text-purple-300 font-medium">Domain: {form.target_industry}</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0D0B1E] border border-white/5 space-y-2">
+              <div className="p-4 rounded-xl bg-[#0E0B1D] border border-white/5 space-y-2">
                 <div className="text-xs text-gray-400 uppercase font-semibold">Targets & Execution</div>
                 <div className="text-base font-bold text-white">{selectedContactIds.length} Enrolled Contacts</div>
                 <div className="text-xs text-gray-400">{sequenceSteps.length} Sequence Steps Configured</div>

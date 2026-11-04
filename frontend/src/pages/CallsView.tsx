@@ -63,7 +63,7 @@ export const CallsView: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-7xl mx-auto space-y-6">
       {/* Header */}

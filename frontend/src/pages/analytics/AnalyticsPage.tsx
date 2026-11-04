@@ -110,7 +110,7 @@ const Breakdown: React.FC<BreakdownProps> = ({ title, dimension, rows, selection
   const max = Math.max(1, ...counts.entries.map((e) => e[1]))
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+    <div className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-white">{title}</h3>
         <Tag kind="snapshot" />
@@ -121,7 +121,7 @@ const Breakdown: React.FC<BreakdownProps> = ({ title, dimension, rows, selection
         <ul className="space-y-1.5">
           {counts.entries.map(([value, count]) => {
             const active = selection?.dimension === dimension && selection.value === value
-            const color = dimension === 'priority' ? PRIORITY_COLORS[value as keyof typeof PRIORITY_COLORS] || '#6b6787' : '#8b7cf6'
+            const color = dimension === 'priority' ? PRIORITY_COLORS[value as keyof typeof PRIORITY_COLORS] || '#6b6787' : '#8b7cc7'
             const share = Math.round((count / rows.length) * 100)
             return (
               <li key={value}>
@@ -277,12 +277,12 @@ export const AnalyticsPage: React.FC = () => {
     }
   }
 
-  const select = 'px-2.5 py-1.5 bg-[#1A1040] border border-slate-700 rounded-lg text-slate-200 text-xs'
+  const select = 'px-2.5 py-1.5 bg-[#2A1E4D] border border-slate-700 rounded-lg text-slate-200 text-xs'
   const maxGrowth = Math.max(1, ...growth.map((g) => g.count))
   const financialRows = selectedOrg ? population.filter((o) => o.id === selectedOrg) : population
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -309,7 +309,7 @@ export const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* Shared filters */}
-        <div className="flex flex-wrap items-center gap-2 bg-[#110B2E] border border-slate-800 rounded-xl px-3 py-2.5">
+        <div className="flex flex-wrap items-center gap-2 bg-[#0E0B1D] border border-slate-800 rounded-xl px-3 py-2.5">
           <label className="flex items-center gap-1.5 text-xs text-slate-400">
             Owner
             <select
@@ -421,14 +421,14 @@ export const AnalyticsPage: React.FC = () => {
             <Loader2 className="w-4 h-4 animate-spin" /> Loading organization data…
           </div>
         ) : error ? (
-          <div className="bg-[#110B2E] border border-rose-500/30 rounded-xl p-6 text-sm text-rose-300 flex items-center gap-2">
+          <div className="bg-[#0E0B1D] border border-rose-500/30 rounded-xl p-6 text-sm text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4" /> {error}
             <button onClick={load} className="ml-auto text-xs underline">
               Retry
             </button>
           </div>
         ) : population.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-xl p-8 text-center text-sm text-slate-400">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-8 text-center text-sm text-slate-400">
             No organizations match these filters{scope === 'mine' ? ' among the organizations you own' : ''}.
           </div>
         ) : tab === 'overview' ? (
@@ -450,7 +450,7 @@ export const AnalyticsPage: React.FC = () => {
                   note: 'linked to SEC filings',
                 },
               ].map((k) => (
-                <div key={k.label} className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+                <div key={k.label} className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4">
                   <div className="text-xs text-slate-400">{k.label}</div>
                   <div className="text-2xl font-semibold text-white mt-1 tabular-nums">{k.value}</div>
                   <div className="mt-1 flex items-center gap-2">
@@ -461,7 +461,7 @@ export const AnalyticsPage: React.FC = () => {
               ))}
             </section>
 
-            <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+            <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm font-semibold text-white">Organizations added per month</h3>
                 <Tag kind="period" />
@@ -504,7 +504,7 @@ export const AnalyticsPage: React.FC = () => {
               <Breakdown title="By location (country or state)" dimension="location" rows={population} selection={selection} onSelect={setSelection} />
             </section>
 
-            <section className="bg-[#110B2E] border border-slate-800 rounded-xl overflow-hidden">
+            <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl overflow-hidden">
               <div className="px-4 py-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-white">
                   Organizations <span className="text-slate-400 font-normal">({detailRows.length})</span>
@@ -513,7 +513,7 @@ export const AnalyticsPage: React.FC = () => {
               </div>
               <div className="overflow-x-auto max-h-[480px]">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-[#1A1040] text-slate-400 sticky top-0">
+                  <thead className="bg-[#2A1E4D] text-slate-400 sticky top-0">
                     <tr>
                       {['Organization', 'Type', 'Industry', 'Priority', 'Stage', 'Location', 'Owner', 'Added', 'Financials'].map((h) => (
                         <th key={h} className="px-3 py-2 font-medium whitespace-nowrap">
@@ -549,7 +549,7 @@ export const AnalyticsPage: React.FC = () => {
           </>
         ) : (
           <>
-            <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-3">
+            <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
                 <h3 className="text-sm font-semibold text-white">
                   {metricLabel(metric)} by organization{year === 'latest' ? ' (latest annual filing)' : ` (FY${year})`}
@@ -584,7 +584,7 @@ export const AnalyticsPage: React.FC = () => {
               <p className="text-[10px] text-slate-500">Source: SEC EDGAR company filings (10-K), as linked on each organization.</p>
             </section>
 
-            <section className="bg-[#110B2E] border border-slate-800 rounded-xl overflow-hidden">
+            <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl overflow-hidden">
               <div className="px-4 py-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-white">
                   Details <span className="text-slate-400 font-normal">({financialRows.length})</span>
@@ -592,7 +592,7 @@ export const AnalyticsPage: React.FC = () => {
               </div>
               <div className="overflow-x-auto max-h-[480px]">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-[#1A1040] text-slate-400 sticky top-0">
+                  <thead className="bg-[#2A1E4D] text-slate-400 sticky top-0">
                     <tr>
                       {['Organization', 'Priority', 'Location', `${metricLabel(metric)} (USD)`, 'Period', 'Financial summary', 'Source'].map((h) => (
                         <th key={h} className="px-3 py-2 font-medium whitespace-nowrap">

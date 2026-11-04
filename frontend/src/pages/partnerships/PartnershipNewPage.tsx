@@ -168,7 +168,7 @@ export const PartnershipNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       <main className="flex-1 p-6 max-w-4xl w-full mx-auto space-y-6">
@@ -186,7 +186,7 @@ export const PartnershipNewPage: React.FC = () => {
         </div>
 
         {/* Page Title Header */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
           <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30">
             <Handshake className="w-6 h-6" />
           </div>
@@ -219,7 +219,7 @@ export const PartnershipNewPage: React.FC = () => {
         )}
 
         {/* Main Form */}
-        <form onSubmit={handleSubmit} className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+        <form onSubmit={handleSubmit} className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
           {/* Section 1: Target Account Context */}
           <div className="space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-violet-400 flex items-center space-x-2">
@@ -236,7 +236,7 @@ export const PartnershipNewPage: React.FC = () => {
                   required
                   value={selectedOrgId || ''}
                   onChange={(e) => setSelectedOrgId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="">-- Choose Organization --</option>
                   {organizations.map((org) => (
@@ -253,7 +253,7 @@ export const PartnershipNewPage: React.FC = () => {
                   disabled={!selectedOrgId}
                   value={selectedContactId || ''}
                   onChange={(e) => setSelectedContactId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 disabled:opacity-50"
                 >
                   <option value="">-- General Account (No Contact) --</option>
                   {contacts.map((c) => (
@@ -272,7 +272,7 @@ export const PartnershipNewPage: React.FC = () => {
                   disabled={!selectedOrgId}
                   value={selectedOppId || ''}
                   onChange={(e) => setSelectedOppId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 disabled:opacity-50"
                 >
                   <option value="">-- Direct Partnership (No Prior Opportunity) --</option>
                   {opportunities.map((opp) => (
@@ -288,7 +288,7 @@ export const PartnershipNewPage: React.FC = () => {
                 <select
                   value={selectedProjectId || ''}
                   onChange={(e) => setSelectedProjectId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="">-- Select Showcase Project --</option>
                   {projects.map((proj) => (
@@ -318,7 +318,7 @@ export const PartnershipNewPage: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Apollo Company Group AI Integration Alliance"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 font-semibold"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 font-semibold"
               />
             </div>
 
@@ -330,7 +330,7 @@ export const PartnershipNewPage: React.FC = () => {
                 <select
                   value={partnershipType}
                   onChange={(e) => setPartnershipType(e.target.value as PartnershipType)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   {PARTNERSHIP_TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -345,7 +345,7 @@ export const PartnershipNewPage: React.FC = () => {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as PartnershipStatus)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="Active">Active (Standard)</option>
                   <option value="On Hold">On Hold</option>
@@ -359,7 +359,7 @@ export const PartnershipNewPage: React.FC = () => {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as PartnershipPriority)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="High">High Priority</option>
                   <option value="Medium">Medium Priority</option>
@@ -375,7 +375,7 @@ export const PartnershipNewPage: React.FC = () => {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -385,7 +385,7 @@ export const PartnershipNewPage: React.FC = () => {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
             </div>
@@ -405,7 +405,7 @@ export const PartnershipNewPage: React.FC = () => {
                 value={objectives}
                 onChange={(e) => setObjectives(e.target.value)}
                 placeholder="Key goals, milestone commitments, strategic value..."
-                className="w-full p-3.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                className="w-full p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
               />
             </div>
 
@@ -417,7 +417,7 @@ export const PartnershipNewPage: React.FC = () => {
                   value={nextAction}
                   onChange={(e) => setNextAction(e.target.value)}
                   placeholder="e.g. Schedule quarterly business review..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -427,7 +427,7 @@ export const PartnershipNewPage: React.FC = () => {
                   type="date"
                   value={nextActionDate}
                   onChange={(e) => setNextActionDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
             </div>
@@ -439,7 +439,7 @@ export const PartnershipNewPage: React.FC = () => {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Internal context, commercial considerations, relationship history..."
-                className="w-full p-3.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                className="w-full p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
               />
             </div>
           </div>
@@ -448,7 +448,7 @@ export const PartnershipNewPage: React.FC = () => {
           <div className="pt-4 border-t border-slate-800/80 flex items-center justify-end space-x-3">
             <Link
               to="/business-development/partnerships"
-              className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition"
+              className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition"
             >
               Cancel
             </Link>

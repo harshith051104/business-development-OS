@@ -64,7 +64,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
@@ -106,7 +106,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Summary of topics discussed, customer interest, pain points, feedback..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
             />
           </div>
 
@@ -121,7 +121,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
               value={decisions}
               onChange={(e) => setDecisions(e.target.value)}
               placeholder="Agreed next milestones, technical review scope, stakeholder sign-offs..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
           </div>
 
@@ -136,7 +136,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
               value={nextActions}
               onChange={(e) => setNextActions(e.target.value)}
               placeholder="Send project presentation deck, schedule technical review..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
             />
           </div>
 
@@ -149,7 +149,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
             <select
               value={advanceOrgStatus}
               onChange={(e) => setAdvanceOrgStatus(e.target.value)}
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-teal-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-teal-500 transition"
             >
               <option value="">Keep current organization stage</option>
               <option value="Discussion">Advance to Discussion (Active Discussions)</option>
@@ -165,7 +165,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
                 type="checkbox"
                 checked={createFollowUp}
                 onChange={(e) => setCreateFollowUp(e.target.checked)}
-                className="rounded bg-[#1A1040] border-slate-700 text-violet-600 focus:ring-0 w-4 h-4"
+                className="rounded bg-[#2A1E4D] border-slate-700 text-violet-600 focus:ring-0 w-4 h-4"
               />
               <span className="text-xs font-semibold text-white flex items-center gap-1.5">
                 <CalendarPlus className="w-3.5 h-3.5 text-violet-400" />
@@ -174,7 +174,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
             </label>
 
             {createFollowUp && (
-              <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3 animate-fade-in">
+              <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3 animate-fade-in">
                 <div className="space-y-1">
                   <span className="text-[11px] text-slate-400 font-medium">Follow-up Task *</span>
                   <input
@@ -183,7 +183,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
                     value={followupTitle}
                     onChange={(e) => setFollowupTitle(e.target.value)}
                     placeholder="e.g. Send technical architecture brief to Dr. Reddy"
-                    className="w-full bg-[#110B2E] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+                    className="w-full bg-[#0E0B1D] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
                   />
                 </div>
 
@@ -195,7 +195,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
                       required={createFollowUp}
                       value={followupDueAt}
                       onChange={(e) => setFollowupDueAt(e.target.value)}
-                      className="w-full bg-[#110B2E] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
+                      className="w-full bg-[#0E0B1D] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -204,7 +204,7 @@ export const CompleteMeetingModal: React.FC<CompleteMeetingModalProps> = ({
                     <select
                       value={followupPriority}
                       onChange={(e) => setFollowupPriority(e.target.value as any)}
-                      className="w-full bg-[#110B2E] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
+                      className="w-full bg-[#0E0B1D] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
                     >
                       <option value="High">High</option>
                       <option value="Medium">Medium</option>

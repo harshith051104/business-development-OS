@@ -158,14 +158,14 @@ export const MeetingNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
       {/* ── Top Bar ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex items-center justify-between">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Link
             to="/business-development/meetings"
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -189,7 +189,7 @@ export const MeetingNewPage: React.FC = () => {
           )}
 
           {/* 1. Target Organization */}
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <h2 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
               <Building2 className="w-4 h-4" />
                 <span>1. Target Organization *</span>
@@ -207,7 +207,7 @@ export const MeetingNewPage: React.FC = () => {
                   required
                   value={selectedOrgId}
                   onChange={(e) => setSelectedOrgId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- Choose Organization --</option>
                   {organizations.map((org) => (
@@ -235,7 +235,7 @@ export const MeetingNewPage: React.FC = () => {
                 {contactsLoading ? (
                   <p className="text-xs text-slate-500 italic">Loading contacts...</p>
                 ) : orgContacts.length === 0 ? (
-                  <div className="p-3 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-400">
+                  <div className="p-3 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-400">
                     No contacts recorded for this organization yet. Meeting will be linked directly
                     to the organization.
                   </div>
@@ -250,7 +250,7 @@ export const MeetingNewPage: React.FC = () => {
                           className={`p-3 rounded-xl border cursor-pointer select-none transition flex items-center justify-between ${
                             isSelected
                               ? 'bg-teal-500/10 border-teal-500/40 text-teal-200'
-                              : 'bg-[#1A1040] border-slate-800 text-slate-300 hover:border-slate-700'
+                              : 'bg-[#2A1E4D] border-slate-800 text-slate-300 hover:border-slate-700'
                           }`}
                         >
                           <div className="space-y-0.5">
@@ -273,7 +273,7 @@ export const MeetingNewPage: React.FC = () => {
           </div>
 
           {/* 2. Meeting Details */}
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <h2 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
               <CalendarPlus className="w-4 h-4" />
               <span>2. Meeting Information *</span>
@@ -288,7 +288,7 @@ export const MeetingNewPage: React.FC = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Enterprise Platform Presentation"
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -299,7 +299,7 @@ export const MeetingNewPage: React.FC = () => {
                 <select
                   value={meetingType}
                   onChange={(e) => setMeetingType(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   {MEETING_TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -314,7 +314,7 @@ export const MeetingNewPage: React.FC = () => {
                 <select
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value))}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value={30}>30 Minutes</option>
                   <option value={45}>45 Minutes (Default)</option>
@@ -334,7 +334,7 @@ export const MeetingNewPage: React.FC = () => {
                   required
                   value={meetingDate}
                   onChange={(e) => setMeetingDate(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
 
@@ -345,7 +345,7 @@ export const MeetingNewPage: React.FC = () => {
                   required
                   value={meetingTime}
                   onChange={(e) => setMeetingTime(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
             </div>
@@ -362,7 +362,7 @@ export const MeetingNewPage: React.FC = () => {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Executive Boardroom / Apollo Hyderabad"
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
 
@@ -376,14 +376,14 @@ export const MeetingNewPage: React.FC = () => {
                   value={meetingUrl}
                   onChange={(e) => setMeetingUrl(e.target.value)}
                   placeholder="https://teams.microsoft.com/..."
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
             </div>
           </div>
 
           {/* 3. Agenda & Objective */}
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <h2 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
               <FileText className="w-4 h-4" />
               <span>3. Agenda & Preliminary Notes (Optional)</span>
@@ -396,7 +396,7 @@ export const MeetingNewPage: React.FC = () => {
                 value={agenda}
                 onChange={(e) => setAgenda(e.target.value)}
                 placeholder="1. Platform Overview\n2. Clinical Decision Support & Bed Management Demo\n3. Integration Timeline & Commercial Discussion"
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition font-sans leading-relaxed"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition font-sans leading-relaxed"
               />
             </div>
           </div>

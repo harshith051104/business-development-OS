@@ -50,10 +50,10 @@ export default function GmailSetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E]">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D]">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-600/30">
             <Mail className="w-5 h-5" />
@@ -73,7 +73,7 @@ export default function GmailSetupPage() {
         ) : (
           <>
             {/* Status Card */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <div className="flex items-center space-x-3">
                 {status?.connected ? (
                   <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
@@ -93,7 +93,7 @@ export default function GmailSetupPage() {
               </div>
 
               {status?.connected && status.sender_email && (
-                <div className="p-3 rounded-xl bg-[#1A1040]/70 border border-slate-800 text-xs">
+                <div className="p-3 rounded-xl bg-[#2A1E4D]/70 border border-slate-800 text-xs">
                   <span className="text-slate-400">Sending as: </span>
                   <span className="text-white font-mono">{status.sender_email}</span>
                 </div>
@@ -102,7 +102,7 @@ export default function GmailSetupPage() {
 
             {/* Deliverability Health */}
             {status?.connected && health.length > 0 && health.map((h) => (
-              <div key={h.account_id} className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+              <div key={h.account_id} className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Activity className="w-4 h-4 text-violet-400" />
@@ -121,15 +121,15 @@ export default function GmailSetupPage() {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2 rounded-xl bg-[#1A1040]/70 border border-slate-800">
+                  <div className="p-2 rounded-xl bg-[#2A1E4D]/70 border border-slate-800">
                     <div className="text-sm font-bold text-white">{h.sent}</div>
                     <div className="text-[10px] text-slate-500">Sent</div>
                   </div>
-                  <div className="p-2 rounded-xl bg-[#1A1040]/70 border border-slate-800">
+                  <div className="p-2 rounded-xl bg-[#2A1E4D]/70 border border-slate-800">
                     <div className="text-sm font-bold text-white">{h.bounce_rate}%</div>
                     <div className="text-[10px] text-slate-500">Bounce rate</div>
                   </div>
-                  <div className="p-2 rounded-xl bg-[#1A1040]/70 border border-slate-800">
+                  <div className="p-2 rounded-xl bg-[#2A1E4D]/70 border border-slate-800">
                     <div className="text-sm font-bold text-white">{h.reply_rate}%</div>
                     <div className="text-[10px] text-slate-500">Reply rate</div>
                   </div>
@@ -139,7 +139,7 @@ export default function GmailSetupPage() {
 
             {/* Connect Button */}
             {!status?.connected && (
-              <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+              <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
                 <h3 className="text-sm font-bold text-white">Connect Gmail Account</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Authorize ELLY to send emails on your behalf using your Gmail account.
@@ -175,7 +175,7 @@ export default function GmailSetupPage() {
 
             {/* What you can do */}
             {status?.connected && (
-              <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+              <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
                 <h3 className="text-sm font-bold text-white">What ELLY Can Do</h3>
                 <div className="space-y-2 text-xs text-slate-300">
                   <div className="flex items-center space-x-2">
@@ -206,7 +206,7 @@ export default function GmailSetupPage() {
             )}
 
             {/* Setup instructions */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
               <h3 className="text-sm font-bold text-white">Setup Instructions (One-Time)</h3>
               <ol className="text-xs text-slate-400 space-y-2 list-decimal list-inside">
                 <li>Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank" className="text-violet-400 underline">Google Cloud Console</a></li>

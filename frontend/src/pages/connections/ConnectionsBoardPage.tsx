@@ -232,11 +232,11 @@ export const ConnectionsBoardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader Bar ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30">
             <GitFork className="w-5 h-5" />
@@ -269,14 +269,14 @@ export const ConnectionsBoardPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search organizations..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
             />
           </div>
 
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
+            className="bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500"
           >
             <option value="All">All Priorities</option>
             <option value="High">High Priority</option>
@@ -302,8 +302,8 @@ export const ConnectionsBoardPage: React.FC = () => {
         <div
           className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center space-x-2.5 animate-in slide-in-from-bottom duration-200 ${
             notification.type === 'success'
-              ? 'bg-[#110B2E] border-emerald-500/40 text-emerald-300'
-              : 'bg-[#110B2E] border-rose-500/40 text-rose-300'
+              ? 'bg-[#0E0B1D] border-emerald-500/40 text-emerald-300'
+              : 'bg-[#0E0B1D] border-rose-500/40 text-rose-300'
           }`}
         >
           {notification.type === 'success' ? (
@@ -323,7 +323,7 @@ export const ConnectionsBoardPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading relationship pipeline board...</p>
           </div>
         ) : error || !board ? (
-          <div className="p-8 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3 max-w-md mx-auto my-12">
+          <div className="p-8 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3 max-w-md mx-auto my-12">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h3 className="text-sm font-bold text-white">Error Loading Pipeline</h3>
             <p className="text-xs text-slate-400">{error}</p>
@@ -346,9 +346,9 @@ export const ConnectionsBoardPage: React.FC = () => {
                   onDragOver={(e) => handleDragOver(e, col.stage)}
                   onDragLeave={(e) => handleDragLeave(e, col.stage)}
                   onDrop={(e) => handleDrop(e, col.stage)}
-                  className={`w-[245px] shrink-0 rounded-2xl bg-[#110B2E] border transition-all duration-150 flex flex-col max-h-[calc(100vh-210px)] shadow-xl ${
+                  className={`w-[245px] shrink-0 rounded-2xl bg-[#0E0B1D] border transition-all duration-150 flex flex-col max-h-[calc(100vh-210px)] shadow-xl ${
                     isOver
-                      ? 'border-violet-500 ring-2 ring-violet-500/40 bg-[#140E2C] shadow-violet-500/10 scale-[1.01]'
+                      ? 'border-violet-500 ring-2 ring-violet-500/40 bg-[#0E0B1D] shadow-violet-500/10 scale-[1.01]'
                       : 'border-slate-800/90'
                   }`}
                 >
@@ -390,7 +390,7 @@ export const ConnectionsBoardPage: React.FC = () => {
                             draggable
                             onDragStart={(e) => handleDragStart(e, org)}
                             onDragEnd={handleDragEnd}
-                            className={`p-3.5 rounded-xl bg-[#1A1040] border border-slate-800/90 hover:border-violet-500/40 transition-all space-y-2.5 group shadow-md cursor-grab active:cursor-grabbing select-none ${
+                            className={`p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800/90 hover:border-violet-500/40 transition-all space-y-2.5 group shadow-md cursor-grab active:cursor-grabbing select-none ${
                               isBeingDragged
                                 ? 'opacity-30 scale-95 border-violet-500 ring-2 ring-violet-500/50'
                                 : 'hover:scale-[1.01]'
@@ -424,7 +424,7 @@ export const ConnectionsBoardPage: React.FC = () => {
 
                             {/* Primary Contact */}
                             {org.primary_contact_name && (
-                              <div className="p-2 rounded-lg bg-[#110B2E] border border-slate-800/80 text-[11px] space-y-0.5">
+                              <div className="p-2 rounded-lg bg-[#0E0B1D] border border-slate-800/80 text-[11px] space-y-0.5">
                                 <div className="flex items-center space-x-1 text-teal-300 font-semibold truncate">
                                   <User className="w-3 h-3 text-teal-500 shrink-0" />
                                   <span className="truncate">{org.primary_contact_name}</span>
@@ -459,7 +459,7 @@ export const ConnectionsBoardPage: React.FC = () => {
                                 value={org.status}
                                 onChange={(e) => handleQuickSelectMove(org, e.target.value)}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-full bg-[#110B2E] border border-slate-800 rounded-lg px-2 py-1 text-[10px] text-slate-300 focus:outline-none focus:border-violet-500"
+                                className="w-full bg-[#0E0B1D] border border-slate-800 rounded-lg px-2 py-1 text-[10px] text-slate-300 focus:outline-none focus:border-violet-500"
                               >
                                 {PIPELINE_STAGES.map((stg) => (
                                   <option key={stg} value={stg}>
@@ -483,7 +483,7 @@ export const ConnectionsBoardPage: React.FC = () => {
       {/* Move Confirmation Modal (For dropdown selector or custom note entry) */}
       {movingCard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <h3 className="text-sm font-bold text-white">Update Pipeline Stage</h3>
             <p className="text-xs text-slate-300">
               Move <span className="font-bold text-white">"{movingCard.organization_name}"</span>{' '}
@@ -500,7 +500,7 @@ export const ConnectionsBoardPage: React.FC = () => {
                 value={moveNote}
                 onChange={(e) => setMoveNote(e.target.value)}
                 placeholder="e.g. Moved card after client update meeting..."
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
               />
             </div>
 

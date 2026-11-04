@@ -138,7 +138,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
   const dedupEvidence = (item as any).dedup_evidence as string[] | undefined
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 hover:border-slate-700/90 rounded-2xl p-5 shadow-xl transition-all flex flex-col justify-between space-y-4 relative group">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 hover:border-slate-700/90 rounded-2xl p-5 shadow-xl transition-all flex flex-col justify-between space-y-4 relative group">
       <div className="space-y-3">
         {/* Top badges */}
         <div className="flex items-start justify-between gap-2">
@@ -202,7 +202,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
 
         {/* Qualification Reasoning */}
         {item.qualification_reason && (
-          <div className="p-2.5 rounded-xl bg-[#1A1040] border border-violet-500/20 text-xs space-y-1">
+          <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-violet-500/20 text-xs space-y-1">
             <div className="flex items-center space-x-1 text-violet-400 font-bold text-[10px] uppercase tracking-wider">
               <Sparkles className="w-3 h-3 text-violet-400" />
               <span>Why this matches</span>
@@ -241,7 +241,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
         <div className="flex items-center space-x-1.5">
           <Link
             to={`/business-development/discover/${item.id}`}
-            className="py-1.5 px-3 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold inline-flex items-center space-x-1.5 transition border border-slate-800"
+            className="py-1.5 px-3 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold inline-flex items-center space-x-1.5 transition border border-slate-800"
           >
             <Users className="w-3 h-3 text-teal-400" />
             <span>View</span>
@@ -250,7 +250,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
           {onResearch && researchStatus !== 'completed' && (
             <button
               onClick={() => onResearch(item.id)}
-              className="py-1.5 px-3 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold inline-flex items-center space-x-1.5 transition border border-slate-800"
+              className="py-1.5 px-3 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold inline-flex items-center space-x-1.5 transition border border-slate-800"
             >
               <Search className="w-3 h-3 text-amber-400" />
               <span>Research</span>
@@ -263,7 +263,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
             <button
               onClick={() => onSave(item.id)}
               title="Save for later"
-              className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-violet-300 transition border border-slate-800"
+              className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-400 hover:text-violet-300 transition border border-slate-800"
             >
               <Bookmark className="w-3.5 h-3.5" />
             </button>
@@ -273,7 +273,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
             <button
               onClick={() => onSkip(item.id)}
               title="Skip"
-              className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition border border-slate-800"
+              className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition border border-slate-800"
             >
               <Ban className="w-3.5 h-3.5" />
             </button>

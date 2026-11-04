@@ -53,7 +53,7 @@ export const AdminUserNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
       <main className="flex-1 p-6 max-w-2xl w-full mx-auto space-y-6">
@@ -66,7 +66,7 @@ export const AdminUserNewPage: React.FC = () => {
           <span className="text-slate-200 font-medium">Create User</span>
         </div>
 
-        <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
           <div className="p-3 rounded-2xl bg-gradient-to-br from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-600/30">
             <UserPlus className="w-6 h-6" />
           </div>
@@ -85,7 +85,7 @@ export const AdminUserNewPage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5 text-xs">
+        <form onSubmit={handleSubmit} className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5 text-xs">
           <div className="space-y-1.5">
             <label className="font-semibold text-slate-300 flex items-center space-x-1.5">
               <User className="w-3.5 h-3.5 text-rose-400" />
@@ -97,7 +97,7 @@ export const AdminUserNewPage: React.FC = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Rachel Adams"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
             />
           </div>
 
@@ -112,7 +112,7 @@ export const AdminUserNewPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="rachel.adams@company.com"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-rose-500 font-mono"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-rose-500 font-mono"
             />
           </div>
 
@@ -128,7 +128,7 @@ export const AdminUserNewPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-rose-500 font-mono"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-rose-500 font-mono"
             />
           </div>
 
@@ -141,7 +141,7 @@ export const AdminUserNewPage: React.FC = () => {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
               >
                 <option value="BUSINESS_DEVELOPMENT">Business Development</option>
                 <option value="ADMIN">Admin</option>
@@ -153,7 +153,7 @@ export const AdminUserNewPage: React.FC = () => {
               <select
                 value={isActive ? 'true' : 'false'}
                 onChange={(e) => setIsActive(e.target.value === 'true')}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-rose-500"
               >
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
@@ -164,7 +164,7 @@ export const AdminUserNewPage: React.FC = () => {
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
             <Link
               to="/admin/users"
-              className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 font-semibold transition"
+              className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 font-semibold transition"
             >
               Cancel
             </Link>

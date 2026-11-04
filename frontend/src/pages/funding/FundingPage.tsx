@@ -95,7 +95,7 @@ export const FundingPage: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-6xl mx-auto space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -113,7 +113,7 @@ export const FundingPage: React.FC = () => {
         {/* Guided search form */}
         <form
           onSubmit={handleSearch}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-2xl bg-[#131127]/60 border border-white/5"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-2xl bg-[#0e0b1d]/60 border border-white/5"
         >
           <div>
             <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5 block">
@@ -124,7 +124,7 @@ export const FundingPage: React.FC = () => {
               placeholder="e.g. fintech, healthtech"
               value={sector}
               onChange={(e) => setSector(e.target.value)}
-              className="w-full bg-[#0D0B1E] px-3 py-2 rounded-xl border border-white/5 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/40"
+              className="w-full bg-[#0E0B1D] px-3 py-2 rounded-xl border border-white/5 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/40"
             />
           </div>
           <div>
@@ -136,7 +136,7 @@ export const FundingPage: React.FC = () => {
               placeholder="e.g. seed, series A"
               value={stage}
               onChange={(e) => setStage(e.target.value)}
-              className="w-full bg-[#0D0B1E] px-3 py-2 rounded-xl border border-white/5 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/40"
+              className="w-full bg-[#0E0B1D] px-3 py-2 rounded-xl border border-white/5 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/40"
             />
           </div>
           <div>
@@ -148,7 +148,7 @@ export const FundingPage: React.FC = () => {
               placeholder="e.g. Bangalore, India"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full bg-[#0D0B1E] px-3 py-2 rounded-xl border border-white/5 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/40"
+              className="w-full bg-[#0E0B1D] px-3 py-2 rounded-xl border border-white/5 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/40"
             />
           </div>
           <div className="sm:col-span-3">
@@ -186,7 +186,7 @@ export const FundingPage: React.FC = () => {
               {results.map((row) => (
                 <div
                   key={row.discovered_org_id}
-                  className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl space-y-3"
+                  className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl space-y-3"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>

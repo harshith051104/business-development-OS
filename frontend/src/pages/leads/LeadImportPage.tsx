@@ -61,7 +61,7 @@ export const LeadImportPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-5xl mx-auto space-y-6">
         <div>
@@ -83,7 +83,7 @@ export const LeadImportPage: React.FC = () => {
         )}
 
         {step === 'upload' && (
-          <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#131127]/60 cursor-pointer hover:border-sky-500/40 transition-all">
+          <label className="flex flex-col items-center justify-center gap-3 p-16 rounded-2xl border-2 border-dashed border-white/10 bg-[#0e0b1d]/60 cursor-pointer hover:border-sky-500/40 transition-all">
             {uploading ? (
               <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
             ) : (
@@ -107,12 +107,12 @@ export const LeadImportPage: React.FC = () => {
 
         {step === 'map' && preview && (
           <div className="space-y-5">
-            <div className="p-4 rounded-xl bg-[#131127]/60 border border-white/5 text-sm text-gray-300">
+            <div className="p-4 rounded-xl bg-[#0e0b1d]/60 border border-white/5 text-sm text-gray-300">
               <span className="font-semibold text-white">{preview.filename}</span> — {preview.total_rows} row(s)
               detected. Map each CRM field to a column from your file, or leave it unmapped to skip it.
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-[#131127]/60 border border-white/5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-[#0e0b1d]/60 border border-white/5">
               {preview.target_fields
                 .filter((field) => showAllFields || mapping[field] || field === 'org_name')
                 .map((field) => (
@@ -125,7 +125,7 @@ export const LeadImportPage: React.FC = () => {
                       onChange={(e) =>
                         setMapping((prev) => ({ ...prev, [field]: e.target.value || null }))
                       }
-                      className="w-full px-3 py-2 rounded-lg bg-[#0c0a1f] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
+                      className="w-full px-3 py-2 rounded-lg bg-[#0e0b1d] border border-white/10 text-sm focus:outline-none focus:border-sky-500/50"
                     >
                       <option value="">— Not mapped —</option>
                       {preview.headers.map((h) => (
@@ -148,7 +148,7 @@ export const LeadImportPage: React.FC = () => {
 
             <div className="overflow-x-auto rounded-xl border border-white/5">
               <table className="w-full text-xs">
-                <thead className="bg-[#131127]">
+                <thead className="bg-[#0e0b1d]">
                   <tr>
                     {preview.headers.map((h) => (
                       <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">
@@ -208,7 +208,7 @@ export const LeadImportPage: React.FC = () => {
                 ['Contacts Created', result.contacts_created],
                 ['Skipped', result.skipped_count],
               ].map(([label, value]) => (
-                <div key={label as string} className="p-4 rounded-xl bg-[#131127]/60 border border-white/5 text-center">
+                <div key={label as string} className="p-4 rounded-xl bg-[#0e0b1d]/60 border border-white/5 text-center">
                   <div className="text-2xl font-bold">{value}</div>
                   <div className="text-xs text-gray-400 mt-1">{label}</div>
                 </div>
@@ -238,7 +238,7 @@ export const LeadImportPage: React.FC = () => {
             </div>
             <div className="overflow-x-auto rounded-xl border border-white/5">
               <table className="w-full text-xs">
-                <thead className="bg-[#131127]">
+                <thead className="bg-[#0e0b1d]">
                   <tr>
                     {['File', 'Rows', 'Orgs Created', 'Contacts Created', 'Skipped', 'When'].map((h) => (
                       <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">

@@ -40,7 +40,7 @@ export const OutreachTrackerPage: React.FC = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-6xl mx-auto space-y-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -79,7 +79,7 @@ export const OutreachTrackerPage: React.FC = () => {
               { label: 'Clicked', value: `${data.summary.clicked} (${data.summary.click_rate}%)`, Icon: MousePointerClick, color: 'text-violet-300' },
               { label: 'Replied', value: `${data.summary.replied} (${data.summary.reply_rate}%)`, Icon: MessageSquare, color: 'text-emerald-300' },
             ].map(({ label, value, Icon, color }) => (
-              <div key={label} className="p-4 rounded-2xl bg-[#131127]/60 border border-white/5">
+              <div key={label} className="p-4 rounded-2xl bg-[#0e0b1d]/60 border border-white/5">
                 <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
                   <Icon className={`w-3.5 h-3.5 ${color}`} />
                   {label}
@@ -95,13 +95,13 @@ export const OutreachTrackerPage: React.FC = () => {
             <Loader2 className="w-6 h-6 animate-spin" />
           </div>
         ) : data && data.items.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-[#131127]/60 border border-white/5 text-center text-sm text-gray-400">
+          <div className="p-8 rounded-2xl bg-[#0e0b1d]/60 border border-white/5 text-center text-sm text-gray-400">
             No campaign emails sent yet. Once a campaign sends, sends show up here with open/click/reply status.
           </div>
         ) : data ? (
           <div className="overflow-x-auto rounded-xl border border-white/5">
             <table className="w-full text-xs">
-              <thead className="bg-[#131127]">
+              <thead className="bg-[#0e0b1d]">
                 <tr>
                   {['Status', 'Contact', 'Organization', 'Campaign', 'Subject', 'Sent', 'Opened', 'Clicked', 'Replied'].map((h) => (
                     <th key={h} className="px-3 py-2 text-left font-semibold text-gray-400 whitespace-nowrap">

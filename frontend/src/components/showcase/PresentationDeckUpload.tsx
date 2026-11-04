@@ -174,7 +174,7 @@ export const PresentationDeckUpload: React.FC<PresentationDeckUploadProps> = ({
 
       {/* Attached Presentation Display */}
       {value ? (
-        <div className="p-3.5 rounded-xl bg-[#1A1040] border border-indigo-500/40 flex items-center justify-between gap-3">
+        <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-indigo-500/40 flex items-center justify-between gap-3">
           <div className="flex items-center space-x-3 overflow-hidden">
             <div className="p-2 rounded-lg bg-indigo-600/20 text-indigo-400 shrink-0">
               {isCurrentGslides ? <LinkIcon className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
@@ -217,7 +217,7 @@ export const PresentationDeckUpload: React.FC<PresentationDeckUploadProps> = ({
           className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition ${
             isUploading
               ? 'border-indigo-500/60 bg-indigo-950/20'
-              : 'border-slate-700 hover:border-indigo-500/50 hover:bg-[#1A1040]/40'
+              : 'border-slate-700 hover:border-indigo-500/50 hover:bg-[#2A1E4D]/40'
           }`}
         >
           {isUploading ? (
@@ -245,7 +245,7 @@ export const PresentationDeckUpload: React.FC<PresentationDeckUploadProps> = ({
         </div>
       ) : (
         /* Google Slides Link Input */
-        <div className="rounded-2xl border border-slate-700 p-4 bg-[#110B2E] space-y-3">
+        <div className="rounded-2xl border border-slate-700 p-4 bg-[#0E0B1D] space-y-3">
           <p className="text-xs text-slate-300 leading-relaxed">
             Paste any Google Slides sharing link (e.g.{' '}
             <code className="text-violet-300 font-mono text-[11px]">
@@ -259,7 +259,7 @@ export const PresentationDeckUpload: React.FC<PresentationDeckUploadProps> = ({
               value={gslidesLinkInput}
               onChange={(e) => setGslidesLinkInput(e.target.value)}
               placeholder="https://docs.google.com/presentation/d/..."
-              className="flex-1 px-3.5 py-2 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+              className="flex-1 px-3.5 py-2 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
             />
             <button
               type="button"

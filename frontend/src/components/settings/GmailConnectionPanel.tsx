@@ -6,7 +6,7 @@ import type { GmailAccount } from '../../types/campaign'
 import { Loader2, Mail } from 'lucide-react'
 
 const Card: React.FC<{ title: string; children: React.ReactNode; note?: string }> = ({ title, children, note }) => (
-  <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-5 space-y-3">
+  <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-5 space-y-3">
     <div>
       <h2 className="text-sm font-semibold text-white">{title}</h2>
       {note && <p className="text-[11px] text-slate-500 mt-0.5">{note}</p>}

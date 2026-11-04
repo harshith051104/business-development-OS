@@ -53,11 +53,11 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
       {activities.map((act) => (
         <div key={act.id} className="relative group">
           {/* Timeline marker node */}
-          <div className="absolute -left-5 top-2 w-3.5 h-3.5 rounded-full bg-[#1A1040] border border-slate-700 flex items-center justify-center -translate-x-1/2">
+          <div className="absolute -left-5 top-2 w-3.5 h-3.5 rounded-full bg-[#2A1E4D] border border-slate-700 flex items-center justify-center -translate-x-1/2">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
           </div>
 
-          <div className="p-3 rounded-xl bg-[#1A1040]/90 border border-slate-800/80 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="p-3 rounded-xl bg-[#2A1E4D]/90 border border-slate-800/80 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-start space-x-2.5 min-w-0">
               <div className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 shrink-0 mt-0.5 sm:mt-0">
                 {getActivityIcon(act.type)}
@@ -92,7 +92,7 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   }
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">

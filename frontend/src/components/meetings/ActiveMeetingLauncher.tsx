@@ -36,6 +36,13 @@ export const ActiveMeetingLauncher: React.FC = () => {
     const nextVal = !autoEnterEnabled
     setAutoEnterEnabled(nextVal)
     localStorage.setItem('elly_auto_enter_meeting', String(nextVal))
+    // Ask for notification permission right on this user gesture: a browser's
+    // popup blocker will later silently swallow window.open() calls fired
+    // from the polling loop below (no user gesture at that point), so the
+    // notification's own onclick handler is the only reliable automatic path.
+    if (nextVal && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {})
+    }
   }
 
   // Poll for active / upcoming meetings
@@ -62,13 +69,25 @@ export const ActiveMeetingLauncher: React.FC = () => {
               !dismissedMeetingIds.includes(m.id)
             ) {
               launchedMeetingIdsRef.current.add(m.id)
-              // Auto-launch meet URL in new tab
-              window.open(m.meeting_url, '_blank')
-              // Notify user
+              // Browsers block window.open() calls made outside a direct user
+              // gesture (a timer tick here isn't one), so this best-effort
+              // attempt only succeeds if the user has already allowed popups
+              // for this site. It's harmless to try either way.
+              const meetingUrl = m.meeting_url
+              window.open(meetingUrl, '_blank')
+              // A click on a system notification IS a trusted user gesture,
+              // so window.open() from inside its onclick is not blocked -
+              // this is the reliable automatic-join path.
               if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(`Launching Meeting: ${m.title}`, {
-                  body: `Entering meeting with ${m.organization_name || 'Prospect'}`,
+                const notification = new Notification(`Launching Meeting: ${m.title}`, {
+                  body: `Entering meeting with ${m.organization_name || 'Prospect'} - click to join`,
+                  requireInteraction: true,
                 })
+                notification.onclick = () => {
+                  window.open(meetingUrl, '_blank')
+                  window.focus()
+                  notification.close()
+                }
               }
             }
           }
@@ -122,7 +141,7 @@ export const ActiveMeetingLauncher: React.FC = () => {
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-md w-full animate-in slide-in-from-top duration-300">
-      <div className="bg-[#160E3B]/95 backdrop-blur-md border border-violet-500/40 rounded-2xl p-4 shadow-2xl text-white space-y-3">
+      <div className="bg-[#0E0B1D]/95 backdrop-blur-md border border-violet-500/40 rounded-2xl p-4 shadow-2xl text-white space-y-3">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">

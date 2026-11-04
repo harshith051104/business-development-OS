@@ -247,7 +247,7 @@ export const ShowcaseListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       {/* Hidden File Input for quick card uploads */}
@@ -261,7 +261,7 @@ export const ShowcaseListPage: React.FC = () => {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#110B2E] border border-emerald-500/40 text-emerald-300 shadow-2xl flex items-center space-x-2.5 animate-in slide-in-from-bottom duration-200">
+        <div className="fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#0E0B1D] border border-emerald-500/40 text-emerald-300 shadow-2xl flex items-center space-x-2.5 animate-in slide-in-from-bottom duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span className="text-xs font-semibold">{toastMessage}</span>
         </div>
@@ -269,7 +269,7 @@ export const ShowcaseListPage: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         {/* ── Hero Banner with Prominent Upload Action ── */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-900/40 via-[#110B2E] to-indigo-950/40 border border-slate-800/90 p-6 sm:p-10 shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-900/40 via-[#0E0B1D] to-indigo-950/40 border border-slate-800/90 p-6 sm:p-10 shadow-2xl">
           <div className="absolute right-0 top-0 -mt-12 -mr-12 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-3xl space-y-3">
@@ -310,7 +310,7 @@ export const ShowcaseListPage: React.FC = () => {
                 className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${
                   selectedCategory === cat
                     ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30'
-                    : 'bg-[#110B2E] text-slate-400 hover:text-white hover:bg-slate-800/80 border border-slate-800'
+                    : 'bg-[#0E0B1D] text-slate-400 hover:text-white hover:bg-slate-800/80 border border-slate-800'
                 }`}
               >
                 {cat}
@@ -319,7 +319,7 @@ export const ShowcaseListPage: React.FC = () => {
           </div>
 
           {/* Search & Secondary Filter Bar */}
-          <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center gap-3">
+          <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -327,7 +327,7 @@ export const ShowcaseListPage: React.FC = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search projects by name, features, or keywords..."
-                className="w-full pl-10 pr-4 py-2 bg-[#1A1040] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full pl-10 pr-4 py-2 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
               />
               {searchInput && (
                 <button
@@ -343,7 +343,7 @@ export const ShowcaseListPage: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 bg-[#1A1040] border border-slate-700/80 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500 w-full sm:w-auto"
+              className="px-3 py-2 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500 w-full sm:w-auto"
             >
               <option value="All">All Statuses</option>
               <option value="Active">Active Only</option>
@@ -356,7 +356,7 @@ export const ShowcaseListPage: React.FC = () => {
               <select
                 value={selectedTag}
                 onChange={(e) => setSelectedTag(e.target.value)}
-                className="px-3 py-2 bg-[#1A1040] border border-slate-700/80 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500 w-full sm:w-auto"
+                className="px-3 py-2 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500 w-full sm:w-auto"
               >
                 <option value="">All Tags</option>
                 {availableTags.map((tag) => (
@@ -386,7 +386,7 @@ export const ShowcaseListPage: React.FC = () => {
             <p className="text-xs text-slate-400 font-medium">Loading showcase projects...</p>
           </div>
         ) : error ? (
-          <div className="py-16 text-center space-y-3 bg-[#110B2E] border border-rose-500/20 rounded-3xl p-8">
+          <div className="py-16 text-center space-y-3 bg-[#0E0B1D] border border-rose-500/20 rounded-3xl p-8">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h2 className="text-sm font-bold text-white">Error loading showcase</h2>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">{error}</p>
@@ -398,7 +398,7 @@ export const ShowcaseListPage: React.FC = () => {
             </button>
           </div>
         ) : projects.length === 0 ? (
-          <div className="py-20 text-center space-y-4 bg-[#110B2E] border border-slate-800/80 rounded-3xl p-8">
+          <div className="py-20 text-center space-y-4 bg-[#0E0B1D] border border-slate-800/80 rounded-3xl p-8">
             <div className="w-12 h-12 rounded-2xl bg-violet-600/10 text-violet-400 flex items-center justify-center mx-auto">
               <Layers className="w-6 h-6" />
             </div>
@@ -424,16 +424,16 @@ export const ShowcaseListPage: React.FC = () => {
               <div
                 key={project.id}
                 onClick={() => navigate(`/business-development/showcase/${project.id}`)}
-                className="rounded-3xl bg-[#110B2E] border border-slate-800/90 hover:border-violet-500/50 transition-all duration-300 cursor-pointer shadow-xl flex flex-col justify-between overflow-hidden group hover:shadow-violet-950/20"
+                className="rounded-3xl bg-[#0E0B1D] border border-slate-800/90 hover:border-violet-500/50 transition-all duration-300 cursor-pointer shadow-xl flex flex-col justify-between overflow-hidden group hover:shadow-violet-950/20"
               >
                 {/* Visual Header / Thumbnail Box */}
-                <div className="relative h-44 bg-gradient-to-br from-violet-950/60 via-[#1A1040] to-slate-900 flex items-center justify-center p-6 border-b border-slate-800/80 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#110B2E] via-transparent to-transparent opacity-80" />
+                <div className="relative h-44 bg-gradient-to-br from-violet-950/60 via-[#2A1E4D] to-slate-900 flex items-center justify-center p-6 border-b border-slate-800/80 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0E0B1D] via-transparent to-transparent opacity-80" />
                   <div className="relative z-10 text-center space-y-2">
                     <div className="w-12 h-12 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300 mx-auto shadow-inner group-hover:scale-110 transition duration-300">
                       <Sparkles className="w-6 h-6" />
                     </div>
-                    <span className="inline-block px-3 py-1 rounded-full bg-[#110B2E]/80 backdrop-blur-md border border-slate-700 text-[10px] font-mono uppercase tracking-wider text-violet-300">
+                    <span className="inline-block px-3 py-1 rounded-full bg-[#0E0B1D]/80 backdrop-blur-md border border-slate-700 text-[10px] font-mono uppercase tracking-wider text-violet-300">
                       {project.category}
                     </span>
                   </div>
@@ -474,7 +474,7 @@ export const ShowcaseListPage: React.FC = () => {
                       {project.tags.slice(0, 3).map((tag, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-0.5 rounded-md bg-[#1A1040] border border-slate-800 text-[10px] text-slate-400"
+                          className="px-2 py-0.5 rounded-md bg-[#2A1E4D] border border-slate-800 text-[10px] text-slate-400"
                         >
                           #{tag}
                         </span>
@@ -490,7 +490,7 @@ export const ShowcaseListPage: React.FC = () => {
 
                 {/* Card Footer Actions */}
                 <div
-                  className="px-6 py-4 bg-[#1A1040]/60 border-t border-slate-800/80 flex items-center justify-between gap-2"
+                  className="px-6 py-4 bg-[#2A1E4D]/60 border-t border-slate-800/80 flex items-center justify-between gap-2"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center space-x-2">
@@ -510,7 +510,7 @@ export const ShowcaseListPage: React.FC = () => {
                         setActiveProjectForFileInput(project)
                         cardFileInputRef.current?.click()
                       }}
-                      className="flex items-center space-x-1 py-1.5 px-2.5 rounded-xl bg-[#110B2E] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs transition"
+                      className="flex items-center space-x-1 py-1.5 px-2.5 rounded-xl bg-[#0E0B1D] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs transition"
                       title={project.presentation_url ? "Replace Presentation Deck" : "Upload Presentation Deck"}
                     >
                       <UploadCloud className="w-3.5 h-3.5 text-indigo-400" />
@@ -524,7 +524,7 @@ export const ShowcaseListPage: React.FC = () => {
                         href={project.demo_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 rounded-xl bg-[#110B2E] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
+                        className="p-2 rounded-xl bg-[#0E0B1D] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
                         title="Open Interactive Demo"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -532,7 +532,7 @@ export const ShowcaseListPage: React.FC = () => {
                     )}
                     <Link
                       to={`/business-development/showcase/${project.id}`}
-                      className="inline-flex items-center space-x-1 py-1.5 px-3 rounded-xl bg-[#110B2E] hover:bg-slate-800 text-slate-200 text-xs font-medium border border-slate-800 hover:border-slate-700 transition"
+                      className="inline-flex items-center space-x-1 py-1.5 px-3 rounded-xl bg-[#0E0B1D] hover:bg-slate-800 text-slate-200 text-xs font-medium border border-slate-800 hover:border-slate-700 transition"
                     >
                       <span>Details</span>
                       <ArrowRight className="w-3 h-3 text-slate-400" />
@@ -548,7 +548,7 @@ export const ShowcaseListPage: React.FC = () => {
       {/* ── UPLOAD PROJECT & PRESENTATION DECK MODAL ── */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in duration-200">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-800 pb-4">
               <div className="space-y-1">
@@ -565,7 +565,7 @@ export const ShowcaseListPage: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsUploadModalOpen(false)}
-                className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white transition"
+                className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-400 hover:text-white transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -580,7 +580,7 @@ export const ShowcaseListPage: React.FC = () => {
 
             <form onSubmit={handleCreateProject} className="space-y-5">
               {/* 1. Presentation Deck Upload Area */}
-              <div className="p-4 rounded-2xl bg-[#1A1040]/70 border border-violet-800/40 space-y-2">
+              <div className="p-4 rounded-2xl bg-[#2A1E4D]/70 border border-violet-800/40 space-y-2">
                 <PresentationDeckUpload
                   value={newPresentationUrl}
                   onChange={(url) => setNewPresentationUrl(url)}
@@ -599,7 +599,7 @@ export const ShowcaseListPage: React.FC = () => {
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="e.g. AI Workflow Engine"
-                    className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                    className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                   />
                 </div>
 
@@ -608,7 +608,7 @@ export const ShowcaseListPage: React.FC = () => {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                    className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                   >
                     <option value="Healthcare">Healthcare</option>
                     <option value="Artificial Intelligence">Artificial Intelligence</option>
@@ -632,7 +632,7 @@ export const ShowcaseListPage: React.FC = () => {
                   value={newShortDesc}
                   onChange={(e) => setNewShortDesc(e.target.value)}
                   placeholder="Concise 1-2 sentence overview for cards and client teasers..."
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -647,7 +647,7 @@ export const ShowcaseListPage: React.FC = () => {
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Detailed breakdown of the architecture, workflow capabilities, and enterprise value..."
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -661,7 +661,7 @@ export const ShowcaseListPage: React.FC = () => {
                   value={newFeatures}
                   onChange={(e) => setNewFeatures(e.target.value)}
                   placeholder="Real-time multi-agent orchestration&#10;Enterprise grade SOC2 encryption&#10;One-click analytics export"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -674,7 +674,7 @@ export const ShowcaseListPage: React.FC = () => {
                     value={newDemoUrl}
                     onChange={(e) => setNewDemoUrl(e.target.value)}
                     placeholder="https://demo.mycompany.com"
-                    className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                    className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                   />
                 </div>
 
@@ -685,7 +685,7 @@ export const ShowcaseListPage: React.FC = () => {
                     value={newWebsiteUrl}
                     onChange={(e) => setNewWebsiteUrl(e.target.value)}
                     placeholder="https://mycompany.com/product"
-                    className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                    className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                   />
                 </div>
               </div>

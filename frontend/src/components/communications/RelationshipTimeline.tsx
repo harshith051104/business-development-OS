@@ -92,7 +92,7 @@ export const RelationshipTimeline: React.FC<RelationshipTimelineProps> = ({
   }
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
@@ -129,7 +129,7 @@ export const RelationshipTimeline: React.FC<RelationshipTimelineProps> = ({
           <p className="text-xs text-slate-500">Loading relationship history...</p>
         </div>
       ) : !timeline || timeline.events.length === 0 ? (
-        <div className="py-12 text-center space-y-3 bg-[#1A1040] rounded-xl border border-slate-800 p-6">
+        <div className="py-12 text-center space-y-3 bg-[#2A1E4D] rounded-xl border border-slate-800 p-6">
           <MessageSquare className="w-8 h-8 text-slate-600 mx-auto" />
           <h3 className="text-xs font-bold text-slate-300">No communication history yet</h3>
           <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
@@ -162,9 +162,9 @@ export const RelationshipTimeline: React.FC<RelationshipTimelineProps> = ({
             return (
               <div key={event.id} className="relative group">
                 {/* Bullet */}
-                <div className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#110B2E] border-2 border-violet-500 group-hover:scale-110 transition flex items-center justify-center" />
+                <div className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#0E0B1D] border-2 border-violet-500 group-hover:scale-110 transition flex items-center justify-center" />
 
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 hover:border-slate-700 transition space-y-2">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 hover:border-slate-700 transition space-y-2">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs font-mono font-bold text-violet-300">
@@ -196,7 +196,7 @@ export const RelationshipTimeline: React.FC<RelationshipTimelineProps> = ({
                   )}
 
                   {event.description && (
-                    <p className="text-xs text-slate-300 bg-[#110B2E] p-2.5 rounded-lg border border-slate-800/80 leading-relaxed whitespace-pre-wrap">
+                    <p className="text-xs text-slate-300 bg-[#0E0B1D] p-2.5 rounded-lg border border-slate-800/80 leading-relaxed whitespace-pre-wrap">
                       {event.description}
                     </p>
                   )}

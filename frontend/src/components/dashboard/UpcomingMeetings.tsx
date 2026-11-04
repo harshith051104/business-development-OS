@@ -28,7 +28,7 @@ export const UpcomingMeetings: React.FC<UpcomingMeetingsProps> = ({
       {meetings.map((item) => (
         <div
           key={item.id}
-          className="p-3.5 rounded-xl bg-[#1A1040]/90 border border-slate-800/80 hover:border-purple-500/30 transition-all duration-200 flex flex-col justify-between space-y-2.5 group"
+          className="p-3.5 rounded-xl bg-[#2A1E4D]/90 border border-slate-800/80 hover:border-purple-500/30 transition-all duration-200 flex flex-col justify-between space-y-2.5 group"
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center space-x-2 min-w-0">
@@ -64,7 +64,7 @@ export const UpcomingMeetings: React.FC<UpcomingMeetingsProps> = ({
   }
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">

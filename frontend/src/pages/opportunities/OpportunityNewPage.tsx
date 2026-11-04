@@ -152,13 +152,13 @@ export const OpportunityNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex items-center justify-between">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Link
             to="/business-development/opportunities"
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -179,7 +179,7 @@ export const OpportunityNewPage: React.FC = () => {
           )}
 
           {/* 1. Target Account */}
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <h2 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               <span>1. Target Account & Stakeholder *</span>
@@ -192,7 +192,7 @@ export const OpportunityNewPage: React.FC = () => {
                   required
                   value={selectedOrgId}
                   onChange={(e) => setSelectedOrgId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- Choose Organization --</option>
                   {organizations.map((org) => (
@@ -208,7 +208,7 @@ export const OpportunityNewPage: React.FC = () => {
                 <select
                   value={selectedContactId}
                   onChange={(e) => setSelectedContactId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- None / General Account --</option>
                   {contacts.map((c) => (
@@ -222,7 +222,7 @@ export const OpportunityNewPage: React.FC = () => {
           </div>
 
           {/* 2. Opportunity Details */}
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <h2 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
               <Target className="w-4 h-4" />
               <span>2. Opportunity Information *</span>
@@ -236,7 +236,7 @@ export const OpportunityNewPage: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Enterprise Platform Collaboration"
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -248,7 +248,7 @@ export const OpportunityNewPage: React.FC = () => {
               <select
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value ? Number(e.target.value) : '')}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 <option value="">-- None / General Enterprise Discussion --</option>
                 {projects.map((p) => (
@@ -265,7 +265,7 @@ export const OpportunityNewPage: React.FC = () => {
                 <select
                   value={stage}
                   onChange={(e) => setStage(e.target.value as OpportunityStage)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   {STAGES.map((s) => (
                     <option key={s} value={s}>
@@ -280,7 +280,7 @@ export const OpportunityNewPage: React.FC = () => {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as OpportunityPriority)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="High">High Priority</option>
                   <option value="Medium">Medium Priority</option>
@@ -300,7 +300,7 @@ export const OpportunityNewPage: React.FC = () => {
                   value={estimatedValue}
                   onChange={(e) => setEstimatedValue(e.target.value)}
                   placeholder="e.g. 100000"
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
                 />
               </div>
 
@@ -323,7 +323,7 @@ export const OpportunityNewPage: React.FC = () => {
                   type="date"
                   value={expectedCloseDate}
                   onChange={(e) => setExpectedCloseDate(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
             </div>
@@ -337,7 +337,7 @@ export const OpportunityNewPage: React.FC = () => {
                   value={nextAction}
                   onChange={(e) => setNextAction(e.target.value)}
                   placeholder="e.g. Schedule architecture review with IT committee"
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
 
@@ -347,7 +347,7 @@ export const OpportunityNewPage: React.FC = () => {
                   type="datetime-local"
                   value={nextActionDate}
                   onChange={(e) => setNextActionDate(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
             </div>
@@ -359,7 +359,7 @@ export const OpportunityNewPage: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Key drivers, department scope, and partnership goals..."
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
               />
             </div>
           </div>

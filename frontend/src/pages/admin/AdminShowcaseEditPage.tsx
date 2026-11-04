@@ -128,7 +128,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col">
         <AdminNavbar />
         <div className="flex-1 flex items-center justify-center">
           <RotateCw className="w-8 h-8 animate-spin text-indigo-400" />
@@ -138,7 +138,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
       <main className="flex-1 p-6 max-w-4xl w-full mx-auto space-y-6">
@@ -151,7 +151,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
           <span className="text-slate-200 font-medium">Edit {name}</span>
         </div>
 
-        <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
           <div className="p-3 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-600/30">
             <Sparkles className="w-6 h-6" />
           </div>
@@ -170,7 +170,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6 text-xs">
+        <form onSubmit={handleSubmit} className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6 text-xs">
           {/* Section 1: Overview */}
           <div className="space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
@@ -184,7 +184,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-bold"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-bold"
               />
             </div>
 
@@ -194,7 +194,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="Healthcare">Healthcare</option>
                   <option value="Artificial Intelligence">Artificial Intelligence</option>
@@ -210,7 +210,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="Draft">Draft (Internal Only)</option>
                   <option value="Review">Review (Under Review)</option>
@@ -227,7 +227,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 required
                 value={shortDescription}
                 onChange={(e) => setShortDescription(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -238,7 +238,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-3.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -257,7 +257,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                   type="url"
                   value={demoUrl}
                   onChange={(e) => setDemoUrl(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
 
@@ -277,7 +277,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                   type="url"
                   value={thumbnailUrl}
                   onChange={(e) => setThumbnailUrl(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
 
@@ -287,7 +287,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                   type="url"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
             </div>
@@ -306,7 +306,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 rows={3}
                 value={featuresText}
                 onChange={(e) => setFeaturesText(e.target.value)}
-                className="w-full p-3.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -317,7 +317,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                   type="text"
                   value={problemSolved}
                   onChange={(e) => setProblemSolved(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -327,7 +327,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                   type="text"
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -338,7 +338,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
                 type="text"
                 value={tagsText}
                 onChange={(e) => setTagsText(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -346,7 +346,7 @@ export const AdminShowcaseEditPage: React.FC = () => {
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
             <Link
               to="/admin/showcase"
-              className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 font-semibold transition"
+              className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 font-semibold transition"
             >
               Cancel
             </Link>

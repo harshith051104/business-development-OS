@@ -119,10 +119,10 @@ export const AdminKnowledgeBasePage: React.FC = () => {
   }
 
   const ready = documents.filter((d) => d.searchable).length
-  const input = 'px-3 py-2 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500'
+  const input = 'px-3 py-2 rounded-lg bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500'
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] md:pl-64">
       <AdminNavbar />
       <main className="p-6 max-w-5xl mx-auto space-y-4">
         <div>
@@ -142,7 +142,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
             ['Searchable by Ask ELLY', loading ? '…' : `${ready} of ${documents.length}`],
             ['Searchable by meaning', loading ? '…' : documents.filter((d) => d.search_mode === 'semantic_and_keyword').length],
           ].map(([label, value]) => (
-            <div key={label as string} className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+            <div key={label as string} className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4">
               <div className="text-xs text-slate-400">{label}</div>
               <div className="text-xl font-semibold text-white mt-1">{value}</div>
             </div>
@@ -150,7 +150,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <form onSubmit={handleUpload} className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-3">
+          <form onSubmit={handleUpload} className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4 space-y-3">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2">
               <Upload className="w-4 h-4 text-slate-400" /> Upload a document
             </h2>
@@ -176,7 +176,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
             </p>
           </form>
 
-          <div className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-2">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4 space-y-2">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2">
               <Link2 className="w-4 h-4 text-slate-400" /> Website and social links
             </h2>
@@ -189,7 +189,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSearch} className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-3">
+        <form onSubmit={handleSearch} className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4 space-y-3">
           <h2 className="text-sm font-semibold text-white">Test what Ask ELLY can find</h2>
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -214,7 +214,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
                 <p className="text-xs text-slate-400">No matching passages. Ask ELLY would say this isn’t documented.</p>
               ) : (
                 results.map((r, i) => (
-                  <div key={i} className="bg-[#1A1040]/70 border border-slate-800 rounded-lg p-3">
+                  <div key={i} className="bg-[#2A1E4D]/70 border border-slate-800 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-1 text-[11px]">
                       <span className="font-medium text-slate-200">{r.document_title || 'Untitled source'}</span>
                       <span className="text-slate-500">match {r.score}</span>
@@ -227,7 +227,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
           )}
         </form>
 
-        <section className="bg-[#110B2E] border border-slate-800 rounded-xl overflow-hidden">
+        <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl overflow-hidden">
           <h2 className="px-4 py-3 text-sm font-semibold text-white">Sources</h2>
           {loading ? (
             <p className="flex items-center gap-2 text-xs text-slate-400 px-4 pb-6">
@@ -245,7 +245,7 @@ export const AdminKnowledgeBasePage: React.FC = () => {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400">
+                <thead className="bg-[#2A1E4D] text-slate-400">
                   <tr>
                     <th className="px-4 py-2.5 font-medium">Title</th>
                     <th className="px-4 py-2.5 font-medium">File</th>

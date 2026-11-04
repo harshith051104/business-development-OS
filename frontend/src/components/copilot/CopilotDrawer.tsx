@@ -247,14 +247,14 @@ export const CopilotDrawer: React.FC = () => {
       {/* Slide-over Copilot Drawer */}
       {isOpen && (
         <div
-          className={`fixed bottom-4 right-4 z-50 flex flex-col bg-[#0F0A24]/95 backdrop-blur-xl border border-violet-800/40 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden ${
+          className={`fixed bottom-4 right-4 z-50 flex flex-col bg-[#0E0B1D]/95 backdrop-blur-xl border border-violet-800/40 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden ${
             isExpanded
               ? 'w-[750px] h-[85vh] max-w-[calc(100vw-2rem)]'
               : 'w-[440px] h-[640px] max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]'
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-[#1A1040]/90 to-[#110B2E]/90 border-b border-violet-800/40">
+          <div className="flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-[#2A1E4D]/90 to-[#0E0B1D]/90 border-b border-violet-800/40">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/25 border border-violet-500/40">
                 <Sparkles className="w-5 h-5 text-white" />
@@ -323,7 +323,7 @@ export const CopilotDrawer: React.FC = () => {
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm space-y-2.5 ${
                     msg.sender === 'user'
                       ? 'bg-violet-600 text-white rounded-br-none ml-auto'
-                      : 'bg-[#1A1040]/90 text-slate-200 border border-violet-800/40 rounded-tl-none'
+                      : 'bg-[#2A1E4D]/90 text-slate-200 border border-violet-800/40 rounded-tl-none'
                   }`}
                 >
                   {/* Markdown / Rich Content */}
@@ -348,7 +348,7 @@ export const CopilotDrawer: React.FC = () => {
                       </button>
 
                       {expandedTools[idx] && (
-                        <div className="mt-2 space-y-1 bg-[#0B0520]/60 rounded-lg p-2 border border-violet-800/30">
+                        <div className="mt-2 space-y-1 bg-[#0E0B1D]/60 rounded-lg p-2 border border-violet-800/30">
                           {msg.tools_executed.map((tool, tIdx) => (
                             <div
                               key={tIdx}
@@ -458,7 +458,7 @@ export const CopilotDrawer: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg bg-violet-600/30 border border-violet-500/40 flex items-center justify-center shrink-0">
                   <Bot className="w-4 h-4 text-violet-300" />
                 </div>
-                <div className="flex items-center gap-2 bg-[#1A1040]/80 px-3.5 py-2 rounded-2xl border border-violet-800/40 text-slate-300">
+                <div className="flex items-center gap-2 bg-[#2A1E4D]/80 px-3.5 py-2 rounded-2xl border border-violet-800/40 text-slate-300">
                   <Loader2 className="w-3.5 h-3.5 text-violet-400 animate-spin" />
                   <span>ELLY is analyzing across modules...</span>
                 </div>
@@ -470,12 +470,12 @@ export const CopilotDrawer: React.FC = () => {
 
           {/* Quick Contextual Suggestions (Shown when messages are few) */}
           {suggestions.length > 0 && messages.length <= 2 && (
-            <div className="px-4 py-2 bg-[#0F0A24]/80 border-t border-violet-900/40 overflow-x-auto flex gap-1.5 scrollbar-thin">
+            <div className="px-4 py-2 bg-[#0E0B1D]/80 border-t border-violet-900/40 overflow-x-auto flex gap-1.5 scrollbar-thin">
               {suggestions.map((s, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSendMessage(s.prompt)}
-                  className="shrink-0 px-2.5 py-1 bg-[#1A1040] hover:bg-violet-900/40 text-slate-300 hover:text-violet-200 border border-violet-800/40 hover:border-violet-500/40 rounded-lg text-[11px] transition-all cursor-pointer text-left"
+                  className="shrink-0 px-2.5 py-1 bg-[#2A1E4D] hover:bg-violet-900/40 text-slate-300 hover:text-violet-200 border border-violet-800/40 hover:border-violet-500/40 rounded-lg text-[11px] transition-all cursor-pointer text-left"
                 >
                   <div className="font-medium truncate">{s.prompt}</div>
                 </button>
@@ -484,7 +484,7 @@ export const CopilotDrawer: React.FC = () => {
           )}
 
           {/* Input Bar */}
-          <div className="p-3 bg-[#0F0A24]/90 border-t border-violet-900/40">
+          <div className="p-3 bg-[#0E0B1D]/90 border-t border-violet-900/40">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -497,7 +497,7 @@ export const CopilotDrawer: React.FC = () => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Ask ELLY to research, draft email, recommend decks, schedule meetings..."
-                className="flex-1 bg-[#1A1040]/90 text-slate-100 placeholder-slate-500 px-3.5 py-2 rounded-xl text-xs border border-violet-800/40 focus:outline-none focus:border-violet-500/80 focus:ring-1 focus:ring-violet-500/40"
+                className="flex-1 bg-[#2A1E4D]/90 text-slate-100 placeholder-slate-500 px-3.5 py-2 rounded-xl text-xs border border-violet-800/40 focus:outline-none focus:border-violet-500/80 focus:ring-1 focus:ring-violet-500/40"
                 disabled={loading}
               />
               <button

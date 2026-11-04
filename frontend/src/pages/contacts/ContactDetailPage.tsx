@@ -146,7 +146,7 @@ export const ContactDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
@@ -171,7 +171,7 @@ export const ContactDetailPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading contact profile...</p>
           </div>
         ) : error || !contact ? (
-          <div className="bg-[#110B2E] border border-rose-500/30 rounded-2xl p-8 text-center space-y-3 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-rose-500/30 rounded-2xl p-8 text-center space-y-3 shadow-xl">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h2 className="text-base font-bold text-white">Contact Not Found</h2>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">{error}</p>
@@ -185,7 +185,7 @@ export const ContactDetailPage: React.FC = () => {
         ) : (
           <>
             {/* ── Contact Header Card ── */}
-            <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-start space-x-4">
                 <div className="p-3.5 rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-700 text-white shadow-lg shadow-teal-600/30 shrink-0">
                   <User className="w-7 h-7" />
@@ -237,7 +237,7 @@ export const ContactDetailPage: React.FC = () => {
 
                 <Link
                   to={`/business-development/meetings/new?organization_id=${contact.organization_id}&contact_id=${contact.id}`}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition"
                 >
                   <CalendarPlus className="w-3.5 h-3.5" />
                   <span>Schedule Meeting</span>
@@ -245,7 +245,7 @@ export const ContactDetailPage: React.FC = () => {
 
                 <button
                   onClick={() => setIsFollowUpModalOpen(true)}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
                 >
                   <Clock3 className="w-3.5 h-3.5 text-amber-400" />
                   <span>Add Follow-up</span>
@@ -269,7 +269,7 @@ export const ContactDetailPage: React.FC = () => {
 
                 <Link
                   to={`/business-development/contacts/${contact.id}/edit`}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   <span>Edit</span>
@@ -278,7 +278,7 @@ export const ContactDetailPage: React.FC = () => {
             </div>
 
             {/* Quick Relationship Actions Row */}
-            <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center space-x-2 text-xs text-slate-400">
                 <span className="font-semibold text-white">Quick Stage Progression:</span>
                 <span>Click a stage to fast-advance this relationship</span>
@@ -292,7 +292,7 @@ export const ContactDetailPage: React.FC = () => {
                     className={`px-3 py-1.5 rounded-xl text-xs font-medium transition border ${
                       contact.connection_status === st
                         ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 cursor-default'
-                        : 'bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700'
+                        : 'bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700'
                     }`}
                   >
                     Mark {st}
@@ -301,7 +301,7 @@ export const ContactDetailPage: React.FC = () => {
                 {!contact.is_primary_contact && (
                   <button
                     onClick={handleTogglePrimary}
-                    className="px-3 py-1.5 rounded-xl bg-[#1A1040] hover:bg-teal-500/20 text-slate-300 hover:text-teal-300 border border-slate-700 text-xs font-medium transition"
+                    className="px-3 py-1.5 rounded-xl bg-[#2A1E4D] hover:bg-teal-500/20 text-slate-300 hover:text-teal-300 border border-slate-700 text-xs font-medium transition"
                   >
                     Set as Primary
                   </button>
@@ -314,14 +314,14 @@ export const ContactDetailPage: React.FC = () => {
               {/* Left 2 Columns: Contact Info, Meetings, Follow-ups, Activity Timeline */}
               <div className="lg:col-span-2 space-y-6">
                 {/* 1. Contact Information Card */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-teal-400 flex items-center gap-2">
                     <User className="w-4 h-4" />
                     <span>Contact Information</span>
                   </h2>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Email Address</span>
                       {contact.email ? (
                         <a
@@ -336,7 +336,7 @@ export const ContactDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Phone Number</span>
                       {contact.phone ? (
                         <a
@@ -351,7 +351,7 @@ export const ContactDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">LinkedIn Profile</span>
                       {contact.linkedin_url ? (
                         <a
@@ -369,7 +369,7 @@ export const ContactDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Location</span>
                       <div className="text-xs text-slate-200 flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -380,7 +380,7 @@ export const ContactDetailPage: React.FC = () => {
                 </div>
 
                 {/* 2. Associated Opportunities Section */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -406,7 +406,7 @@ export const ContactDetailPage: React.FC = () => {
                   </div>
 
                   {opportunities.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No opportunities directly associated with this contact yet.
                     </p>
                   ) : (
@@ -414,7 +414,7 @@ export const ContactDetailPage: React.FC = () => {
                       {opportunities.map((opp) => (
                         <div
                           key={opp.id}
-                          className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
                           <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-2">
@@ -452,7 +452,7 @@ export const ContactDetailPage: React.FC = () => {
                 </div>
 
                 {/* 3. Meetings with Contact */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -478,7 +478,7 @@ export const ContactDetailPage: React.FC = () => {
                   </div>
 
                   {meetings.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No meetings recorded with this contact yet.
                     </p>
                   ) : (
@@ -486,7 +486,7 @@ export const ContactDetailPage: React.FC = () => {
                       {meetings.map((m) => (
                         <div
                           key={m.id}
-                          className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -524,7 +524,7 @@ export const ContactDetailPage: React.FC = () => {
                 </div>
 
                 {/* 3. Follow-up Tasks with Contact */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -550,7 +550,7 @@ export const ContactDetailPage: React.FC = () => {
                   </div>
 
                   {followups.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No follow-ups recorded for this contact yet.
                     </p>
                   ) : (
@@ -558,7 +558,7 @@ export const ContactDetailPage: React.FC = () => {
                       {followups.map((f) => (
                         <div
                           key={f.id}
-                          className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 flex items-center justify-between gap-3"
+                          className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 flex items-center justify-between gap-3"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -598,7 +598,7 @@ export const ContactDetailPage: React.FC = () => {
                 </div>
 
                 {/* 4. Activity & Connection History Timeline */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-indigo-400 flex items-center gap-2">
                     <Activity className="w-4 h-4" />
                     <span>Connection & Activity History</span>
@@ -608,11 +608,11 @@ export const ContactDetailPage: React.FC = () => {
                     <div className="relative pl-6 space-y-3.5 before:absolute before:left-2 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-800">
                       {contact.activities.map((act) => (
                         <div key={act.id} className="relative group">
-                          <div className="absolute -left-6 top-2 w-4 h-4 rounded-full bg-[#1A1040] border border-slate-700 flex items-center justify-center -translate-x-1/2">
+                          <div className="absolute -left-6 top-2 w-4 h-4 rounded-full bg-[#2A1E4D] border border-slate-700 flex items-center justify-center -translate-x-1/2">
                             <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
                           </div>
 
-                          <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800/80 hover:border-slate-700 transition space-y-1">
+                          <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800/80 hover:border-slate-700 transition space-y-1">
                             <p className="text-xs font-semibold text-slate-200">{act.description}</p>
                             <div className="flex items-center space-x-2 text-[11px] text-slate-500 font-mono">
                               <Clock className="w-3 h-3" />
@@ -636,14 +636,14 @@ export const ContactDetailPage: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No connection activities recorded yet.
                     </p>
                   )}
                 </div>
 
                 {/* 5. Internal Notes */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-sm font-bold text-white uppercase tracking-wider text-teal-400 flex items-center gap-2">
                       <MessageSquare className="w-4 h-4" />
@@ -658,7 +658,7 @@ export const ContactDetailPage: React.FC = () => {
                   </div>
 
                   {contact.notes ? (
-                    <div className="bg-[#1A1040] p-4 rounded-xl border border-slate-800 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+                    <div className="bg-[#2A1E4D] p-4 rounded-xl border border-slate-800 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
                       {contact.notes}
                     </div>
                   ) : (
@@ -679,13 +679,13 @@ export const ContactDetailPage: React.FC = () => {
               {/* Right Column: Connection Timeline Dates & Parent Organization */}
               <div className="space-y-6">
                 {/* Parent Organization Card */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-violet-400 flex items-center gap-2">
                     <Building2 className="w-4 h-4" />
                     <span>Parent Organization</span>
                   </h2>
 
-                  <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-2">
+                  <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-2">
                     <div className="text-sm font-bold text-white">{contact.organization_name}</div>
                     <Link
                       to={`/business-development/organizations/${contact.organization_id}`}
@@ -698,13 +698,13 @@ export const ContactDetailPage: React.FC = () => {
                 </div>
 
                 {/* Connection Milestones Card */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-teal-400 flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     <span>Relationship Timeline</span>
                   </h2>
 
-                  <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3 text-xs">
+                  <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-slate-400">First Contact Date:</span>
                       <span className="font-mono text-slate-200">

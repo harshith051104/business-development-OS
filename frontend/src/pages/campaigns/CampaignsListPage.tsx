@@ -92,7 +92,7 @@ export const CampaignsListPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-7xl mx-auto space-y-6">
         {/* Header */}
@@ -142,7 +142,7 @@ export const CampaignsListPage: React.FC = () => {
 
         {/* Aggregate Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl">
+          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl">
             <div className="flex items-center justify-between text-gray-400 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Active Campaigns</span>
               <Send className="w-4 h-4 text-purple-400" />
@@ -151,7 +151,7 @@ export const CampaignsListPage: React.FC = () => {
             <div className="text-xs text-gray-400 mt-1">{campaigns.length} total campaigns configured</div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl">
+          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl">
             <div className="flex items-center justify-between text-gray-400 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Target Contacts</span>
               <Users className="w-4 h-4 text-blue-400" />
@@ -160,7 +160,7 @@ export const CampaignsListPage: React.FC = () => {
             <div className="text-xs text-gray-400 mt-1">Enrolled across all sequences</div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl">
+          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl">
             <div className="flex items-center justify-between text-gray-400 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Emails Delivered</span>
               <Mail className="w-4 h-4 text-emerald-400" />
@@ -169,7 +169,7 @@ export const CampaignsListPage: React.FC = () => {
             <div className="text-xs text-gray-400 mt-1">Via Gmail API</div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl">
+          <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl">
             <div className="flex items-center justify-between text-gray-400 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Replies & Meetings</span>
               <TrendingUp className="w-4 h-4 text-amber-400" />
@@ -180,8 +180,8 @@ export const CampaignsListPage: React.FC = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[#131127]/60 border border-white/5">
-          <div className="flex items-center gap-2 flex-1 max-w-md bg-[#0D0B1E] px-3 py-2 rounded-xl border border-white/5">
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[#0e0b1d]/60 border border-white/5">
+          <div className="flex items-center gap-2 flex-1 max-w-md bg-[#0E0B1D] px-3 py-2 rounded-xl border border-white/5">
             <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
@@ -213,7 +213,7 @@ export const CampaignsListPage: React.FC = () => {
         {loading ? (
           <div className="p-12 text-center text-gray-400">Loading outreach campaigns...</div>
         ) : filtered.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl bg-[#131127]/40 border border-white/5 space-y-4">
+          <div className="p-12 text-center rounded-2xl bg-[#0e0b1d]/40 border border-white/5 space-y-4">
             <Send className="w-10 h-10 text-gray-600 mx-auto" />
             <div className="text-lg font-semibold text-gray-300">No campaigns found</div>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
@@ -233,7 +233,7 @@ export const CampaignsListPage: React.FC = () => {
               <div
                 key={c.id}
                 onClick={() => navigate(`/business-development/campaigns/${c.id}`)}
-                className="group p-6 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 hover:border-purple-500/40 shadow-xl cursor-pointer transition-all relative overflow-hidden"
+                className="group p-6 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 hover:border-purple-500/40 shadow-xl cursor-pointer transition-all relative overflow-hidden"
               >
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>

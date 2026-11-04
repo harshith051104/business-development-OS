@@ -14,8 +14,8 @@ export const PhasePlaceholder: React.FC<PhasePlaceholderProps> = ({
   description,
 }) => {
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-[#110B2E] border border-violet-500/20 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden backdrop-blur-xl">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex items-center justify-center p-4">
+      <div className="max-w-lg w-full bg-[#0E0B1D] border border-violet-500/20 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden backdrop-blur-xl">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500" />
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -36,7 +36,7 @@ export const PhasePlaceholder: React.FC<PhasePlaceholderProps> = ({
           {description}
         </p>
 
-        <div className="p-3.5 bg-[#1A1040] border border-slate-800 rounded-xl text-xs text-slate-400 mb-6">
+        <div className="p-3.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-xs text-slate-400 mb-6">
           Phase 2 focuses strictly on the Business Development Dashboard layout and live data orchestration.
         </div>
 

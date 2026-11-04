@@ -101,7 +101,7 @@ export const OrganizationFinancialPanel: React.FC<Props> = ({
   const linkedCount = rows.filter((r) => r.financials).length
 
   return (
-    <section aria-label="Financial comparison" className="bg-[#110B2E] border border-slate-800/90 rounded-xl">
+    <section aria-label="Financial comparison" className="bg-[#0E0B1D] border border-slate-800/90 rounded-xl">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <button
           type="button"
@@ -119,7 +119,7 @@ export const OrganizationFinancialPanel: React.FC<Props> = ({
               <select
                 value={metric}
                 onChange={(e) => setMetric(e.target.value as FinancialMetricKey)}
-                className="px-2 py-1 bg-[#1A1040] border border-slate-700 rounded-md text-slate-200 text-xs"
+                className="px-2 py-1 bg-[#2A1E4D] border border-slate-700 rounded-md text-slate-200 text-xs"
               >
                 {FINANCIAL_METRICS.filter((m) => metrics.includes(m.key)).map((m) => (
                   <option key={m.key} value={m.key}>
@@ -133,7 +133,7 @@ export const OrganizationFinancialPanel: React.FC<Props> = ({
               <select
                 value={String(year)}
                 onChange={(e) => setYear(e.target.value === 'latest' ? 'latest' : Number(e.target.value))}
-                className="px-2 py-1 bg-[#1A1040] border border-slate-700 rounded-md text-slate-200 text-xs"
+                className="px-2 py-1 bg-[#2A1E4D] border border-slate-700 rounded-md text-slate-200 text-xs"
               >
                 <option value="latest">Latest filed</option>
                 {years.map((y) => (

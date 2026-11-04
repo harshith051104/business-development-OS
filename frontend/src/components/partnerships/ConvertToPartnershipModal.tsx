@@ -91,7 +91,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
           <div className="flex items-center space-x-3">
@@ -121,7 +121,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
         )}
 
         {/* Opportunity Peek Context */}
-        <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div>
             <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Organization</span>
             <span className="font-bold text-white truncate block">{opportunity.organization_name}</span>
@@ -155,7 +155,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white font-medium text-xs focus:outline-none focus:border-violet-500"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white font-medium text-xs focus:outline-none focus:border-violet-500"
             />
           </div>
 
@@ -167,7 +167,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
               <select
                 value={partnershipType}
                 onChange={(e) => setPartnershipType(e.target.value as PartnershipType)}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
               >
                 {PARTNERSHIP_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -182,7 +182,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as PartnershipPriority)}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
               >
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
@@ -198,7 +198,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
               />
             </div>
 
@@ -208,7 +208,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
               />
             </div>
           </div>
@@ -220,7 +220,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
               value={objectives}
               onChange={(e) => setObjectives(e.target.value)}
               placeholder="Outline key strategic goals and milestones..."
-              className="w-full p-3 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+              className="w-full p-3 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
             />
           </div>
 
@@ -231,12 +231,12 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
               value={nextAction}
               onChange={(e) => setNextAction(e.target.value)}
               placeholder="e.g. Schedule executive steering committee..."
-              className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
             />
           </div>
 
           {/* Status Update Checkbox */}
-          <div className="p-3 rounded-xl bg-[#1A1040] border border-slate-800">
+          <div className="p-3 rounded-xl bg-[#2A1E4D] border border-slate-800">
             <label className="flex items-center space-x-2 text-slate-300 font-semibold cursor-pointer">
               <input
                 type="checkbox"
@@ -253,7 +253,7 @@ export const ConvertToPartnershipModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 font-semibold text-xs transition"
+              className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 font-semibold text-xs transition"
             >
               Cancel
             </button>

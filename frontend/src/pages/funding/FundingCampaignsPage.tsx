@@ -21,7 +21,7 @@ export const FundingCampaignsPage: React.FC = () => {
   const totalReplied = campaigns.reduce((acc, c) => acc + (c.stats?.replied || 0), 0)
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-4">
@@ -48,20 +48,20 @@ export const FundingCampaignsPage: React.FC = () => {
             <Loader2 className="w-4 h-4 animate-spin" /> Loading...
           </div>
         ) : campaigns.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-[#131127]/60 border border-white/5 text-center text-sm text-gray-400">
+          <div className="p-8 rounded-2xl bg-[#0e0b1d]/60 border border-white/5 text-center text-sm text-gray-400">
             No funding campaigns yet. Go to Find Investors to search and send your first outreach.
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl">
+              <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl">
                 <div className="flex items-center justify-between text-gray-400 mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider">Emails Sent</span>
                   <Mail className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div className="text-2xl font-bold text-white">{totalSent}</div>
               </div>
-              <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl">
+              <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl">
                 <div className="flex items-center justify-between text-gray-400 mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider">Replies</span>
                   <TrendingUp className="w-4 h-4 text-amber-400" />
@@ -75,7 +75,7 @@ export const FundingCampaignsPage: React.FC = () => {
                 <Link
                   key={c.id}
                   to={`/business-development/campaigns/${c.id}`}
-                  className="flex items-center justify-between p-4 rounded-xl bg-[#131127]/60 border border-white/5 hover:border-emerald-500/30 transition-all"
+                  className="flex items-center justify-between p-4 rounded-xl bg-[#0e0b1d]/60 border border-white/5 hover:border-emerald-500/30 transition-all"
                 >
                   <div>
                     <div className="text-sm font-medium text-white">{c.name}</div>

@@ -68,7 +68,7 @@ export const AdminDashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] md:pl-64">
       <AdminNavbar />
       <main className="p-6 max-w-6xl mx-auto space-y-4">
         <div>
@@ -76,7 +76,7 @@ export const AdminDashboardPage: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">What needs attention across the workspace. Team-wide numbers are visible to admins only.</p>
         </div>
 
-        <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+        <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4">
           <h2 className="text-sm font-semibold text-white mb-2">Needs attention</h2>
           {loading ? (
             <p className="flex items-center gap-2 text-xs text-slate-400">
@@ -117,7 +117,7 @@ export const AdminDashboardPage: React.FC = () => {
             ['Open opportunities', stats.data?.active_opportunities],
             ['Active partnerships', stats.data?.active_partnerships],
           ].map(([label, value]) => (
-            <div key={label as string} className="bg-[#110B2E] border border-slate-800 rounded-xl p-4">
+            <div key={label as string} className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4">
               <div className="text-xs text-slate-400">{label}</div>
               <div className="text-xl font-semibold text-white mt-1 tabular-nums">{stats.error ? '—' : value ?? '…'}</div>
             </div>
@@ -125,7 +125,7 @@ export const AdminDashboardPage: React.FC = () => {
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-2">
+          <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4 space-y-2">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-white">Integrations</h2>
             </div>
@@ -149,7 +149,7 @@ export const AdminDashboardPage: React.FC = () => {
             )}
           </section>
 
-          <section className="bg-[#110B2E] border border-slate-800 rounded-xl p-4 space-y-2">
+          <section className="bg-[#0E0B1D] border border-slate-800 rounded-xl p-4 space-y-2">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-white">Recent activity log</h2>
               <Link to="/admin/audit-logs" className="text-xs text-violet-300 hover:text-violet-200">

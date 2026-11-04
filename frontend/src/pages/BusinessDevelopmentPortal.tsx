@@ -89,14 +89,14 @@ export const BusinessDevelopmentPortal: React.FC = () => {
   const overdueCount = data?.followups?.overdue?.length || 0
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-12 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-12 md:pl-64">
       <Navbar />
       {/* Ambient Lighting */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[250px] bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-5 relative z-10">
         {/* ── Compact Executive Header ── */}
-        <header className="bg-[#110B2E]/90 backdrop-blur-md border border-slate-800/90 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <header className="bg-[#0E0B1D]/90 backdrop-blur-md border border-slate-800/90 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
               <Sparkles className="w-5 h-5" />
@@ -128,14 +128,14 @@ export const BusinessDevelopmentPortal: React.FC = () => {
 
             <Link
               to="/business-development/showcase"
-              className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-violet-300 hover:text-white text-xs font-semibold transition border border-violet-500/20"
+              className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-violet-300 hover:text-white text-xs font-semibold transition border border-violet-500/20"
             >
               <Sparkles className="w-3.5 h-3.5 text-violet-400" />
               <span>Showcase</span>
             </Link>
 
             {/* Role Pill */}
-            <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#1A1040] border border-violet-500/20 text-[11px]">
+            <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#2A1E4D] border border-violet-500/20 text-[11px]">
               <Shield className="w-3 h-3 text-violet-400" />
               <span className="font-mono text-violet-300 font-semibold">{user?.role}</span>
             </div>
@@ -145,7 +145,7 @@ export const BusinessDevelopmentPortal: React.FC = () => {
               onClick={fetchDashboard}
               disabled={loading}
               title="Refresh Dashboard"
-              className="p-2 rounded-lg bg-[#1A1040] hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition disabled:opacity-50"
+              className="p-2 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition disabled:opacity-50"
             >
               <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-violet-400' : ''}`} />
             </button>
@@ -154,7 +154,7 @@ export const BusinessDevelopmentPortal: React.FC = () => {
             <button
               onClick={() => logout()}
               title="Logout"
-              className="p-2 rounded-lg bg-[#1A1040] hover:bg-red-500/10 hover:border-red-500/30 text-slate-300 hover:text-red-400 border border-slate-800 transition"
+              className="p-2 rounded-lg bg-[#2A1E4D] hover:bg-red-500/10 hover:border-red-500/30 text-slate-300 hover:text-red-400 border border-slate-800 transition"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -166,17 +166,17 @@ export const BusinessDevelopmentPortal: React.FC = () => {
           <div className="space-y-4 animate-pulse">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-16 bg-[#110B2E] border border-slate-800/80 rounded-xl" />
+                <div key={i} className="h-16 bg-[#0E0B1D] border border-slate-800/80 rounded-xl" />
               ))}
             </div>
-            <div className="h-24 bg-[#110B2E] border border-slate-800/80 rounded-xl" />
+            <div className="h-24 bg-[#0E0B1D] border border-slate-800/80 rounded-xl" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="h-72 bg-[#110B2E] border border-slate-800/80 rounded-xl" />
-              <div className="h-72 bg-[#110B2E] border border-slate-800/80 rounded-xl" />
+              <div className="h-72 bg-[#0E0B1D] border border-slate-800/80 rounded-xl" />
+              <div className="h-72 bg-[#0E0B1D] border border-slate-800/80 rounded-xl" />
             </div>
           </div>
         ) : error ? (
-          <div className="bg-[#110B2E] border border-red-500/20 rounded-2xl p-8 text-center space-y-3 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-red-500/20 rounded-2xl p-8 text-center space-y-3 shadow-xl">
             <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto text-red-400">
               <AlertCircle className="w-6 h-6" />
             </div>
@@ -191,7 +191,7 @@ export const BusinessDevelopmentPortal: React.FC = () => {
             </button>
           </div>
         ) : isDataEmpty ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-10 text-center space-y-4 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-10 text-center space-y-4 shadow-xl">
             <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
               <Inbox className="w-7 h-7 stroke-[1.5]" />
             </div>
@@ -272,11 +272,11 @@ export const BusinessDevelopmentPortal: React.FC = () => {
             {/* 3. Dual-Column Action Workspace (~380px tall) */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Left Column: Commercial Operations & Schedule */}
-              <div className="bg-[#110B2E]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+              <div className="bg-[#0E0B1D]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
                   {/* Segmented Tab Switcher */}
                   <div className="flex items-center justify-between pb-3 border-b border-slate-800/60 mb-3">
-                    <div className="flex items-center space-x-1.5 bg-[#1A1040] p-1 rounded-xl border border-slate-800">
+                    <div className="flex items-center space-x-1.5 bg-[#2A1E4D] p-1 rounded-xl border border-slate-800">
                       <button
                         onClick={() => setLeftTab('meetings')}
                         className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
@@ -351,11 +351,11 @@ export const BusinessDevelopmentPortal: React.FC = () => {
               </div>
 
               {/* Right Column: Commercial Intelligence & Activity */}
-              <div className="bg-[#110B2E]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+              <div className="bg-[#0E0B1D]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
                   {/* Segmented Tab Switcher */}
                   <div className="flex items-center justify-between pb-3 border-b border-slate-800/60 mb-3">
-                    <div className="flex items-center space-x-1.5 bg-[#1A1040] p-1 rounded-xl border border-slate-800">
+                    <div className="flex items-center space-x-1.5 bg-[#2A1E4D] p-1 rounded-xl border border-slate-800">
                       <button
                         onClick={() => setRightTab('priorities')}
                         className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
@@ -426,42 +426,42 @@ export const BusinessDevelopmentPortal: React.FC = () => {
             </section>
 
             {/* 4. Single-Row Fast Navigation Toolbar */}
-            <section className="bg-[#110B2E]/90 border border-slate-800/80 rounded-2xl p-3 shadow-lg flex flex-wrap items-center justify-between gap-2">
+            <section className="bg-[#0E0B1D]/90 border border-slate-800/80 rounded-2xl p-3 shadow-lg flex flex-wrap items-center justify-between gap-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2">
                 Quick Shortcuts:
               </span>
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   to="/business-development/discover"
-                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-teal-500/20 hover:border-teal-500/30 border border-slate-800 text-slate-300 hover:text-teal-300 text-xs font-medium transition"
+                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-teal-500/20 hover:border-teal-500/30 border border-slate-800 text-slate-300 hover:text-teal-300 text-xs font-medium transition"
                 >
                   <Compass className="w-3.5 h-3.5 text-teal-400" />
                   <span>Discover Organizations</span>
                 </Link>
                 <Link
                   to="/business-development/showcase"
-                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-violet-500/20 hover:border-violet-500/30 border border-slate-800 text-slate-300 hover:text-violet-300 text-xs font-medium transition"
+                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-violet-500/20 hover:border-violet-500/30 border border-slate-800 text-slate-300 hover:text-violet-300 text-xs font-medium transition"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-violet-400" />
                   <span>Showcase Projects</span>
                 </Link>
                 <Link
                   to="/business-development/connections"
-                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-indigo-500/20 hover:border-indigo-500/30 border border-slate-800 text-slate-300 hover:text-indigo-300 text-xs font-medium transition"
+                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-indigo-500/20 hover:border-indigo-500/30 border border-slate-800 text-slate-300 hover:text-indigo-300 text-xs font-medium transition"
                 >
                   <GitFork className="w-3.5 h-3.5 text-indigo-400" />
                   <span>Pipeline Board</span>
                 </Link>
                 <Link
                   to="/business-development/analytics"
-                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-purple-500/20 hover:border-purple-500/30 border border-slate-800 text-slate-300 hover:text-purple-300 text-xs font-medium transition"
+                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-purple-500/20 hover:border-purple-500/30 border border-slate-800 text-slate-300 hover:text-purple-300 text-xs font-medium transition"
                 >
                   <BarChart3 className="w-3.5 h-3.5 text-purple-400" />
                   <span>Funnel Analytics</span>
                 </Link>
                 <Link
                   to="/business-development/campaigns"
-                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-cyan-500/20 hover:border-cyan-500/30 border border-slate-800 text-slate-300 hover:text-cyan-300 text-xs font-medium transition"
+                  className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-cyan-500/20 hover:border-cyan-500/30 border border-slate-800 text-slate-300 hover:text-cyan-300 text-xs font-medium transition"
                 >
                   <Users className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Campaigns</span>

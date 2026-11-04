@@ -127,7 +127,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
@@ -166,7 +166,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
               <select
                 value={channel}
                 onChange={(e) => setChannel(e.target.value as CommunicationChannel)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 {CHANNELS.map((ch) => (
                   <option key={ch} value={ch}>
@@ -181,7 +181,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
               <select
                 value={direction}
                 onChange={(e) => setDirection(e.target.value as CommunicationDirection)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 <option value="Outgoing">Outgoing (We contacted them)</option>
                 <option value="Incoming">Incoming (They contacted us)</option>
@@ -198,7 +198,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Introductory Email sent regarding ELLY Platform capabilities"
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
 
@@ -211,7 +211,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
                 onChange={(e) =>
                   setSelectedContactId(e.target.value ? Number(e.target.value) : '')
                 }
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 <option value="">-- General Organization Level --</option>
                 {contacts.map((c) => (
@@ -231,7 +231,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
                 onChange={(e) =>
                   setSelectedOpportunityId(e.target.value ? Number(e.target.value) : '')
                 }
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 <option value="">-- None / General Discussion --</option>
                 {opportunities.map((opp) => (
@@ -251,7 +251,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
                 type="datetime-local"
                 value={commDate}
                 onChange={(e) => setCommDate(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -260,7 +260,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as CommunicationStatus)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 <option value="Completed">Completed</option>
                 <option value="Pending">Pending</option>
@@ -277,7 +277,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder="High-level summary of the exchange..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
 
@@ -291,7 +291,7 @@ export const RecordCommunicationModal: React.FC<RecordCommunicationModalProps> =
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Record email body snippet, call points, or message summary..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
 

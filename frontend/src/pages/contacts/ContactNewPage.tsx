@@ -147,7 +147,7 @@ export const ContactNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -190,7 +190,7 @@ export const ContactNewPage: React.FC = () => {
         {/* ── Form Card ── */}
         <form
           onSubmit={handleSubmit}
-          className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
+          className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
         >
           {/* Section 1: Organization & Identity */}
           <div className="space-y-4">
@@ -211,7 +211,7 @@ export const ContactNewPage: React.FC = () => {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, organization_id: Number(e.target.value) }))
                   }
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                 >
                   {organizations.map((org) => (
                     <option key={org.id} value={org.id}>
@@ -233,7 +233,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.first_name}
                   onChange={handleChange}
                   placeholder="e.g. Sangita"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -246,7 +246,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.last_name || ''}
                   onChange={handleChange}
                   placeholder="e.g. Reddy"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -262,7 +262,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.designation || ''}
                   onChange={handleChange}
                   placeholder="e.g. Company Director / Chief Technology Officer"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
                 <datalist id="designation-role-options">
                   {(dropdowns?.roles ?? []).filter((r) => r !== 'Other').map((r) => <option key={r} value={r} />)}
@@ -278,7 +278,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.department || ''}
                   onChange={handleChange}
                   placeholder="e.g. Management / Technology / Operations"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
             </div>
@@ -299,7 +299,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.email || ''}
                   onChange={handleChange}
                   placeholder="name@organization.com"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -311,7 +311,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.phone || ''}
                   onChange={handleChange}
                   placeholder="+91 98765 43210"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -325,7 +325,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.linkedin_url || ''}
                   onChange={handleChange}
                   placeholder="https://www.linkedin.com/in/username"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -337,7 +337,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.location || ''}
                   onChange={handleChange}
                   placeholder="e.g. Hyderabad / Bangalore"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -379,7 +379,7 @@ export const ContactNewPage: React.FC = () => {
                   name="connection_status"
                   value={formData.connection_status}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                 >
                   {contactStatuses.map((st) => (
                     <option key={st} value={st}>
@@ -397,7 +397,7 @@ export const ContactNewPage: React.FC = () => {
                     name="is_decision_maker"
                     checked={formData.is_decision_maker}
                     onChange={handleChange}
-                    className="w-4 h-4 rounded border-slate-700 bg-[#1A1040] text-teal-600 focus:ring-0"
+                    className="w-4 h-4 rounded border-slate-700 bg-[#2A1E4D] text-teal-600 focus:ring-0"
                   />
                   <span className="font-semibold">Key Decision Maker</span>
                   <span className="text-[11px] text-slate-400">(Has sign-off or budget authority)</span>
@@ -409,7 +409,7 @@ export const ContactNewPage: React.FC = () => {
                     name="is_primary_contact"
                     checked={formData.is_primary_contact}
                     onChange={handleChange}
-                    className="w-4 h-4 rounded border-slate-700 bg-[#1A1040] text-teal-600 focus:ring-0"
+                    className="w-4 h-4 rounded border-slate-700 bg-[#2A1E4D] text-teal-600 focus:ring-0"
                   />
                   <span className="font-semibold">Primary Contact</span>
                   <span className="text-[11px] text-slate-400">
@@ -428,7 +428,7 @@ export const ContactNewPage: React.FC = () => {
                   value={formData.notes || ''}
                   onChange={handleChange}
                   placeholder="Confidential stakeholder insights, preferred contact channels, or background details..."
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500 resize-none"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500 resize-none"
                 />
               </div>
             </div>

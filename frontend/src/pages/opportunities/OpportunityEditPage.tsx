@@ -134,20 +134,20 @@ export const OpportunityEditPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0E0B1D] text-white flex items-center justify-center">
         <RotateCw className="w-8 h-8 animate-spin text-violet-400" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex items-center justify-between">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Link
             to={`/business-development/opportunities/${id}`}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -169,7 +169,7 @@ export const OpportunityEditPage: React.FC = () => {
             </div>
           )}
 
-          <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300">Opportunity Name *</label>
               <input
@@ -177,7 +177,7 @@ export const OpportunityEditPage: React.FC = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -187,7 +187,7 @@ export const OpportunityEditPage: React.FC = () => {
                 <select
                   value={selectedContactId}
                   onChange={(e) => setSelectedContactId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- None / General Account --</option>
                   {contacts.map((c) => (
@@ -203,7 +203,7 @@ export const OpportunityEditPage: React.FC = () => {
                 <select
                   value={selectedProjectId}
                   onChange={(e) => setSelectedProjectId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="">-- None / General Enterprise Discussion --</option>
                   {projects.map((p) => (
@@ -221,7 +221,7 @@ export const OpportunityEditPage: React.FC = () => {
                 <select
                   value={stage}
                   onChange={(e) => setStage(e.target.value as OpportunityStage)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   {STAGES.map((s) => (
                     <option key={s} value={s}>
@@ -236,7 +236,7 @@ export const OpportunityEditPage: React.FC = () => {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as OpportunityPriority)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 >
                   <option value="High">High Priority</option>
                   <option value="Medium">Medium Priority</option>
@@ -253,7 +253,7 @@ export const OpportunityEditPage: React.FC = () => {
                   min="0"
                   value={estimatedValue}
                   onChange={(e) => setEstimatedValue(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
                 />
               </div>
 
@@ -275,7 +275,7 @@ export const OpportunityEditPage: React.FC = () => {
                   type="date"
                   value={expectedCloseDate}
                   onChange={(e) => setExpectedCloseDate(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
             </div>
@@ -287,7 +287,7 @@ export const OpportunityEditPage: React.FC = () => {
                   type="text"
                   value={nextAction}
                   onChange={(e) => setNextAction(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
 
@@ -297,7 +297,7 @@ export const OpportunityEditPage: React.FC = () => {
                   type="datetime-local"
                   value={nextActionDate}
                   onChange={(e) => setNextActionDate(e.target.value)}
-                  className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
                 />
               </div>
             </div>
@@ -308,7 +308,7 @@ export const OpportunityEditPage: React.FC = () => {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -318,7 +318,7 @@ export const OpportunityEditPage: React.FC = () => {
                 rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
           </div>

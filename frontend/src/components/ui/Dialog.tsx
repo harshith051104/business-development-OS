@@ -33,7 +33,7 @@ export const Dialog: React.FC<DialogProps> = ({ title, open, onClose, children, 
         aria-modal="true"
         aria-label={title}
         onMouseDown={(e) => e.stopPropagation()}
-        className="bg-[#110B2E] border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 outline-none"
+        className="bg-[#0E0B1D] border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 outline-none"
       >
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-sm font-semibold text-white">{title}</h3>

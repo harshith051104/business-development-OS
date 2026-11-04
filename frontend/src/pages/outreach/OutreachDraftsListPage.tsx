@@ -83,11 +83,11 @@ export const OutreachDraftsListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-violet-600/20 text-violet-300 border border-violet-500/30">
             <Bookmark className="w-5 h-5" />
@@ -114,7 +114,7 @@ export const OutreachDraftsListPage: React.FC = () => {
       {/* ── Main Content ── */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-5">
         {/* Filters Bar */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-3 text-xs">
             <div className="flex items-center space-x-1.5 text-slate-400">
               <Filter className="w-3.5 h-3.5" />
@@ -126,7 +126,7 @@ export const OutreachDraftsListPage: React.FC = () => {
                 setStatusFilter(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+              className="px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
             >
               <option value="All">All Statuses</option>
               <option value="Draft">Draft</option>
@@ -144,7 +144,7 @@ export const OutreachDraftsListPage: React.FC = () => {
                 setChannelFilter(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+              className="px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
             >
               <option value="All">All Channels</option>
               <option value="Email">Email</option>
@@ -166,7 +166,7 @@ export const OutreachDraftsListPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading drafts...</p>
           </div>
         ) : drafts.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
             <Bookmark className="w-8 h-8 text-slate-600 mx-auto" />
             <h3 className="text-sm font-bold text-white">No Outreach Drafts Found</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
@@ -180,10 +180,10 @@ export const OutreachDraftsListPage: React.FC = () => {
             </Link>
           </div>
         ) : (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400 border-b border-slate-800">
+                <thead className="bg-[#2A1E4D] text-slate-400 border-b border-slate-800">
                   <tr>
                     <th className="p-3.5 font-semibold">Organization</th>
                     <th className="p-3.5 font-semibold">Contact</th>
@@ -196,7 +196,7 @@ export const OutreachDraftsListPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {drafts.map((d) => (
-                    <tr key={d.id} className="hover:bg-[#1A1040]/40 transition">
+                    <tr key={d.id} className="hover:bg-[#2A1E4D]/40 transition">
                       <td className="p-3.5 font-bold text-white">
                         <Link
                           to={`/business-development/organizations/${d.organization_id}`}
@@ -209,7 +209,7 @@ export const OutreachDraftsListPage: React.FC = () => {
                         {d.contact_name || <span className="text-slate-500 italic">General Account</span>}
                       </td>
                       <td className="p-3.5">
-                        <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#1A1040] border border-slate-800 text-slate-300 text-[11px]">
+                        <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#2A1E4D] border border-slate-800 text-slate-300 text-[11px]">
                           {getChannelIcon(d.channel)}
                           <span>{d.channel}</span>
                         </span>
@@ -244,7 +244,7 @@ export const OutreachDraftsListPage: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleDelete(d.id)}
-                          className="p-1 rounded-lg bg-[#1A1040] hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition"
+                          className="p-1 rounded-lg bg-[#2A1E4D] hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -265,14 +265,14 @@ export const OutreachDraftsListPage: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

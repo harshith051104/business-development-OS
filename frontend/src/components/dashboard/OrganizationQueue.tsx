@@ -66,7 +66,7 @@ export const OrganizationQueue: React.FC = () => {
   }, [load]);
 
   return (
-    <div className="bg-[#1A1040]/90 border border-slate-800/80 rounded-xl p-3 space-y-2">
+    <div className="bg-[#2A1E4D]/90 border border-slate-800/80 rounded-xl p-3 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
           <Building2 className="w-3.5 h-3.5 text-teal-400" />

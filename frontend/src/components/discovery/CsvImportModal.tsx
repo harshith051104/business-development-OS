@@ -80,7 +80,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-4xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] flex flex-col">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-4xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
           <div className="flex items-center space-x-3">
@@ -115,7 +115,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
             <div className="space-y-4">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-slate-700 hover:border-violet-500/60 rounded-2xl p-8 text-center cursor-pointer bg-[#1A1040]/50 hover:bg-[#1A1040] transition space-y-3"
+                className="border-2 border-dashed border-slate-700 hover:border-violet-500/60 rounded-2xl p-8 text-center cursor-pointer bg-[#2A1E4D]/50 hover:bg-[#2A1E4D] transition space-y-3"
               >
                 <Upload className="w-8 h-8 text-violet-400 mx-auto" />
                 <div>
@@ -147,7 +147,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
             <div className="space-y-5">
               {/* Preview Stats */}
               <div className="grid grid-cols-4 gap-3">
-                <div className="p-3 rounded-xl bg-[#1A1040] border border-slate-800 text-center">
+                <div className="p-3 rounded-xl bg-[#2A1E4D] border border-slate-800 text-center">
                   <span className="text-[11px] text-slate-400">Rows Detected</span>
                   <div className="text-lg font-bold font-mono text-white mt-0.5">
                     {preview.total_rows}
@@ -179,7 +179,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                     type="checkbox"
                     checked={skipDuplicates}
                     onChange={(e) => setSkipDuplicates(e.target.checked)}
-                    className="rounded border-slate-700 bg-[#1A1040] text-violet-600 focus:ring-0"
+                    className="rounded border-slate-700 bg-[#2A1E4D] text-violet-600 focus:ring-0"
                   />
                   <span>Skip potential duplicate organizations</span>
                 </label>
@@ -195,7 +195,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
               {/* Rows Preview Table */}
               <div className="border border-slate-800 rounded-2xl overflow-hidden max-h-60 overflow-y-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#1A1040] sticky top-0 border-b border-slate-800 text-slate-400">
+                  <thead className="bg-[#2A1E4D] sticky top-0 border-b border-slate-800 text-slate-400">
                     <tr>
                       <th className="p-2.5 font-semibold">Row</th>
                       <th className="p-2.5 font-semibold">Name</th>
@@ -206,7 +206,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 font-mono">
                     {preview.rows.map((row) => (
-                      <tr key={row.row_number} className="hover:bg-[#1A1040]/40">
+                      <tr key={row.row_number} className="hover:bg-[#2A1E4D]/40">
                         <td className="p-2.5 text-slate-500 font-sans">{row.row_number}</td>
                         <td className="p-2.5 font-bold text-white font-sans truncate max-w-[200px]">
                           {row.name || <span className="text-rose-400 italic">Missing Name</span>}
@@ -237,25 +237,25 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
               <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
               <h3 className="text-base font-bold text-white">Import Successfully Completed</h3>
               <div className="grid grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800">
+                <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800">
                   <span className="text-slate-400">Imported:</span>
                   <div className="text-base font-bold text-emerald-400 mt-0.5 font-mono">
                     {result.imported_count}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800">
+                <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800">
                   <span className="text-slate-400">Skipped:</span>
                   <div className="text-base font-bold text-slate-300 mt-0.5 font-mono">
                     {result.skipped_count}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800">
+                <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800">
                   <span className="text-slate-400">Duplicates:</span>
                   <div className="text-base font-bold text-amber-400 mt-0.5 font-mono">
                     {result.duplicate_count}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800">
+                <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800">
                   <span className="text-slate-400">Invalid:</span>
                   <div className="text-base font-bold text-rose-400 mt-0.5 font-mono">
                     {result.invalid_count}
@@ -270,7 +270,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
         <div className="pt-4 border-t border-slate-800/80 flex items-center justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition"
+            className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold transition"
           >
             {result ? 'Close' : 'Cancel'}
           </button>

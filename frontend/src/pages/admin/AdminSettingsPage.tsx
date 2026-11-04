@@ -92,10 +92,10 @@ export const AdminSettingsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
-      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-violet-500/20 text-violet-300 border border-violet-500/30">
             <Sliders className="w-5 h-5" />
@@ -136,7 +136,7 @@ export const AdminSettingsPage: React.FC = () => {
         )}
 
         {/* Security Notice Banner */}
-        <div className="p-4 rounded-3xl bg-[#110B2E] border border-slate-800 text-xs space-y-1 shadow-xl flex items-start space-x-3">
+        <div className="p-4 rounded-3xl bg-[#0E0B1D] border border-slate-800 text-xs space-y-1 shadow-xl flex items-start space-x-3">
           <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-white">Safe Parameter Management: </span>
@@ -154,7 +154,7 @@ export const AdminSettingsPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* 1. Organization Types */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
               <div className="flex items-center space-x-2 pb-2 border-b border-slate-800">
                 <Building2 className="w-4 h-4 text-violet-400" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -166,7 +166,7 @@ export const AdminSettingsPage: React.FC = () => {
                 {orgTypes.map((type) => (
                   <span
                     key={type}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                   >
                     <span>{type}</span>
                     <button
@@ -184,7 +184,7 @@ export const AdminSettingsPage: React.FC = () => {
                   value={newOrgType}
                   onChange={(e) => setNewOrgType(e.target.value)}
                   placeholder="New organization type..."
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
                 <button
                   type="button"
@@ -197,7 +197,7 @@ export const AdminSettingsPage: React.FC = () => {
             </div>
 
             {/* 2. Partnership Types */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
               <div className="flex items-center space-x-2 pb-2 border-b border-slate-800">
                 <Handshake className="w-4 h-4 text-emerald-400" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -209,7 +209,7 @@ export const AdminSettingsPage: React.FC = () => {
                 {partnershipTypes.map((type) => (
                   <span
                     key={type}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                   >
                     <span>{type}</span>
                     <button
@@ -227,7 +227,7 @@ export const AdminSettingsPage: React.FC = () => {
                   value={newPartType}
                   onChange={(e) => setNewPartType(e.target.value)}
                   placeholder="New partnership type..."
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
                 <button
                   type="button"
@@ -240,7 +240,7 @@ export const AdminSettingsPage: React.FC = () => {
             </div>
 
             {/* 3. Meeting Types */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
               <div className="flex items-center space-x-2 pb-2 border-b border-slate-800">
                 <Calendar className="w-4 h-4 text-amber-400" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -252,7 +252,7 @@ export const AdminSettingsPage: React.FC = () => {
                 {meetingTypes.map((type) => (
                   <span
                     key={type}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                   >
                     <span>{type}</span>
                     <button
@@ -270,7 +270,7 @@ export const AdminSettingsPage: React.FC = () => {
                   value={newMeetingType}
                   onChange={(e) => setNewMeetingType(e.target.value)}
                   placeholder="New meeting format..."
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
                 <button
                   type="button"
@@ -283,7 +283,7 @@ export const AdminSettingsPage: React.FC = () => {
             </div>
 
             {/* 4. Project Categories */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
               <div className="flex items-center space-x-2 pb-2 border-b border-slate-800">
                 <Sparkles className="w-4 h-4 text-indigo-400" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -295,7 +295,7 @@ export const AdminSettingsPage: React.FC = () => {
                 {projectCategories.map((type) => (
                   <span
                     key={type}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs"
                   >
                     <span>{type}</span>
                     <button
@@ -313,7 +313,7 @@ export const AdminSettingsPage: React.FC = () => {
                   value={newProjectCategory}
                   onChange={(e) => setNewProjectCategory(e.target.value)}
                   placeholder="New project category..."
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
                 <button
                   type="button"

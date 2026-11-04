@@ -113,9 +113,9 @@ export const AdminNavbar: React.FC = () => {
 
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 w-64 bg-[#0D0820] border-r border-slate-800 z-40 hidden md:block">{renderNavContent()}</aside>
+      <aside className="fixed inset-y-0 left-0 w-64 bg-[#0E0B1D] border-r border-slate-800 z-40 hidden md:block">{renderNavContent()}</aside>
 
-      <header className="sticky top-0 z-40 md:hidden bg-[#0D0820] border-b border-slate-800 px-4 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-40 md:hidden bg-[#0E0B1D] border-b border-slate-800 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg text-slate-300 hover:text-white" aria-label="Toggle menu">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -130,7 +130,7 @@ export const AdminNavbar: React.FC = () => {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="fixed inset-0 bg-black/70" onClick={() => setMobileOpen(false)} />
-          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-[#0D0820] border-r border-slate-800 z-50">{renderNavContent()}</div>
+          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-[#0E0B1D] border-r border-slate-800 z-50">{renderNavContent()}</div>
         </div>
       )}
     </>

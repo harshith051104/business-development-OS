@@ -8,7 +8,7 @@ interface TeamPerformanceTableProps {
 
 export const TeamPerformanceTable: React.FC<TeamPerformanceTableProps> = ({ team }) => {
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -40,7 +40,7 @@ export const TeamPerformanceTable: React.FC<TeamPerformanceTableProps> = ({ team
           </thead>
           <tbody className="divide-y divide-slate-800/60">
             {team.map((member) => (
-              <tr key={member.user_id} className="hover:bg-[#1A1040]/40 transition">
+              <tr key={member.user_id} className="hover:bg-[#2A1E4D]/40 transition">
                 <td className="py-3">
                   <div className="flex items-center space-x-2.5">
                     <div className="w-7 h-7 rounded-full bg-violet-600/20 text-violet-300 border border-violet-500/30 flex items-center justify-center font-bold">

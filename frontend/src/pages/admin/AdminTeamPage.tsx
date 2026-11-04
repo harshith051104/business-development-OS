@@ -104,10 +104,10 @@ export const AdminTeamPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
-      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-500/30">
             <UserCheck className="w-5 h-5" />
@@ -142,7 +142,7 @@ export const AdminTeamPage: React.FC = () => {
             {error}
           </div>
         ) : team.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
             <Users className="w-10 h-10 text-slate-600 mx-auto" />
             <h3 className="text-sm font-bold text-white">No Business Development users found.</h3>
             <p className="text-xs text-slate-400">Create a user with BUSINESS_DEVELOPMENT role to begin.</p>
@@ -152,7 +152,7 @@ export const AdminTeamPage: React.FC = () => {
             {team.map((member) => (
               <div
                 key={member.id}
-                className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5 flex flex-col justify-between hover:border-slate-700 transition"
+                className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5 flex flex-col justify-between hover:border-slate-700 transition"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between gap-3">
@@ -191,19 +191,19 @@ export const AdminTeamPage: React.FC = () => {
 
                   {/* Portfolio Counters */}
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800/80 space-y-0.5">
+                    <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800/80 space-y-0.5">
                       <span className="text-[10px] text-slate-500 uppercase font-semibold">Orgs</span>
                       <div className="text-base font-bold text-violet-400 font-mono">
                         {member.organizations_count}
                       </div>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800/80 space-y-0.5">
+                    <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800/80 space-y-0.5">
                       <span className="text-[10px] text-slate-500 uppercase font-semibold">Opps</span>
                       <div className="text-base font-bold text-indigo-400 font-mono">
                         {member.opportunities_count}
                       </div>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-[#1A1040] border border-slate-800/80 space-y-0.5">
+                    <div className="p-2.5 rounded-xl bg-[#2A1E4D] border border-slate-800/80 space-y-0.5">
                       <span className="text-[10px] text-slate-500 uppercase font-semibold">Partners</span>
                       <div className="text-base font-bold text-emerald-400 font-mono">
                         {member.partnerships_count}
@@ -228,7 +228,7 @@ export const AdminTeamPage: React.FC = () => {
                   </Link>
                   <button
                     onClick={() => openReassignmentModal(member.id)}
-                    className="px-3 py-1 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition"
+                    className="px-3 py-1 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition"
                   >
                     Assign Items
                   </button>
@@ -242,7 +242,7 @@ export const AdminTeamPage: React.FC = () => {
       {/* Bulk Reassignment Modal */}
       {isAssignModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
             <div className="pb-3 border-b border-slate-800">
               <h3 className="text-base font-bold text-white">Portfolio Ownership Reassignment</h3>
               <p className="text-xs text-slate-400">
@@ -257,7 +257,7 @@ export const AdminTeamPage: React.FC = () => {
                 <select
                   value={selectedTargetOwnerId || ''}
                   onChange={(e) => setSelectedTargetOwnerId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-rose-500"
                 >
                   <option value="">-- Unassigned (Clear Owner) --</option>
                   {team.map((t) => (
@@ -273,7 +273,7 @@ export const AdminTeamPage: React.FC = () => {
                 <label className="font-semibold text-slate-300 flex items-center justify-between">
                   <span>Organizations ({selectedOrgIds.length} selected)</span>
                 </label>
-                <div className="max-h-32 overflow-y-auto rounded-xl bg-[#1A1040] border border-slate-800 p-2 space-y-1">
+                <div className="max-h-32 overflow-y-auto rounded-xl bg-[#2A1E4D] border border-slate-800 p-2 space-y-1">
                   {organizations.map((org) => (
                     <label key={org.id} className="flex items-center space-x-2 p-1.5 rounded hover:bg-slate-800 cursor-pointer">
                       <input
@@ -296,7 +296,7 @@ export const AdminTeamPage: React.FC = () => {
                 <label className="font-semibold text-slate-300 flex items-center justify-between">
                   <span>Opportunities ({selectedOppIds.length} selected)</span>
                 </label>
-                <div className="max-h-32 overflow-y-auto rounded-xl bg-[#1A1040] border border-slate-800 p-2 space-y-1">
+                <div className="max-h-32 overflow-y-auto rounded-xl bg-[#2A1E4D] border border-slate-800 p-2 space-y-1">
                   {opportunities.map((opp) => (
                     <label key={opp.id} className="flex items-center space-x-2 p-1.5 rounded hover:bg-slate-800 cursor-pointer">
                       <input
@@ -319,7 +319,7 @@ export const AdminTeamPage: React.FC = () => {
                 <label className="font-semibold text-slate-300 flex items-center justify-between">
                   <span>Partnerships ({selectedPartIds.length} selected)</span>
                 </label>
-                <div className="max-h-32 overflow-y-auto rounded-xl bg-[#1A1040] border border-slate-800 p-2 space-y-1">
+                <div className="max-h-32 overflow-y-auto rounded-xl bg-[#2A1E4D] border border-slate-800 p-2 space-y-1">
                   {partnerships.map((part) => (
                     <label key={part.id} className="flex items-center space-x-2 p-1.5 rounded hover:bg-slate-800 cursor-pointer">
                       <input
@@ -342,7 +342,7 @@ export const AdminTeamPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAssignModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 font-semibold text-xs"
+                className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 font-semibold text-xs"
               >
                 Cancel
               </button>

@@ -126,7 +126,7 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
         onDragStart={(e) => e.dataTransfer.setData('text/elly-task', String(t.id))}
         onClick={(e) => onSelect(t, (e.currentTarget as HTMLElement).getBoundingClientRect())}
         aria-label={`Task: ${t.title}, due ${t.day}, ${t.task.status}`}
-        className={`w-full flex items-center gap-1 text-left text-[11px] rounded-md px-1.5 py-0.5 truncate outline-none focus-visible:ring-2 focus-visible:ring-[#8B6BB1] ${selectedKey === `task-${t.id}` ? 'ring-2 ring-[#8B6BB1]' : ''}`}
+        className={`w-full flex items-center gap-1 text-left text-[11px] rounded-md px-1.5 py-0.5 truncate outline-none focus-visible:ring-2 focus-visible:ring-[#8B7CC7] ${selectedKey === `task-${t.id}` ? 'ring-2 ring-[#8B7CC7]' : ''}`}
         style={{ backgroundColor: c.bg, color: c.text, borderLeft: `3px solid ${c.dot}` }}
       >
         {done ? <CheckSquare className="w-3 h-3 shrink-0" /> : <Square className="w-3 h-3 shrink-0" />}
@@ -140,10 +140,10 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
     return (
       <div
         key={dayKey(d)}
-        className={`rounded-2xl px-3 py-2 flex items-baseline gap-1.5 justify-center ${isToday ? 'bg-[#443253] ring-1 ring-[#8B6BB1]' : 'bg-[#1D1927]'}`}
+        className={`rounded-2xl px-3 py-2 flex items-baseline gap-1.5 justify-center ${isToday ? 'bg-[#3a3a52] ring-1 ring-[#8B7CC7]' : 'bg-[#0E0B1D]'}`}
       >
-        <span className={`text-sm ${isToday ? 'text-[#EAE7EF]' : 'text-[#ABA3B7]'}`}>{d.toLocaleDateString(undefined, { weekday: 'short' }).toLowerCase()}</span>
-        <span className={`text-2xl font-semibold ${isToday ? 'text-[#EAE7EF]' : 'text-[#EAE7EF]/90'}`}>{d.getDate()}</span>
+        <span className={`text-sm ${isToday ? 'text-[#C9C2E3]' : 'text-[#8B7CC7]'}`}>{d.toLocaleDateString(undefined, { weekday: 'short' }).toLowerCase()}</span>
+        <span className={`text-2xl font-semibold ${isToday ? 'text-[#C9C2E3]' : 'text-[#C9C2E3]/90'}`}>{d.getDate()}</span>
       </div>
     )
   }
@@ -154,16 +154,16 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
     <div className="flex flex-col h-full min-h-0">
       {/* Day headers */}
       <div className="grid gap-2 px-3 pt-1 pb-2" style={gridCols}>
-        <div className="rounded-2xl bg-[#1D1927] flex items-center justify-center" title={`Times shown in ${tzShort}`}>
-          <span className="text-[10px] font-semibold text-[#ABA3B7] -rotate-90 whitespace-nowrap">{tzShort}</span>
+        <div className="rounded-2xl bg-[#0E0B1D] flex items-center justify-center" title={`Times shown in ${tzShort}`}>
+          <span className="text-[10px] font-semibold text-[#8B7CC7] -rotate-90 whitespace-nowrap">{tzShort}</span>
         </div>
         {days.map(dayHeader)}
       </div>
 
-      <div className="flex-1 min-h-0 bg-[#15131C] rounded-3xl mx-3 mb-3 border border-[#302938] flex flex-col overflow-hidden shadow-sm">
+      <div className="flex-1 min-h-0 bg-[#0E0B1D] rounded-3xl mx-3 mb-3 border border-[#2a1e4d] flex flex-col overflow-hidden shadow-sm">
         {/* All-day row: task due dates (no times or durations) */}
-        <div className="grid border-b border-[#262130]" style={gridCols}>
-          <div className="text-[10px] text-[#ABA3B7] px-2 py-2 leading-tight">Tasks due</div>
+        <div className="grid border-b border-[#2a1e4d]" style={gridCols}>
+          <div className="text-[10px] text-[#8B7CC7] px-2 py-2 leading-tight">Tasks due</div>
           {days.map((d) => {
             const k = dayKey(d)
             const list = tasksByDay.get(k) || []
@@ -183,7 +183,7 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
                   setDropDay(null)
                   if (id) onMoveTask(id, k)
                 }}
-                className={`p-1 space-y-0.5 min-h-[34px] max-h-[96px] overflow-y-auto border-l border-[#262130] ${dropDay === k ? 'bg-[#262033]' : ''}`}
+                className={`p-1 space-y-0.5 min-h-[34px] max-h-[96px] overflow-y-auto border-l border-[#2a1e4d] ${dropDay === k ? 'bg-[#2a1e4d]' : ''}`}
               >
                 {list.map(taskChip)}
               </div>
@@ -196,7 +196,7 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
           <div className="grid relative" style={{ ...gridCols, height: 24 * HOUR_PX }}>
             <div className="relative">
               {Array.from({ length: 24 }, (_, h) => (
-                <div key={h} className="absolute right-2 text-[11px] text-[#8F879C] -translate-y-1/2" style={{ top: h * HOUR_PX }}>
+                <div key={h} className="absolute right-2 text-[11px] text-[#8B7CC7] -translate-y-1/2" style={{ top: h * HOUR_PX }}>
                   {h === 0 ? '' : new Date(2000, 0, 1, h).toLocaleTimeString(undefined, { hour: 'numeric' }).toLowerCase()}
                 </div>
               ))}
@@ -210,7 +210,7 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
                 return (
                   <div
                     key={k}
-                    className="relative border-l border-[#262130] cursor-pointer"
+                    className="relative border-l border-[#2a1e4d] cursor-pointer"
                     onClick={(e) => {
                       if (e.target !== e.currentTarget) return
                       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -219,11 +219,11 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
                     }}
                   >
                     {Array.from({ length: 24 }, (_, h) => (
-                      <div key={h} className="absolute left-0 right-0 border-t border-[#262130] pointer-events-none" style={{ top: h * HOUR_PX }} />
+                      <div key={h} className="absolute left-0 right-0 border-t border-[#2a1e4d] pointer-events-none" style={{ top: h * HOUR_PX }} />
                     ))}
                     {isToday && (
-                      <div className="absolute left-0 right-0 border-t-2 border-[#B49ACF] z-10 pointer-events-none" style={{ top: (minutesOf(now) / 60) * HOUR_PX }}>
-                        <span className="absolute -left-1 -top-[5px] w-2 h-2 rounded-full bg-[#B49ACF]" />
+                      <div className="absolute left-0 right-0 border-t-2 border-[#C9C2E3] z-10 pointer-events-none" style={{ top: (minutesOf(now) / 60) * HOUR_PX }}>
+                        <span className="absolute -left-1 -top-[5px] w-2 h-2 rounded-full bg-[#C9C2E3]" />
                       </div>
                     )}
                     {list.map((m) => {
@@ -238,7 +238,7 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
                       return (
                         <div
                           key={m.id}
-                          className={`absolute rounded-2xl px-2 py-1.5 overflow-hidden select-none touch-none group ${drag?.id === m.id ? 'shadow-lg z-20 opacity-90' : 'z-[5]'} ${selectedKey === `meeting-${m.id}` ? 'ring-2 ring-[#8B6BB1]' : ''}`}
+                          className={`absolute rounded-2xl px-2 py-1.5 overflow-hidden select-none touch-none group ${drag?.id === m.id ? 'shadow-lg z-20 opacity-90' : 'z-[5]'} ${selectedKey === `meeting-${m.id}` ? 'ring-2 ring-[#8B7CC7]' : ''}`}
                           style={{
                             top: (startMin / 60) * HOUR_PX + 1,
                             height: Math.max(22, ((endMin - startMin) / 60) * HOUR_PX - 3),
@@ -278,7 +278,7 @@ export const TimeGrid: React.FC<Props> = ({ days, meetings, tasks, tzShort, sele
                           </button>
                           {m.meeting.primary_contact_name && endMin - startMin >= 60 && (
                             <div className="flex mt-1" aria-hidden>
-                              <span className="w-6 h-6 rounded-full bg-[#ABA3B7] border-2 border-[#15131C] text-[#0E0D12] text-[10px] font-semibold flex items-center justify-center" title={m.meeting.primary_contact_name}>
+                              <span className="w-6 h-6 rounded-full bg-[#8B7CC7] border-2 border-[#0E0B1D] text-[#0E0B1D] text-[10px] font-semibold flex items-center justify-center" title={m.meeting.primary_contact_name}>
                                 {m.meeting.primary_contact_name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('')}
                               </span>
                             </div>

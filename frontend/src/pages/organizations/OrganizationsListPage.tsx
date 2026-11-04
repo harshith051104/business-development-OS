@@ -183,7 +183,7 @@ export const OrganizationsListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -213,7 +213,7 @@ export const OrganizationsListPage: React.FC = () => {
         </div>
 
         {/* ── Search & Filter Bar ── */}
-        <div className="bg-[#110B2E] border border-slate-800/90 rounded-xl p-4 space-y-3">
+        <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-xl p-4 space-y-3">
           {/* Top Search Row */}
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
@@ -223,7 +223,7 @@ export const OrganizationsListPage: React.FC = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search by organization name, city, state, type, or industry..."
-                className="w-full pl-10 pr-4 py-2 bg-[#1A1040] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full pl-10 pr-4 py-2 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
               />
               {searchInput && (
                 <button
@@ -236,7 +236,7 @@ export const OrganizationsListPage: React.FC = () => {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center space-x-1 bg-[#1A1040] p-1 rounded-xl border border-slate-800 shrink-0">
+            <div className="flex items-center space-x-1 bg-[#2A1E4D] p-1 rounded-xl border border-slate-800 shrink-0">
               <button
                 onClick={() => setViewMode('table')}
                 className={`p-1.5 rounded-lg transition ${
@@ -264,7 +264,7 @@ export const OrganizationsListPage: React.FC = () => {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
             >
               <option value="">All Types</option>
               {orgTypes.map((t) => (
@@ -278,7 +278,7 @@ export const OrganizationsListPage: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
             >
               <option value="">All Stages</option>
               {statusStages.map((s) => (
@@ -292,7 +292,7 @@ export const OrganizationsListPage: React.FC = () => {
             <select
               value={selectedPriority}
               onChange={(e) => setSelectedPriority(e.target.value)}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
             >
               <option value="">All Priorities</option>
               {priorityLevels.map((p) => (
@@ -310,7 +310,7 @@ export const OrganizationsListPage: React.FC = () => {
                 setSortBy(sb)
                 setSortOrder(so as 'asc' | 'desc')
               }}
-              className="px-3 py-1.5 bg-[#1A1040] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
+              className="px-3 py-1.5 bg-[#2A1E4D] border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none focus:border-violet-500"
             >
               <option value="created_at-desc">Newest First</option>
               <option value="created_at-asc">Oldest First</option>
@@ -348,12 +348,12 @@ export const OrganizationsListPage: React.FC = () => {
 
         {/* ── Content View: Loading / Error / Empty / List ── */}
         {loading ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-3">
             <RotateCw className="w-6 h-6 animate-spin text-violet-400 mx-auto" />
             <p className="text-xs text-slate-400 font-medium">Loading organizations directory...</p>
           </div>
         ) : error ? (
-          <div className="bg-[#110B2E] border border-red-500/20 rounded-2xl p-10 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-red-500/20 rounded-2xl p-10 text-center space-y-3">
             <AlertCircle className="w-8 h-8 text-red-400 mx-auto" />
             <h2 className="text-sm font-bold text-white">Error loading organizations</h2>
             <p className="text-xs text-slate-400 max-w-md mx-auto">{error}</p>
@@ -365,7 +365,7 @@ export const OrganizationsListPage: React.FC = () => {
             </button>
           </div>
         ) : organizations.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-16 text-center space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-16 text-center space-y-4">
             <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
               <Inbox className="w-7 h-7 stroke-[1.5]" />
             </div>
@@ -396,11 +396,11 @@ export const OrganizationsListPage: React.FC = () => {
           </div>
         ) : viewMode === 'table' ? (
           /* ── Table Layout ── */
-          <div className="bg-[#110B2E] border border-slate-800/90 rounded-xl overflow-hidden">
+          <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800/80 bg-[#1A1040]/80 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <tr className="border-b border-slate-800/80 bg-[#2A1E4D]/80 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                     <th className="py-3.5 px-4">Organization</th>
                     <th className="py-3.5 px-4 hidden min-[1400px]:table-cell">Type</th>
                     <th className="py-3.5 px-4">Location</th>
@@ -419,7 +419,7 @@ export const OrganizationsListPage: React.FC = () => {
                       tabIndex={-1}
                       aria-selected={selectedOrgId === org.id}
                       className={`transition group cursor-pointer outline-none ${
-                        selectedOrgId === org.id ? 'bg-violet-600/15 ring-1 ring-inset ring-violet-400/60' : 'hover:bg-[#1A1040]/40'
+                        selectedOrgId === org.id ? 'bg-violet-600/15 ring-1 ring-inset ring-violet-400/60' : 'hover:bg-[#2A1E4D]/40'
                       }`}
                       onClick={() => navigate(`/business-development/organizations/${org.id}`)}
                     >
@@ -489,14 +489,14 @@ export const OrganizationsListPage: React.FC = () => {
                           <button
                             onClick={() => setStatusModalOrg(org)}
                             title="Change Connection Status"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-violet-500/20 text-slate-400 hover:text-violet-300 border border-slate-800 transition"
+                            className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-violet-500/20 text-slate-400 hover:text-violet-300 border border-slate-800 transition"
                           >
                             <GitFork className="w-3.5 h-3.5" />
                           </button>
                           <Link
                             to={`/business-development/organizations/${org.id}`}
                             title="View Profile"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
+                            className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </Link>
@@ -504,7 +504,7 @@ export const OrganizationsListPage: React.FC = () => {
                             to={`/business-development/organizations/${org.id}/edit`}
                             title="Edit Organization"
                             aria-label={`Edit ${org.name}`}
-                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition text-xs"
+                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition text-xs"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                             Edit
@@ -512,7 +512,7 @@ export const OrganizationsListPage: React.FC = () => {
                           <button
                             onClick={() => setDeleteConfirmOrg(org)}
                             title="Delete Organization"
-                            className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-800 transition"
+                            className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-800 transition"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -533,14 +533,14 @@ export const OrganizationsListPage: React.FC = () => {
                 id={`org-row-${org.id}`}
                 tabIndex={-1}
                 onClick={() => navigate(`/business-development/organizations/${org.id}`)}
-                className={`p-5 rounded-xl bg-[#110B2E] border transition-colors cursor-pointer flex flex-col justify-between space-y-4 group outline-none ${
+                className={`p-5 rounded-xl bg-[#0E0B1D] border transition-colors cursor-pointer flex flex-col justify-between space-y-4 group outline-none ${
                   selectedOrgId === org.id ? 'border-violet-400 ring-1 ring-violet-400/60' : 'border-slate-800/80 hover:border-slate-600'
                 }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-xl bg-[#1A1040] border border-slate-800">
+                      <div className="p-2 rounded-xl bg-[#2A1E4D] border border-slate-800">
                         <Building2 className="w-4 h-4 text-violet-400" />
                       </div>
                       <div>
@@ -589,14 +589,14 @@ export const OrganizationsListPage: React.FC = () => {
                       onClick={() => setStatusModalOrg(org)}
                       title="Change Connection Status"
                       aria-label={`Change connection status for ${org.name}`}
-                      className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-violet-500/20 text-slate-400 hover:text-violet-300 border border-slate-800"
+                      className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-violet-500/20 text-slate-400 hover:text-violet-300 border border-slate-800"
                     >
                       <GitFork className="w-3.5 h-3.5" />
                     </button>
                     <Link
                       to={`/business-development/organizations/${org.id}/edit`}
                       aria-label={`Edit ${org.name}`}
-                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs"
+                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       Edit
@@ -623,17 +623,17 @@ export const OrganizationsListPage: React.FC = () => {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-xl bg-[#110B2E] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-xl bg-[#0E0B1D] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1.5 rounded-xl bg-[#110B2E] border border-slate-800 font-mono text-white">
+              <span className="px-3 py-1.5 rounded-xl bg-[#0E0B1D] border border-slate-800 font-mono text-white">
                 {page} / {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-xl bg-[#110B2E] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-xl bg-[#0E0B1D] border border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -656,7 +656,7 @@ export const OrganizationsListPage: React.FC = () => {
       {/* ── Delete Confirmation Modal ── */}
       {deleteConfirmOrg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-red-500/30 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-red-500/30 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <div className="flex items-center space-x-2.5 text-red-400">
               <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/20">
                 <Trash2 className="w-5 h-5" />

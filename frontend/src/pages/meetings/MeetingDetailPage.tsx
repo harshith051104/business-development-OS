@@ -94,7 +94,7 @@ export const MeetingDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#0E0B1D] flex items-center justify-center text-white">
         <div className="text-center space-y-3">
           <RotateCw className="w-8 h-8 animate-spin text-violet-400 mx-auto" />
           <p className="text-xs text-slate-400">Loading meeting profile...</p>
@@ -105,7 +105,7 @@ export const MeetingDetailPage: React.FC = () => {
 
   if (error || !meeting) {
     return (
-      <div className="min-h-screen bg-[#0A071B] flex items-center justify-center p-6 text-white">
+      <div className="min-h-screen bg-[#0E0B1D] flex items-center justify-center p-6 text-white">
         <div className="text-center space-y-3 max-w-sm">
           <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
           <h2 className="text-base font-bold text-white">Meeting Not Found</h2>
@@ -124,14 +124,14 @@ export const MeetingDetailPage: React.FC = () => {
   const meetingDate = parseMeetingDate(meeting.scheduled_at)
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
       {/* ── Top Bar ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex items-center justify-between">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Link
             to="/business-development/meetings"
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -158,7 +158,7 @@ export const MeetingDetailPage: React.FC = () => {
 
               <button
                 onClick={() => setIsCancelModalOpen(true)}
-                className="flex items-center space-x-1.5 py-2 px-3 rounded-xl bg-[#1A1040] hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border border-slate-800 hover:border-rose-500/30 text-xs font-medium transition"
+                className="flex items-center space-x-1.5 py-2 px-3 rounded-xl bg-[#2A1E4D] hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border border-slate-800 hover:border-rose-500/30 text-xs font-medium transition"
               >
                 <XCircle className="w-3.5 h-3.5" />
                 <span>Cancel</span>
@@ -168,7 +168,7 @@ export const MeetingDetailPage: React.FC = () => {
 
           <Link
             to={`/business-development/meetings/${meeting.id}/edit`}
-            className="flex items-center space-x-1.5 py-2 px-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-medium transition"
+            className="flex items-center space-x-1.5 py-2 px-3 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-medium transition"
           >
             <Edit2 className="w-3.5 h-3.5" />
             <span>Edit</span>
@@ -179,7 +179,7 @@ export const MeetingDetailPage: React.FC = () => {
       {/* ── Main Content Grid ── */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
         {/* Header Hero Card */}
-        <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-2xl space-y-4">
+        <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-2xl space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -252,19 +252,19 @@ export const MeetingDetailPage: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Agenda */}
             {meeting.agenda && (
-              <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+              <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
                 <h3 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   <span>Meeting Agenda</span>
                 </h3>
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
                   {meeting.agenda}
                 </div>
               </div>
             )}
 
             {/* Discussion Notes */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
                   <FileText className="w-4 h-4" />
@@ -281,11 +281,11 @@ export const MeetingDetailPage: React.FC = () => {
               </div>
 
               {meeting.notes ? (
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
                   {meeting.notes}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                   No discussion notes recorded yet. Click "Mark Completed" to record meeting
                   outcomes.
                 </p>
@@ -293,34 +293,34 @@ export const MeetingDetailPage: React.FC = () => {
             </div>
 
             {/* Decisions Made */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
               <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Agreed Decisions</span>
               </h3>
               {meeting.decisions ? (
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
                   {meeting.decisions}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                   No explicit decisions recorded.
                 </p>
               )}
             </div>
 
             {/* Next Actions */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
               <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
                 <Target className="w-4 h-4" />
                 <span>Agreed Next Actions</span>
               </h3>
               {meeting.next_actions ? (
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
                   {meeting.next_actions}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                   No specific next actions recorded.
                 </p>
               )}
@@ -338,7 +338,7 @@ export const MeetingDetailPage: React.FC = () => {
           {/* Right Column: Attendees Roster & Linked Follow-ups */}
           <div className="space-y-6">
             {/* Attendees Card */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
               <h3 className="text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span>Attendees & Stakeholders</span>
@@ -350,7 +350,7 @@ export const MeetingDetailPage: React.FC = () => {
                     <Link
                       key={att.id}
                       to={`/business-development/contacts/${att.id}`}
-                      className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 hover:border-teal-500/40 transition block group space-y-1"
+                      className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 hover:border-teal-500/40 transition block group space-y-1"
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-white group-hover:text-teal-300 transition">
@@ -375,7 +375,7 @@ export const MeetingDetailPage: React.FC = () => {
             </div>
 
             {/* Linked Follow-ups Card */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
                   <Clock3 className="w-4 h-4" />
@@ -390,7 +390,7 @@ export const MeetingDetailPage: React.FC = () => {
               </div>
 
               {followups.length === 0 ? (
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-center space-y-2">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-center space-y-2">
                   <p className="text-xs text-slate-400">No action follow-ups created yet.</p>
                   <button
                     onClick={() => setIsFollowUpModalOpen(true)}
@@ -404,7 +404,7 @@ export const MeetingDetailPage: React.FC = () => {
                   {followups.map((f) => (
                     <div
                       key={f.id}
-                      className="p-3 rounded-xl bg-[#1A1040] border border-slate-800 space-y-2"
+                      className="p-3 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-2"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <span className="text-xs font-bold text-white">{f.title}</span>
@@ -459,7 +459,7 @@ export const MeetingDetailPage: React.FC = () => {
       {/* Cancel Modal */}
       {isCancelModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <h3 className="text-sm font-bold text-white">Cancel Meeting</h3>
             <p className="text-xs text-slate-400">
               Are you sure you want to cancel "{meeting.title}"? You can specify a reason below.
@@ -469,7 +469,7 @@ export const MeetingDetailPage: React.FC = () => {
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder="e.g. Client requested postponement due to audit..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500"
             />
             <div className="flex items-center justify-end space-x-2.5 pt-2">
               <button

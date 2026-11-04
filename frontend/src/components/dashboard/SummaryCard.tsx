@@ -68,7 +68,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   if (compact) {
     return (
       <div
-        className={`group relative bg-[#110B2E]/90 border ${styles.border} rounded-xl p-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 overflow-hidden flex items-center justify-between gap-2.5`}
+        className={`group relative bg-[#0E0B1D]/90 border ${styles.border} rounded-xl p-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 overflow-hidden flex items-center justify-between gap-2.5`}
       >
         <div className="min-w-0 flex-1">
           <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400 block truncate">
@@ -87,7 +87,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
 
   return (
     <div
-      className={`group relative bg-[#110B2E] border ${styles.border} rounded-2xl p-5 shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
+      className={`group relative bg-[#0E0B1D] border ${styles.border} rounded-2xl p-5 shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
     >
       {/* Ambient background hover glow */}
       <div

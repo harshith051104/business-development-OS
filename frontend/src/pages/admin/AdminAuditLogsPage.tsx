@@ -62,10 +62,10 @@ export const AdminAuditLogsPage: React.FC = () => {
   }, [fetchLogs])
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
-      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
             <History className="w-5 h-5" />
@@ -89,7 +89,7 @@ export const AdminAuditLogsPage: React.FC = () => {
             setEndDate('')
             setPage(1)
           }}
-          className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition"
+          className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition"
         >
           <span>Reset Filters</span>
         </button>
@@ -104,7 +104,7 @@ export const AdminAuditLogsPage: React.FC = () => {
         )}
 
         {/* Filter Controls */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
             <div className="sm:col-span-4 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -116,7 +116,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                   setPage(1)
                 }}
                 placeholder="Search action or metadata..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
               />
             </div>
 
@@ -127,7 +127,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                   setResourceType(e.target.value)
                   setPage(1)
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
               >
                 <option value="">All record types</option>
                 <option value="USER">Users</option>
@@ -152,7 +152,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                   setPage(1)
                 }}
                 placeholder="Filter by user email..."
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none"
               />
             </div>
 
@@ -166,7 +166,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                   setStartDate(e.target.value)
                   setPage(1)
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none font-mono"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none font-mono"
               />
             </div>
           </div>
@@ -181,7 +181,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                   setPage(1)
                 }}
                 placeholder="e.g. LOGIN_FAILED"
-                className="px-3 py-1.5 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500"
+                className="px-3 py-1.5 rounded-lg bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500"
               />
             </label>
             <label className="flex items-center gap-1.5">
@@ -193,7 +193,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                   setEndDate(e.target.value)
                   setPage(1)
                 }}
-                className="px-3 py-1.5 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs font-mono"
+                className="px-3 py-1.5 rounded-lg bg-[#2A1E4D] border border-slate-700 text-white text-xs font-mono"
               />
             </label>
             {(search || resourceType || userEmail || startDate || endDate || action) && (
@@ -223,16 +223,16 @@ export const AdminAuditLogsPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading audit records...</p>
           </div>
         ) : logs.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
             <History className="w-10 h-10 text-slate-600 mx-auto" />
             <h3 className="text-sm font-bold text-white">No audit logs found matching criteria.</h3>
             <p className="text-xs text-slate-400">Clear filters or try searching for another term.</p>
           </div>
         ) : (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400 border-b border-slate-800">
+                <thead className="bg-[#2A1E4D] text-slate-400 border-b border-slate-800">
                   <tr>
                     <th className="p-3.5 font-semibold">Timestamp</th>
                     <th className="p-3.5 font-semibold">Action</th>
@@ -244,7 +244,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {logs.map((log) => (
-                    <tr key={log.id} className="hover:bg-[#1A1040]/40 transition">
+                    <tr key={log.id} className="hover:bg-[#2A1E4D]/40 transition">
                       <td className="p-3.5 text-slate-400 text-[11px] whitespace-nowrap">
                         {log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A'}
                       </td>
@@ -272,7 +272,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                       <td className="p-3.5 text-right font-sans">
                         <button
                           onClick={() => setSelectedMetaLog(log)}
-                          className="py-1 px-2 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 border border-slate-700 text-[11px] transition"
+                          className="py-1 px-2 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 border border-slate-700 text-[11px] transition"
                         >
                           Payload
                         </button>
@@ -292,14 +292,14 @@ export const AdminAuditLogsPage: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -313,7 +313,7 @@ export const AdminAuditLogsPage: React.FC = () => {
       {/* Metadata Detail Modal */}
       {selectedMetaLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 font-mono text-xs">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 font-mono text-xs">
             <div className="flex items-center justify-between pb-2 border-b border-slate-800 font-sans">
               <h3 className="text-sm font-bold text-white">
                 Audit Record #{selectedMetaLog.id}
@@ -331,7 +331,7 @@ export const AdminAuditLogsPage: React.FC = () => {
 
             <div className="space-y-1">
               <div className="font-sans font-semibold text-slate-300">Payload Metadata</div>
-              <pre className="p-3 rounded-xl bg-[#0B091D] border border-slate-800 text-cyan-300 text-[11px] overflow-x-auto max-h-60">
+              <pre className="p-3 rounded-xl bg-[#0E0B1D] border border-slate-800 text-cyan-300 text-[11px] overflow-x-auto max-h-60">
                 {(() => {
                   try {
                     return JSON.stringify(JSON.parse(selectedMetaLog.metadata_json || '{}'), null, 2)
@@ -346,7 +346,7 @@ export const AdminAuditLogsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMetaLog(null)}
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
               >
                 Close
               </button>

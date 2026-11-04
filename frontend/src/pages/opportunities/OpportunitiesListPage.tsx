@@ -110,11 +110,11 @@ export const OpportunitiesListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-5 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-5 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30">
             <Target className="w-5 h-5" />
@@ -177,7 +177,7 @@ export const OpportunitiesListPage: React.FC = () => {
         )}
 
         {/* Search & Filter Toolbar */}
-        <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+        <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
           <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
@@ -187,7 +187,7 @@ export const OpportunitiesListPage: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search opportunity name, organization, contact, project..."
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
               />
             </div>
 
@@ -199,7 +199,7 @@ export const OpportunitiesListPage: React.FC = () => {
                   setStageFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
               >
                 {STAGES.map((s) => (
                   <option key={s} value={s}>
@@ -217,7 +217,7 @@ export const OpportunitiesListPage: React.FC = () => {
                   setPriorityFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
               >
                 {PRIORITIES.map((p) => (
                   <option key={p} value={p}>
@@ -237,7 +237,7 @@ export const OpportunitiesListPage: React.FC = () => {
               className={`px-3 py-2 rounded-xl text-xs font-semibold transition border flex items-center gap-1.5 whitespace-nowrap ${
                 noNextActionFilter
                   ? 'bg-amber-500/20 text-amber-200 border-amber-500/40 shadow-sm'
-                  : 'bg-[#1A1040] text-slate-400 hover:text-white border-slate-800'
+                  : 'bg-[#2A1E4D] text-slate-400 hover:text-white border-slate-800'
               }`}
             >
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -260,7 +260,7 @@ export const OpportunitiesListPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading business opportunities...</p>
           </div>
         ) : error ? (
-          <div className="p-8 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3">
+          <div className="p-8 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h3 className="text-sm font-bold text-white">Error Loading Opportunities</h3>
             <p className="text-xs text-slate-400">{error}</p>
@@ -272,7 +272,7 @@ export const OpportunitiesListPage: React.FC = () => {
             </button>
           </div>
         ) : opportunities.length === 0 ? (
-          <div className="p-16 rounded-2xl bg-[#110B2E] border border-slate-800 text-center space-y-4 shadow-xl">
+          <div className="p-16 rounded-2xl bg-[#0E0B1D] border border-slate-800 text-center space-y-4 shadow-xl">
             <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
               <Target className="w-7 h-7 stroke-[1.5]" />
             </div>
@@ -295,7 +295,7 @@ export const OpportunitiesListPage: React.FC = () => {
               {opportunities.map((opp) => (
                 <div
                   key={opp.id}
-                  className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl"
+                  className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl"
                 >
                   {/* Left: Info */}
                   <div className="space-y-2 flex-1">
@@ -376,7 +376,7 @@ export const OpportunitiesListPage: React.FC = () => {
                   <div className="flex items-center space-x-2 shrink-0 self-end md:self-center">
                     <button
                       onClick={() => setStageModalOpp(opp)}
-                      className="px-3 py-1.5 rounded-xl bg-[#1A1040] hover:bg-violet-600/20 text-violet-300 border border-slate-700 hover:border-violet-500/30 text-xs font-semibold transition"
+                      className="px-3 py-1.5 rounded-xl bg-[#2A1E4D] hover:bg-violet-600/20 text-violet-300 border border-slate-700 hover:border-violet-500/30 text-xs font-semibold transition"
                     >
                       Stage
                     </button>
@@ -402,14 +402,14 @@ export const OpportunitiesListPage: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
+                    className="p-2 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                     disabled={page === totalPages}
-                    className="p-2 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
+                    className="p-2 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

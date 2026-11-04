@@ -36,7 +36,7 @@ export const AddNoteModal: React.FC<AddNoteModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center space-x-2">
             <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -66,7 +66,7 @@ export const AddNoteModal: React.FC<AddNoteModalProps> = ({
               rows={4}
               required
               placeholder="e.g. Discussed hospital IT roadmap with Dr. Reddy. They are planning budgeting in Q4."
-              className="w-full px-3 py-2 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full px-3 py-2 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
             />
             <p className="text-[11px] text-slate-500 mt-1">
               Internal only. This note is never exposed to external organizations.

@@ -84,10 +84,10 @@ export const AdminUsersListPage: React.FC = () => {
     }
   }
 
-  const select = 'px-3 py-2 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs'
+  const select = 'px-3 py-2 rounded-lg bg-[#2A1E4D] border border-slate-700 text-white text-xs'
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] md:pl-64">
       <AdminNavbar />
       <main className="p-6 max-w-6xl mx-auto space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -103,7 +103,7 @@ export const AdminUsersListPage: React.FC = () => {
         <Notice notice={notice} onDismiss={() => setNotice(null)} />
         {error && <Notice notice={{ kind: 'error', text: error }} onDismiss={() => setError(null)} />}
 
-        <div className="flex flex-wrap items-center gap-2 bg-[#110B2E] border border-slate-800 rounded-xl p-3">
+        <div className="flex flex-wrap items-center gap-2 bg-[#0E0B1D] border border-slate-800 rounded-xl p-3">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -115,7 +115,7 @@ export const AdminUsersListPage: React.FC = () => {
                 setPage(1)
               }}
               placeholder="Search by name or email"
-              className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500"
             />
           </div>
           <select aria-label="Role" className={select} value={roleFilter} onChange={(e) => (setRoleFilter(e.target.value), setPage(1))}>
@@ -133,7 +133,7 @@ export const AdminUsersListPage: React.FC = () => {
           </select>
         </div>
 
-        <div className="bg-[#110B2E] border border-slate-800 rounded-xl overflow-hidden">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-xl overflow-hidden">
           {loading && users.length === 0 ? (
             <p className="flex items-center justify-center gap-2 text-xs text-slate-400 py-12">
               <Loader2 className="w-4 h-4 animate-spin" /> Loading users…
@@ -143,7 +143,7 @@ export const AdminUsersListPage: React.FC = () => {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400">
+                <thead className="bg-[#2A1E4D] text-slate-400">
                   <tr>
                     <th className="px-4 py-2.5 font-medium">Name</th>
                     <th className="px-4 py-2.5 font-medium">Role</th>

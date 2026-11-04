@@ -19,7 +19,7 @@ const FollowUpCard: React.FC<{ item: CategorizedFollowUpItem; badgeStyle: string
   item,
   badgeStyle,
 }) => (
-  <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800/80 hover:border-slate-700 transition space-y-2 group">
+  <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800/80 hover:border-slate-700 transition space-y-2 group">
     <div className="flex items-start justify-between gap-2">
       <div className="flex items-center space-x-1.5 truncate">
         <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -124,7 +124,7 @@ export const FollowUpsSection: React.FC<FollowUpsSectionProps> = ({
   }
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">

@@ -71,7 +71,7 @@ export const FinancialBarChart: React.FC<Props> = ({ rows, metric, year, selecte
     const f = b.org.financials
     const health = f?.health?.label ? HEALTH_LABELS[f.health.label] || f.health.label : null
     return (
-      <div className="absolute z-20 left-0 top-full mt-1 w-80 max-w-[90vw] bg-[#1B1440] border border-slate-600 rounded-lg shadow-2xl p-3 text-[11px] text-slate-300 space-y-1 pointer-events-none">
+      <div className="absolute z-20 left-0 top-full mt-1 w-80 max-w-[90vw] bg-[#2A1E4D] border border-slate-600 rounded-lg shadow-2xl p-3 text-[11px] text-slate-300 space-y-1 pointer-events-none">
         <div className="text-xs font-semibold text-white">{b.org.name}</div>
         <div>
           {metricLabel(metric)}: <span className="text-white font-medium">{formatMoney(b.point?.value ?? null, f?.currency)}</span>
@@ -147,7 +147,7 @@ export const FinancialBarChart: React.FC<Props> = ({ rows, metric, year, selecte
                           width: `${Math.max(width, 0.4)}%`,
                           backgroundColor: priorityColor(b.org.priority),
                           opacity: activeId && !isActive ? 0.45 : 1,
-                          outline: isSelected ? '2px solid #ffffff' : undefined,
+                          outline: isSelected ? '2px solid #c9c2e3' : undefined,
                         }}
                       />
                       <span

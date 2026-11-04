@@ -101,11 +101,11 @@ export const CommunicationsListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-5 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-5 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30">
             <MessageSquare className="w-5 h-5" />
@@ -149,7 +149,7 @@ export const CommunicationsListPage: React.FC = () => {
               className={`px-3 py-1 rounded-full text-xs font-medium border transition ${
                 channelFilter === 'All'
                   ? 'bg-violet-600 text-white border-violet-500 shadow-sm'
-                  : 'bg-[#1A1040] text-slate-400 border-slate-800 hover:text-white'
+                  : 'bg-[#2A1E4D] text-slate-400 border-slate-800 hover:text-white'
               }`}
             >
               All Channels ({total})
@@ -164,7 +164,7 @@ export const CommunicationsListPage: React.FC = () => {
                 className={`px-3 py-1 rounded-full text-xs font-medium border transition ${
                   channelFilter === ch
                     ? 'bg-violet-600 text-white border-violet-500 shadow-sm'
-                    : 'bg-[#1A1040] text-slate-400 border-slate-800 hover:text-white'
+                    : 'bg-[#2A1E4D] text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
                 {ch} ({count})
@@ -174,7 +174,7 @@ export const CommunicationsListPage: React.FC = () => {
         )}
 
         {/* Filter Toolbar */}
-        <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+        <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
           <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -183,7 +183,7 @@ export const CommunicationsListPage: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search subject, organization, contact, summary, or content..."
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
               />
             </div>
 
@@ -194,7 +194,7 @@ export const CommunicationsListPage: React.FC = () => {
                   setChannelFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
               >
                 {CHANNELS.map((ch) => (
                   <option key={ch} value={ch}>
@@ -211,7 +211,7 @@ export const CommunicationsListPage: React.FC = () => {
                   setDirectionFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
               >
                 {DIRECTIONS.map((d) => (
                   <option key={d} value={d}>
@@ -228,7 +228,7 @@ export const CommunicationsListPage: React.FC = () => {
                   setDateRangeFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500"
               >
                 {DATE_RANGES.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -254,7 +254,7 @@ export const CommunicationsListPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading communication records...</p>
           </div>
         ) : error ? (
-          <div className="p-8 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3">
+          <div className="p-8 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h3 className="text-sm font-bold text-white">Error Loading Communications</h3>
             <p className="text-xs text-slate-400">{error}</p>
@@ -266,7 +266,7 @@ export const CommunicationsListPage: React.FC = () => {
             </button>
           </div>
         ) : communications.length === 0 ? (
-          <div className="p-16 rounded-2xl bg-[#110B2E] border border-slate-800 text-center space-y-4 shadow-xl">
+          <div className="p-16 rounded-2xl bg-[#0E0B1D] border border-slate-800 text-center space-y-4 shadow-xl">
             <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
               <MessageSquare className="w-7 h-7 stroke-[1.5]" />
             </div>
@@ -288,7 +288,7 @@ export const CommunicationsListPage: React.FC = () => {
               {communications.map((comm) => (
                 <div
                   key={comm.id}
-                  className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl"
+                  className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl"
                 >
                   <div className="space-y-2 flex-1">
                     {/* Top Row: Date, Channel & Direction Badges */}
@@ -381,14 +381,14 @@ export const CommunicationsListPage: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
+                    className="p-2 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                     disabled={page === totalPages}
-                    className="p-2 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
+                    className="p-2 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 disabled:opacity-40 transition"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

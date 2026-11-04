@@ -6,57 +6,57 @@
   /* Light mode defaults — these override @theme values at runtime */
   --color-dark-bg: #FAF9FF;
   --color-dark-surface: #FFFFFF;
-  --color-dark-card: #F5F3FF;
-  --color-dark-border: #E9E4F5;
+  --color-dark-card: #F5F0FF;
+  --color-dark-border: #E4DCF5;
 
   --color-light-bg: #FAF9FF;
   --color-light-surface: #FFFFFF;
-  --color-light-card: #F5F3FF;
-  --color-light-border: #E9E4F5;
+  --color-light-card: #F5F0FF;
+  --color-light-border: #E4DCF5;
 
-  --color-text-dark: #171329;
-  --color-text-light: #171329;
-  --color-muted-dark: #6F6A82;
-  --color-muted-light: #6F6A82;
+  --color-text-dark: #1E1A33;
+  --color-text-light: #1E1A33;
+  --color-muted-dark: #5A3B8C;
+  --color-muted-light: #5A3B8C;
 }
 
 .dark {
-  --color-dark-bg: #0B0520;
-  --color-dark-surface: #110B2E;
-  --color-dark-card: #1A1040;
-  --color-dark-border: rgba(139, 92, 246, 0.2);
+  --color-dark-bg: #0E0B1D;
+  --color-dark-surface: #2A1E4D;
+  --color-dark-card: #2A1E4D;
+  --color-dark-border: rgba(90, 59, 140, 0.35);
 
-  --color-light-bg: #0B0520;
-  --color-light-surface: #110B2E;
-  --color-light-card: #1A1040;
-  --color-light-border: rgba(139, 92, 246, 0.2);
+  --color-light-bg: #0E0B1D;
+  --color-light-surface: #2A1E4D;
+  --color-light-card: #2A1E4D;
+  --color-light-border: rgba(90, 59, 140, 0.35);
 
-  --color-text-light: #F0ECFF;
-  --color-muted-dark: #B0A8D0;
+  --color-text-light: #C9C2E3;
+  --color-muted-dark: #8B7CC7;
 }
 
 @theme {
-  --color-primary: #7C3AED;
-  --color-primary-deep: #5B21B6;
-  --color-primary-violet: #8B5CF6;
-  --color-primary-light: #A78BFA;
-  --color-primary-lavender: #C4B5FD;
-  --color-primary-soft: #EDE9FE;
+  --color-primary: #5A3B8C;
+  --color-primary-deep: #3A3A52;
+  --color-primary-violet: #5A3B8C;
+  --color-primary-light: #8B7CC7;
+  --color-primary-lavender: #C9C2E3;
+  --color-primary-soft: #C9C2E3;
 
-  --color-dark-bg: #0B0520;
-  --color-dark-surface: #110B2E;
-  --color-dark-card: #1A1040;
-  --color-dark-border: rgba(139, 92, 246, 0.2);
+  --color-dark-bg: #0E0B1D;
+  --color-dark-surface: #2A1E4D;
+  --color-dark-card: #2A1E4D;
+  --color-dark-border: rgba(90, 59, 140, 0.35);
 
   --color-light-bg: #FAF9FF;
   --color-light-surface: #FFFFFF;
-  --color-light-card: #F5F3FF;
-  --color-light-border: #E9E4F5;
+  --color-light-card: #F5F0FF;
+  --color-light-border: #E4DCF5;
 
-  --color-text-dark: #171329;
-  --color-text-light: #F8F7FF;
-  --color-muted-dark: #A8A3C0;
-  --color-muted-light: #6F6A82;
+  --color-text-dark: #1E1A33;
+  --color-text-light: #C9C2E3;
+  --color-muted-dark: #8B7CC7;
+  --color-muted-light: #5A3B8C;
 
   --color-success: #10B981;
   --color-warning: #F59E0B;
@@ -64,6 +64,15 @@
   --color-info: #3B82F6;
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Rounder corners site-wide — every rounded-* utility picks this up. */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+  --radius-3xl: 2.25rem;
 }
 
 @layer base {
@@ -91,11 +100,11 @@
 
 @layer components {
   .gradient-primary {
-    background: linear-gradient(135deg, #4C1D95, #7C3AED, #A78BFA);
+    background: linear-gradient(135deg, #2A1E4D, #5A3B8C, #8B7CC7);
   }
 
   .glow-purple {
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.25), 0 0 60px rgba(91, 33, 182, 0.1);
+    box-shadow: 0 0 20px rgba(90, 59, 140, 0.25), 0 0 60px rgba(42, 30, 77, 0.1);
   }
 
   .skeleton {
@@ -118,15 +127,15 @@
 
 /* Leaflet Dark Mode Customizations */
 .leaflet-container {
-  background-color: #0B0520 !important;
+  background-color: #0E0B1D !important;
   font-family: inherit;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #110B2E !important;
-  color: #F0ECFF !important;
-  border: 1px solid rgba(139, 92, 246, 0.35) !important;
-  border-radius: 16px !important;
+  background: #2A1E4D !important;
+  color: #C9C2E3 !important;
+  border: 1px solid rgba(90, 59, 140, 0.35) !important;
+  border-radius: 20px !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
   padding: 0 !important;
 }
@@ -137,12 +146,12 @@
 }
 
 .leaflet-popup-tip {
-  background: #110B2E !important;
-  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  background: #2A1E4D !important;
+  border: 1px solid rgba(90, 59, 140, 0.35) !important;
 }
 
 .leaflet-popup-close-button {
-  color: #A8A3C0 !important;
+  color: #8B7CC7 !important;
   top: 10px !important;
   right: 12px !important;
   font-size: 18px !important;

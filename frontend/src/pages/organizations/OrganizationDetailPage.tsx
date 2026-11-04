@@ -149,7 +149,7 @@ export const OrganizationDetailPage: React.FC = () => {
   const primaryContact = contacts.find((c) => c.is_primary_contact)
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
@@ -172,7 +172,7 @@ export const OrganizationDetailPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading organization details...</p>
           </div>
         ) : error || !org ? (
-          <div className="bg-[#110B2E] border border-rose-500/30 rounded-2xl p-8 text-center space-y-3 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-rose-500/30 rounded-2xl p-8 text-center space-y-3 shadow-xl">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h2 className="text-base font-bold text-white">Organization Not Found</h2>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">{error}</p>
@@ -186,7 +186,7 @@ export const OrganizationDetailPage: React.FC = () => {
         ) : (
           <>
             {/* ── Organization Header Card ── */}
-            <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-start space-x-4">
                 <div className="p-3.5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30 shrink-0">
                   <Building2 className="w-7 h-7" />
@@ -236,7 +236,7 @@ export const OrganizationDetailPage: React.FC = () => {
 
                 <Link
                   to={`/business-development/meetings/new?organization_id=${org.id}`}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition"
                 >
                   <CalendarPlus className="w-3.5 h-3.5" />
                   <span>Schedule Meeting</span>
@@ -244,7 +244,7 @@ export const OrganizationDetailPage: React.FC = () => {
 
                 <button
                   onClick={() => setIsFollowUpModalOpen(true)}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
                 >
                   <Clock3 className="w-3.5 h-3.5 text-amber-400" />
                   <span>Add Follow-up</span>
@@ -260,7 +260,7 @@ export const OrganizationDetailPage: React.FC = () => {
 
                 <button
                   onClick={() => setIsStatusModalOpen(true)}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
                 >
                   <GitFork className="w-3.5 h-3.5" />
                   <span>Change Status</span>
@@ -268,7 +268,7 @@ export const OrganizationDetailPage: React.FC = () => {
 
                 <Link
                   to={`/business-development/organizations/${org.id}/edit`}
-                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
+                  className="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   <span>Edit</span>
@@ -281,7 +281,7 @@ export const OrganizationDetailPage: React.FC = () => {
               {/* Left 2 Columns: Contacts, Meetings, Follow-ups, Overview */}
               <div className="lg:col-span-2 space-y-6">
                 {/* 1. Associated Contacts List */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
@@ -307,7 +307,7 @@ export const OrganizationDetailPage: React.FC = () => {
                   </div>
 
                   {contacts.length === 0 ? (
-                    <div className="p-8 rounded-xl bg-[#1A1040] border border-slate-800 text-center space-y-3">
+                    <div className="p-8 rounded-xl bg-[#2A1E4D] border border-slate-800 text-center space-y-3">
                       <p className="text-xs text-slate-400">
                         No contacts associated with this organization yet.
                       </p>
@@ -325,7 +325,7 @@ export const OrganizationDetailPage: React.FC = () => {
                         <Link
                           key={c.id}
                           to={`/business-development/contacts/${c.id}`}
-                          className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 hover:border-teal-500/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
+                          className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 hover:border-teal-500/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -358,7 +358,7 @@ export const OrganizationDetailPage: React.FC = () => {
                 </div>
 
                 {/* 2. Business Opportunities Section */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -384,7 +384,7 @@ export const OrganizationDetailPage: React.FC = () => {
                   </div>
 
                   {opportunities.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No business opportunities recorded for this organization yet.
                     </p>
                   ) : (
@@ -392,7 +392,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       {opportunities.map((opp) => (
                         <div
                           key={opp.id}
-                          className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
                           <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-2">
@@ -436,7 +436,7 @@ export const OrganizationDetailPage: React.FC = () => {
                 </div>
 
                 {/* 2.5 Partnerships Section */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -470,7 +470,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       {partnerships.map((p) => (
                         <div
                           key={p.id}
-                          className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-2 hover:border-violet-500/40 transition flex flex-col justify-between"
+                          className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-2 hover:border-violet-500/40 transition flex flex-col justify-between"
                         >
                           <div className="space-y-1.5">
                             <div className="flex items-start justify-between gap-2">
@@ -507,7 +507,7 @@ export const OrganizationDetailPage: React.FC = () => {
                 </div>
 
                 {/* 3. Business Meetings Section */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -533,7 +533,7 @@ export const OrganizationDetailPage: React.FC = () => {
                   </div>
 
                   {meetings.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No business meetings logged with this organization yet.
                     </p>
                   ) : (
@@ -541,7 +541,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       {meetings.map((m) => (
                         <div
                           key={m.id}
-                          className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -579,7 +579,7 @@ export const OrganizationDetailPage: React.FC = () => {
                 </div>
 
                 {/* 3. Follow-up Tasks Section */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -605,7 +605,7 @@ export const OrganizationDetailPage: React.FC = () => {
                   </div>
 
                   {followups.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic p-4 bg-[#1A1040] rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-500 italic p-4 bg-[#2A1E4D] rounded-xl border border-slate-800">
                       No follow-ups recorded for this organization yet.
                     </p>
                   ) : (
@@ -613,7 +613,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       {followups.map((f) => (
                         <div
                           key={f.id}
-                          className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 flex items-center justify-between gap-3"
+                          className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 flex items-center justify-between gap-3"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -653,14 +653,14 @@ export const OrganizationDetailPage: React.FC = () => {
                 </div>
 
                 {/* 4. Organization Overview & Details */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-violet-400 flex items-center gap-2">
                     <Building2 className="w-4 h-4" />
                     <span>Organization Overview</span>
                   </h2>
 
                   {org.description ? (
-                    <p className="text-xs text-slate-300 leading-relaxed bg-[#1A1040] p-4 rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-300 leading-relaxed bg-[#2A1E4D] p-4 rounded-xl border border-slate-800">
                       {org.description}
                     </p>
                   ) : (
@@ -668,7 +668,7 @@ export const OrganizationDetailPage: React.FC = () => {
                   )}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Website</span>
                       {org.website ? (
                         <a
@@ -686,7 +686,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Official Email</span>
                       {org.email ? (
                         <a
@@ -701,7 +701,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Official Phone</span>
                       {org.phone ? (
                         <div className="text-xs text-slate-200 flex items-center gap-1.5">
@@ -713,7 +713,7 @@ export const OrganizationDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-1">
                       <span className="text-[11px] text-slate-400 block font-medium">Facility Size</span>
                       <div className="text-xs text-slate-200 flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -728,7 +728,7 @@ export const OrganizationDetailPage: React.FC = () => {
 
                 {/* 4b. Location Map */}
                 {(org.address || org.city || org.country || org.latitude) && (
-                  <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                  <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                     <h2 className="text-sm font-bold text-white uppercase tracking-wider text-amber-400 flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
                       <span>Location</span>
@@ -783,7 +783,7 @@ export const OrganizationDetailPage: React.FC = () => {
                 )}
 
                 {/* 5. Internal BD Notes */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-sm font-bold text-white uppercase tracking-wider text-indigo-400 flex items-center gap-2">
                       <FileText className="w-4 h-4" />
@@ -798,11 +798,11 @@ export const OrganizationDetailPage: React.FC = () => {
                   </div>
 
                   {org.notes ? (
-                    <div className="bg-[#1A1040] p-4 rounded-xl border border-slate-800 text-xs text-slate-300 whitespace-pre-wrap font-sans leading-relaxed space-y-2">
+                    <div className="bg-[#2A1E4D] p-4 rounded-xl border border-slate-800 text-xs text-slate-300 whitespace-pre-wrap font-sans leading-relaxed space-y-2">
                       {org.notes}
                     </div>
                   ) : (
-                    <div className="p-6 rounded-xl bg-[#1A1040]/40 border border-slate-800/80 text-center text-xs text-slate-500">
+                    <div className="p-6 rounded-xl bg-[#2A1E4D]/40 border border-slate-800/80 text-center text-xs text-slate-500">
                       No internal notes recorded yet.
                     </div>
                   )}
@@ -821,14 +821,14 @@ export const OrganizationDetailPage: React.FC = () => {
               {/* Right Column: Primary Contact & Connection Status */}
               <div className="space-y-6">
                 {/* Primary Contact Card */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-teal-400 flex items-center gap-2">
                     <Star className="w-4 h-4 fill-current text-teal-400" />
                     <span>Primary Contact</span>
                   </h2>
 
                   {primaryContact ? (
-                    <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-2">
+                    <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-2">
                       <div className="font-bold text-white text-sm">{primaryContact.full_name}</div>
                       <div className="text-xs text-slate-300">{primaryContact.designation}</div>
                       {primaryContact.email && (
@@ -843,20 +843,20 @@ export const OrganizationDetailPage: React.FC = () => {
                       </Link>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-center text-xs text-slate-500">
+                    <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-center text-xs text-slate-500">
                       No primary contact designated yet.
                     </div>
                   )}
                 </div>
 
                 {/* Connection Stage Card */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-violet-400 flex items-center gap-2">
                     <GitFork className="w-4 h-4" />
                     <span>Outreach Stage</span>
                   </h2>
 
-                  <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 space-y-3">
+                  <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-slate-400 font-medium">Connection status</span>
                       <StatusBadge status={org.status} size="md" />

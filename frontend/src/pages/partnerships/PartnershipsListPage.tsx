@@ -86,11 +86,11 @@ export const PartnershipsListPage: React.FC = () => {
   }, [fetchPartnerships])
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg shadow-violet-600/30">
             <Handshake className="w-5 h-5" />
@@ -124,7 +124,7 @@ export const PartnershipsListPage: React.FC = () => {
               setStatusFilter('Active')
               setPage(1)
             }}
-            className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 hover:border-violet-500/40 cursor-pointer transition shadow-xl space-y-2"
+            className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 hover:border-violet-500/40 cursor-pointer transition shadow-xl space-y-2"
           >
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span className="font-semibold">Active Partnerships</span>
@@ -143,7 +143,7 @@ export const PartnershipsListPage: React.FC = () => {
               setQuickFilter('all')
               setPage(1)
             }}
-            className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 hover:border-violet-500/40 cursor-pointer transition shadow-xl space-y-2"
+            className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 hover:border-violet-500/40 cursor-pointer transition shadow-xl space-y-2"
           >
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span className="font-semibold">New This Month</span>
@@ -163,7 +163,7 @@ export const PartnershipsListPage: React.FC = () => {
             className={`p-4 rounded-2xl border cursor-pointer transition shadow-xl space-y-2 ${
               quickFilter === 'ending_soon'
                 ? 'bg-amber-500/10 border-amber-500/50'
-                : 'bg-[#110B2E] border-slate-800 hover:border-amber-500/40'
+                : 'bg-[#0E0B1D] border-slate-800 hover:border-amber-500/40'
             }`}
           >
             <div className="flex items-center justify-between text-xs text-slate-400">
@@ -184,7 +184,7 @@ export const PartnershipsListPage: React.FC = () => {
             className={`p-4 rounded-2xl border cursor-pointer transition shadow-xl space-y-2 ${
               quickFilter === 'needs_attention'
                 ? 'bg-rose-500/10 border-rose-500/50'
-                : 'bg-[#110B2E] border-slate-800 hover:border-rose-500/40'
+                : 'bg-[#0E0B1D] border-slate-800 hover:border-rose-500/40'
             }`}
           >
             <div className="flex items-center justify-between text-xs text-slate-400">
@@ -199,7 +199,7 @@ export const PartnershipsListPage: React.FC = () => {
         </div>
 
         {/* ── Search & Filter Controls ── */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
             {/* Search Input */}
             <div className="sm:col-span-4 relative">
@@ -212,7 +212,7 @@ export const PartnershipsListPage: React.FC = () => {
                   setPage(1)
                 }}
                 placeholder="Search partnerships, orgs, contacts, projects..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
               />
             </div>
 
@@ -224,7 +224,7 @@ export const PartnershipsListPage: React.FC = () => {
                   setStatusFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
               >
                 <option value="All">All Statuses</option>
                 <option value="Active">Active</option>
@@ -242,7 +242,7 @@ export const PartnershipsListPage: React.FC = () => {
                   setTypeFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
               >
                 <option value="All">All Types</option>
                 <option value="Technology Partnership">Technology Partnership</option>
@@ -264,7 +264,7 @@ export const PartnershipsListPage: React.FC = () => {
                   setPriorityFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
               >
                 <option value="All">All Priorities</option>
                 <option value="High">High</option>
@@ -282,7 +282,7 @@ export const PartnershipsListPage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading business partnerships...</p>
           </div>
         ) : partnerships.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-4 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-4 shadow-xl">
             <Handshake className="w-10 h-10 text-slate-600 mx-auto" />
             <h3 className="text-sm font-bold text-white">No active partnerships yet.</h3>
             <p className="text-xs text-slate-400 max-w-md mx-auto">
@@ -291,7 +291,7 @@ export const PartnershipsListPage: React.FC = () => {
             <div className="flex items-center justify-center space-x-3 pt-2">
               <Link
                 to="/business-development/organizations"
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
+                className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
               >
                 View Organizations
               </Link>
@@ -304,10 +304,10 @@ export const PartnershipsListPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400 border-b border-slate-800">
+                <thead className="bg-[#2A1E4D] text-slate-400 border-b border-slate-800">
                   <tr>
                     <th className="p-3.5 font-semibold">Partnership / Project</th>
                     <th className="p-3.5 font-semibold">Organization</th>
@@ -322,7 +322,7 @@ export const PartnershipsListPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {partnerships.map((p) => (
-                    <tr key={p.id} className="hover:bg-[#1A1040]/40 transition">
+                    <tr key={p.id} className="hover:bg-[#2A1E4D]/40 transition">
                       <td className="p-3.5">
                         <div className="space-y-1">
                           <Link
@@ -429,14 +429,14 @@ export const PartnershipsListPage: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

@@ -37,8 +37,8 @@ const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
 const MEETING_TYPES: MeetingType[] = ['Introduction', 'Project Showcase', 'Business Discussion', 'Partnership Discussion', 'Technical Discussion', 'Follow-up', 'Other']
 const DURATIONS = [15, 30, 45, 60, 90, 120, 180, 240]
 
-const field = 'w-full px-2.5 py-1.5 rounded-lg border border-[#302938] bg-[#15131C] text-[#EAE7EF] text-xs [color-scheme:dark] focus:outline-none focus:border-[#8B6BB1]'
-const label = 'block text-[11px] font-medium text-[#ABA3B7] mb-1'
+const field = 'w-full px-2.5 py-1.5 rounded-lg border border-[#2a1e4d] bg-[#0E0B1D] text-[#C9C2E3] text-xs [color-scheme:dark] focus:outline-none focus:border-[#8B7CC7]'
+const label = 'block text-[11px] font-medium text-[#8B7CC7] mb-1'
 const errText = (err: any, fallback: string) => err?.detail || err?.message || fallback
 
 /** Details and editing for a calendar task or meeting, or the "Add" form. Floats next to the clicked item. */
@@ -225,7 +225,7 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
         aria-modal="true"
         aria-label={heading}
         onMouseDown={(e) => e.stopPropagation()}
-        className="absolute w-[340px] max-h-[86vh] overflow-y-auto bg-[#1D1927] rounded-3xl shadow-2xl border border-[#302938] p-4 text-[#EAE7EF]"
+        className="absolute w-[340px] max-h-[86vh] overflow-y-auto bg-[#0E0B1D] rounded-3xl shadow-2xl border border-[#2a1e4d] p-4 text-[#C9C2E3]"
         style={{ left: pos.left, top: pos.top }}
       >
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -234,9 +234,9 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={kind === 'task' ? 'Task title' : 'Meeting title'}
-            className="flex-1 text-base font-semibold text-[#EAE7EF] bg-transparent border-b border-transparent focus:border-[#8B6BB1] placeholder:text-[#6E6779] focus:outline-none"
+            className="flex-1 text-base font-semibold text-[#C9C2E3] bg-transparent border-b border-transparent focus:border-[#8B7CC7] placeholder:text-[#5A3B8C] focus:outline-none"
           />
-          <button onClick={onClose} aria-label="Close" className="text-[#ABA3B7] hover:text-[#EAE7EF]">
+          <button onClick={onClose} aria-label="Close" className="text-[#8B7CC7] hover:text-[#C9C2E3]">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -251,13 +251,13 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
                 aria-selected={kind === k}
                 disabled={!isCreate}
                 onClick={() => setKind(k)}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${kind === k ? (k === 'task' ? 'bg-[#4d3340] text-[#EAE7EF]' : 'bg-[#443253] text-[#EAE7EF]') : 'bg-[#262033] text-[#ABA3B7]'}`}
+                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${kind === k ? (k === 'task' ? 'bg-[#3a3a52] text-[#C9C2E3]' : 'bg-[#3a3a52] text-[#C9C2E3]') : 'bg-[#2a1e4d] text-[#8B7CC7]'}`}
               >
                 {k === 'task' ? 'Task' : 'Meeting / event'}
               </button>
             ) : null,
           )}
-          {m && <span className="px-2.5 py-1 rounded-full text-[11px] bg-[#262033] text-[#ABA3B7]">{m.status}</span>}
+          {m && <span className="px-2.5 py-1 rounded-full text-[11px] bg-[#2a1e4d] text-[#8B7CC7]">{m.status}</span>}
         </div>
 
         {kind === 'task' ? (
@@ -267,7 +267,7 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
                 type="button"
                 onClick={quickComplete}
                 disabled={saving}
-                className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold ${status === 'Completed' ? 'bg-[#262033] text-[#ABA3B7]' : 'bg-[#443253] text-[#EAE7EF] hover:bg-[#523d63]'}`}
+                className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold ${status === 'Completed' ? 'bg-[#2a1e4d] text-[#8B7CC7]' : 'bg-[#3a3a52] text-[#C9C2E3] hover:bg-[#3a3a52]'}`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" /> {status === 'Completed' ? 'Reopen task' : 'Mark complete'}
               </button>
@@ -293,7 +293,7 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
             <div>
               <label className={label} htmlFor="cal-due">Due date (no time — tasks don’t have a duration)</label>
               <input id="cal-due" type="date" className={field} value={due} onChange={(e) => setDue(e.target.value)} />
-              {!t && !due && <p className="text-[11px] text-[#8F879C] mt-1">Leave empty to add it to Unscheduled tasks.</p>}
+              {!t && !due && <p className="text-[11px] text-[#8B7CC7] mt-1">Leave empty to add it to Unscheduled tasks.</p>}
             </div>
             <div>
               <label className={label} htmlFor="cal-owner">Assigned to</label>
@@ -311,31 +311,31 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
               <textarea id="cal-desc" rows={3} className={field} value={description || ''} onChange={(e) => setDescription(e.target.value)} />
             </div>
             {t?.entity_name && (
-              <p className="text-[11px] text-[#ABA3B7]">
+              <p className="text-[11px] text-[#8B7CC7]">
                 Linked to {t.entity_type}: <span className="text-white">{t.entity_name}</span>
               </p>
             )}
             {t && (
-              <div className="border-t border-[#302938] pt-2">
+              <div className="border-t border-[#2a1e4d] pt-2">
                 <div className={label}>Comments</div>
                 {comments === null ? (
-                  <p className="text-[11px] text-[#8F879C]">Loading…</p>
+                  <p className="text-[11px] text-[#8B7CC7]">Loading…</p>
                 ) : comments.length === 0 ? (
-                  <p className="text-[11px] text-[#8F879C]">No comments yet.</p>
+                  <p className="text-[11px] text-[#8B7CC7]">No comments yet.</p>
                 ) : (
                   <ul className="space-y-1.5 mb-2 max-h-32 overflow-y-auto">
                     {comments.map((c) => (
                       <li key={c.id} className="text-[11px]">
-                        <span className="font-semibold text-[#EAE7EF]">{c.user_name || 'Someone'}</span>{' '}
-                        <span className="text-[#8F879C]">{new Date(c.created_at).toLocaleDateString()}</span>
-                        <div className="text-[#EAE7EF]">{c.body}</div>
+                        <span className="font-semibold text-[#C9C2E3]">{c.user_name || 'Someone'}</span>{' '}
+                        <span className="text-[#8B7CC7]">{new Date(c.created_at).toLocaleDateString()}</span>
+                        <div className="text-[#C9C2E3]">{c.body}</div>
                       </li>
                     ))}
                   </ul>
                 )}
                 <div className="flex gap-1.5">
                   <input aria-label="New comment" className={field} value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Add a comment" />
-                  <button type="button" onClick={addComment} disabled={saving || !newComment.trim()} className="px-2.5 rounded-lg bg-[#7A5C9E] text-white text-xs disabled:opacity-40">
+                  <button type="button" onClick={addComment} disabled={saving || !newComment.trim()} className="px-2.5 rounded-lg bg-[#5A3B8C] text-white text-xs disabled:opacity-40">
                     Post
                   </button>
                 </div>
@@ -358,9 +358,9 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
               </div>
             ) : (
               m && (
-                <p className="text-xs text-[#ABA3B7]">
+                <p className="text-xs text-[#8B7CC7]">
                   With{' '}
-                  <Link to={`/business-development/organizations/${m.organization_id}`} className="text-[#8B6BB1] hover:underline">
+                  <Link to={`/business-development/organizations/${m.organization_id}`} className="text-[#8B7CC7] hover:underline">
                     {m.organization_name || 'organization'}
                   </Link>
                 </p>
@@ -412,26 +412,26 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
               <div>
                 <div className={label}>Attendees</div>
                 {!detail ? (
-                  <p className="text-[11px] text-[#8F879C]">Loading…</p>
+                  <p className="text-[11px] text-[#8B7CC7]">Loading…</p>
                 ) : !detail.attendees?.length ? (
-                  <p className="text-[11px] text-[#8F879C]">No contacts recorded.</p>
+                  <p className="text-[11px] text-[#8B7CC7]">No contacts recorded.</p>
                 ) : (
                   <ul className="space-y-1">
                     {detail.attendees.map((a) => (
                       <li key={a.id} className="flex items-center gap-2 text-xs">
-                        <span className="w-6 h-6 rounded-full text-[10px] font-semibold text-[#0E0D12] flex items-center justify-center" style={{ backgroundColor: avatarColor(a.id) }}>
+                        <span className="w-6 h-6 rounded-full text-[10px] font-semibold text-[#0E0B1D] flex items-center justify-center" style={{ backgroundColor: avatarColor(a.id) }}>
                           {initials(a.full_name)}
                         </span>
                         <span className="text-white">{a.full_name}</span>
-                        {a.designation && <span className="text-[#8F879C] truncate">{a.designation}</span>}
+                        {a.designation && <span className="text-[#8B7CC7] truncate">{a.designation}</span>}
                       </li>
                     ))}
                   </ul>
                 )}
-                <p className="text-[11px] text-[#8F879C] mt-1">
+                <p className="text-[11px] text-[#8B7CC7] mt-1">
                   Organizer assignment isn’t available: the meetings API doesn’t return or accept an owner.
                 </p>
-                <Link to={`/business-development/meetings/${m.id}`} className="inline-flex items-center gap-1 text-[11px] text-[#8B6BB1] hover:underline mt-1">
+                <Link to={`/business-development/meetings/${m.id}`} className="inline-flex items-center gap-1 text-[11px] text-[#8B7CC7] hover:underline mt-1">
                   Open meeting page (notes, complete, cancel) <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
@@ -453,7 +453,7 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
                 <button onClick={doDelete} disabled={saving} className="px-2 py-1 rounded-md bg-rose-600 text-white">
                   Yes, delete
                 </button>
-                <button onClick={() => setConfirmDelete(false)} className="px-2 py-1 rounded-md bg-[#262033] text-[#ABA3B7]">
+                <button onClick={() => setConfirmDelete(false)} className="px-2 py-1 rounded-md bg-[#2a1e4d] text-[#8B7CC7]">
                   No
                 </button>
               </span>
@@ -468,7 +468,7 @@ export const ItemEditor: React.FC<Props> = ({ target, anchor, members, currentUs
           <button
             onClick={kind === 'task' ? saveTask : saveMeeting}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#7A5C9E] hover:bg-[#6B4F8C] text-white text-xs font-semibold disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#5A3B8C] hover:bg-[#5A3B8C] text-white text-xs font-semibold disabled:opacity-50"
           >
             {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {isCreate ? 'Add' : 'Save'}

@@ -77,10 +77,10 @@ export const AdminShowcasePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
-      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-rose-500/20 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
             <Sparkles className="w-5 h-5" />
@@ -113,7 +113,7 @@ export const AdminShowcasePage: React.FC = () => {
         )}
 
         {/* Search & Filter Controls */}
-        <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
             <div className="sm:col-span-8 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -125,7 +125,7 @@ export const AdminShowcasePage: React.FC = () => {
                   setPage(1)
                 }}
                 placeholder="Search projects by name, description, tags..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -136,7 +136,7 @@ export const AdminShowcasePage: React.FC = () => {
                   setStatusFilter(e.target.value)
                   setPage(1)
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
               >
                 <option value="All">All Governance Statuses</option>
                 <option value="Published">Published (Live in BD Portal)</option>
@@ -155,16 +155,16 @@ export const AdminShowcasePage: React.FC = () => {
             <p className="text-xs text-slate-400">Loading showcase initiatives...</p>
           </div>
         ) : projects.length === 0 ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-12 text-center space-y-3 shadow-xl">
             <Sparkles className="w-10 h-10 text-slate-600 mx-auto" />
             <h3 className="text-sm font-bold text-white">No projects available.</h3>
             <p className="text-xs text-slate-400">Create and publish projects for Business Development presentations.</p>
           </div>
         ) : (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#1A1040] text-slate-400 border-b border-slate-800">
+                <thead className="bg-[#2A1E4D] text-slate-400 border-b border-slate-800">
                   <tr>
                     <th className="p-3.5 font-semibold">Initiative</th>
                     <th className="p-3.5 font-semibold">Category</th>
@@ -176,7 +176,7 @@ export const AdminShowcasePage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {projects.map((proj) => (
-                    <tr key={proj.id} className="hover:bg-[#1A1040]/40 transition">
+                    <tr key={proj.id} className="hover:bg-[#2A1E4D]/40 transition">
                       <td className="p-3.5 max-w-xs">
                         <div className="font-bold text-white truncate block">{proj.name}</div>
                         <span className="text-[11px] text-slate-400 truncate block">
@@ -258,7 +258,7 @@ export const AdminShowcasePage: React.FC = () => {
 
                         <Link
                           to={`/admin/showcase/${proj.id}/edit`}
-                          className="py-1 px-2.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs transition inline-block"
+                          className="py-1 px-2.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs transition inline-block"
                         >
                           Edit
                         </Link>
@@ -285,14 +285,14 @@ export const AdminShowcasePage: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 disabled:opacity-40"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

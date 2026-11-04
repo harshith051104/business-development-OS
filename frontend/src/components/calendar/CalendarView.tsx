@@ -199,7 +199,7 @@ export default function CalendarView({ onEventClick, height = '600px' }: Calenda
                 <button
                   key={event.id}
                   onClick={() => handleEventClick(event)}
-                  className="w-full flex items-start gap-3 text-left p-3 bg-[#1A1040] border border-slate-700 rounded-xl hover:border-violet-500/50 transition"
+                  className="w-full flex items-start gap-3 text-left p-3 bg-[#2A1E4D] border border-slate-700 rounded-xl hover:border-violet-500/50 transition"
                 >
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${STATUS_DOTS[event.status] || 'bg-slate-500'}`} />
                   <div className="flex-1 min-w-0">

@@ -59,7 +59,7 @@ export const QuickActions: React.FC = () => {
   ]
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -84,7 +84,7 @@ export const QuickActions: React.FC = () => {
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="p-2 rounded-lg bg-[#1A1040] border border-slate-800">
+                  <div className="p-2 rounded-lg bg-[#2A1E4D] border border-slate-800">
                     <Icon className="w-4 h-4" />
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition" />

@@ -98,7 +98,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
@@ -139,7 +139,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Enterprise Platform Collaboration"
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
 
@@ -152,7 +152,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value ? Number(e.target.value) : '')}
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
             >
               <option value="">-- None / General Collaboration --</option>
               {projects.map((p) => (
@@ -170,7 +170,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
               <select
                 value={stage}
                 onChange={(e) => setStage(e.target.value as OpportunityStage)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 {STAGES.map((s) => (
                   <option key={s} value={s}>
@@ -185,7 +185,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as OpportunityPriority)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               >
                 <option value="High">High Priority</option>
                 <option value="Medium">Medium Priority</option>
@@ -208,7 +208,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
                 value={estimatedValue}
                 onChange={(e) => setEstimatedValue(e.target.value)}
                 placeholder="e.g. 75000"
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
               />
             </div>
 
@@ -237,7 +237,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
                 value={nextAction}
                 onChange={(e) => setNextAction(e.target.value)}
                 placeholder="e.g. Schedule commercial terms discussion"
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
               />
             </div>
 
@@ -247,7 +247,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
                 type="datetime-local"
                 value={nextActionDate}
                 onChange={(e) => setNextActionDate(e.target.value)}
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-violet-500 transition"
               />
             </div>
           </div>
@@ -260,7 +260,7 @@ export const CreateOpportunityModal: React.FC<CreateOpportunityModalProps> = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Context and background for this business opportunity..."
-              className="w-full bg-[#1A1040] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+              className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
 

@@ -99,7 +99,7 @@ export const ProjectDetailPage: React.FC = () => {
   }, [fetchProject])
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
@@ -115,12 +115,12 @@ export const ProjectDetailPage: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-16 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-16 text-center space-y-3">
             <RotateCw className="w-6 h-6 animate-spin text-violet-400 mx-auto" />
             <p className="text-xs text-slate-400">Loading project details...</p>
           </div>
         ) : error || !project ? (
-          <div className="bg-[#110B2E] border border-red-500/20 rounded-2xl p-12 text-center space-y-4">
+          <div className="bg-[#0E0B1D] border border-red-500/20 rounded-2xl p-12 text-center space-y-4">
             <AlertCircle className="w-8 h-8 text-red-400 mx-auto" />
             <h2 className="text-base font-bold text-white">Project Not Found</h2>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">{error}</p>
@@ -134,7 +134,7 @@ export const ProjectDetailPage: React.FC = () => {
         ) : (
           <>
             {/* ── Project Header Card ── */}
-            <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-2.5 max-w-3xl">
                   <div className="flex flex-wrap items-center gap-2">
@@ -174,7 +174,7 @@ export const ProjectDetailPage: React.FC = () => {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingDeck}
-                    className="flex items-center space-x-2 py-2.5 px-4 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-bold transition shadow-sm hover:scale-[1.02] disabled:opacity-50 cursor-pointer"
+                    className="flex items-center space-x-2 py-2.5 px-4 rounded-2xl bg-[#2A1E4D] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-bold transition shadow-sm hover:scale-[1.02] disabled:opacity-50 cursor-pointer"
                   >
                     <UploadCloud className={`w-4 h-4 ${uploadingDeck ? 'animate-bounce text-violet-400' : 'text-violet-400'}`} />
                     <span>{uploadingDeck ? 'Uploading...' : project.presentation_url ? 'Replace Deck' : 'Upload Deck'}</span>
@@ -186,7 +186,7 @@ export const ProjectDetailPage: React.FC = () => {
                       setGslidesInput(isGoogleSlidesUrl(project.presentation_url) ? (project.presentation_url || '') : '')
                       setShowGslidesModal(true)
                     }}
-                    className="flex items-center space-x-1.5 py-2.5 px-3.5 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-semibold transition shadow-sm hover:scale-[1.02]"
+                    className="flex items-center space-x-1.5 py-2.5 px-3.5 rounded-2xl bg-[#2A1E4D] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-semibold transition shadow-sm hover:scale-[1.02]"
                   >
                     <LinkIcon className="w-3.5 h-3.5 text-amber-400" />
                     <span>{isGoogleSlidesUrl(project.presentation_url) ? 'Change Google Slides' : 'Google Slides Link'}</span>
@@ -197,7 +197,7 @@ export const ProjectDetailPage: React.FC = () => {
                       href={project.demo_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-1.5 py-2.5 px-4 rounded-2xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
+                      className="flex items-center space-x-1.5 py-2.5 px-4 rounded-2xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
                     >
                       <ExternalLink className="w-4 h-4 text-violet-400" />
                       <span>Open Demo</span>
@@ -209,7 +209,7 @@ export const ProjectDetailPage: React.FC = () => {
                       href={project.website_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center space-x-1.5 py-2.5 px-4 rounded-2xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
+                      className="flex items-center space-x-1.5 py-2.5 px-4 rounded-2xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition"
                     >
                       <Globe className="w-4 h-4 text-slate-400" />
                       <span>Website</span>
@@ -225,7 +225,7 @@ export const ProjectDetailPage: React.FC = () => {
                   {project.tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-[#1A1040] border border-slate-800 text-xs text-slate-300"
+                      className="px-2.5 py-1 rounded-lg bg-[#2A1E4D] border border-slate-800 text-xs text-slate-300"
                     >
                       #{tag}
                     </span>
@@ -239,7 +239,7 @@ export const ProjectDetailPage: React.FC = () => {
               {/* Left 2 Columns: About, Key Features, Use Cases */}
               <div className="lg:col-span-2 space-y-8">
                 {/* About the Project */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider text-violet-400 flex items-center gap-2">
                     <FileText className="w-4 h-4" />
                     <span>About the Project</span>
@@ -251,7 +251,7 @@ export const ProjectDetailPage: React.FC = () => {
 
                 {/* Key Features */}
                 {project.key_features && project.key_features.length > 0 && (
-                  <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
+                  <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
                     <h2 className="text-sm font-bold text-white uppercase tracking-wider text-teal-400 flex items-center gap-2">
                       <Layers className="w-4 h-4" />
                       <span>Key Features & Capabilities</span>
@@ -261,7 +261,7 @@ export const ProjectDetailPage: React.FC = () => {
                       {project.key_features.map((feature, idx) => (
                         <div
                           key={idx}
-                          className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800/90 flex items-start space-x-3"
+                          className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800/90 flex items-start space-x-3"
                         >
                           <div className="p-1 rounded-lg bg-teal-500/10 text-teal-400 shrink-0 mt-0.5">
                             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -277,7 +277,7 @@ export const ProjectDetailPage: React.FC = () => {
 
                 {/* Business Value & ROI Breakdown */}
                 {project.business_value && (
-                  <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
+                  <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
                     <h2 className="text-sm font-bold text-white uppercase tracking-wider text-indigo-400 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" />
                       <span>Business Value & ROI</span>
@@ -285,7 +285,7 @@ export const ProjectDetailPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {project.business_value.problem_solved && (
-                        <div className="p-4 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1.5">
+                        <div className="p-4 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1.5">
                           <div className="flex items-center space-x-1.5 text-xs font-bold text-rose-300">
                             <HelpCircle className="w-3.5 h-3.5" />
                             <span>Problem Addressed</span>
@@ -297,7 +297,7 @@ export const ProjectDetailPage: React.FC = () => {
                       )}
 
                       {project.business_value.target_audience && (
-                        <div className="p-4 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1.5">
+                        <div className="p-4 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1.5">
                           <div className="flex items-center space-x-1.5 text-xs font-bold text-blue-300">
                             <Users className="w-3.5 h-3.5" />
                             <span>Who Can Use It</span>
@@ -309,7 +309,7 @@ export const ProjectDetailPage: React.FC = () => {
                       )}
 
                       {project.business_value.value_proposition && (
-                        <div className="p-4 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1.5">
+                        <div className="p-4 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1.5">
                           <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-300">
                             <TrendingUp className="w-3.5 h-3.5" />
                             <span>Measurable Business Value</span>
@@ -321,7 +321,7 @@ export const ProjectDetailPage: React.FC = () => {
                       )}
 
                       {project.business_value.target_organizations && (
-                        <div className="p-4 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-1.5">
+                        <div className="p-4 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-1.5">
                           <div className="flex items-center space-x-1.5 text-xs font-bold text-amber-300">
                             <Building2 className="w-3.5 h-3.5" />
                             <span>Target Organizations</span>
@@ -337,7 +337,7 @@ export const ProjectDetailPage: React.FC = () => {
 
                 {/* Real-World Use Cases */}
                 {project.business_use_cases && project.business_use_cases.length > 0 && (
-                  <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
+                  <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
                     <h2 className="text-sm font-bold text-white uppercase tracking-wider text-amber-400 flex items-center gap-2">
                       <Target className="w-4 h-4" />
                       <span>Real-World Business Use Cases</span>
@@ -347,7 +347,7 @@ export const ProjectDetailPage: React.FC = () => {
                       {project.business_use_cases.map((uc, idx) => (
                         <div
                           key={idx}
-                          className="p-4 rounded-2xl bg-[#1A1040] border border-slate-800/90 space-y-2"
+                          className="p-4 rounded-2xl bg-[#2A1E4D] border border-slate-800/90 space-y-2"
                         >
                           <h3 className="text-xs sm:text-sm font-bold text-white">{uc.title}</h3>
                           <p className="text-xs text-slate-300 leading-relaxed">{uc.description}</p>
@@ -367,7 +367,7 @@ export const ProjectDetailPage: React.FC = () => {
               {/* Right Column: Presentation Tools, Media, Safe Links */}
               <div className="space-y-8">
                 {/* Presentation Card */}
-                <div className="bg-gradient-to-br from-violet-900/40 via-[#110B2E] to-indigo-950/40 border border-violet-500/30 rounded-3xl p-6 shadow-xl space-y-4">
+                <div className="bg-gradient-to-br from-violet-900/40 via-[#0E0B1D] to-indigo-950/40 border border-violet-500/30 rounded-3xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 text-violet-300">
                       <Presentation className="w-5 h-5" />
@@ -404,7 +404,7 @@ export const ProjectDetailPage: React.FC = () => {
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploadingDeck}
-                      className="w-full py-2 px-4 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-bold transition flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
+                      className="w-full py-2 px-4 rounded-2xl bg-[#2A1E4D] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-bold transition flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
                     >
                       <UploadCloud className="w-4 h-4 text-violet-400" />
                       <span>
@@ -422,7 +422,7 @@ export const ProjectDetailPage: React.FC = () => {
                         setGslidesInput(isGoogleSlidesUrl(project.presentation_url) ? (project.presentation_url || '') : '')
                         setShowGslidesModal(true)
                       }}
-                      className="w-full py-2 px-4 rounded-2xl bg-[#1A1040] hover:bg-amber-950/30 border border-amber-500/40 text-amber-200 text-xs font-bold transition flex items-center justify-center space-x-2 cursor-pointer"
+                      className="w-full py-2 px-4 rounded-2xl bg-[#2A1E4D] hover:bg-amber-950/30 border border-amber-500/40 text-amber-200 text-xs font-bold transition flex items-center justify-center space-x-2 cursor-pointer"
                     >
                       <LinkIcon className="w-3.5 h-3.5 text-amber-400" />
                       <span>
@@ -435,7 +435,7 @@ export const ProjectDetailPage: React.FC = () => {
                 </div>
 
                 {/* Approved Links Card */}
-                <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 shadow-xl space-y-4">
+                <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 shadow-xl space-y-4">
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300 flex items-center gap-2">
                     <ExternalLink className="w-4 h-4 text-violet-400" />
                     <span>Approved Materials</span>
@@ -447,7 +447,7 @@ export const ProjectDetailPage: React.FC = () => {
                         href={project.demo_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-3 rounded-xl bg-[#1A1040] hover:bg-violet-600/20 border border-slate-800 hover:border-violet-500/40 transition flex items-center justify-between text-xs text-slate-200 group"
+                        className="p-3 rounded-xl bg-[#2A1E4D] hover:bg-violet-600/20 border border-slate-800 hover:border-violet-500/40 transition flex items-center justify-between text-xs text-slate-200 group"
                       >
                         <span className="font-semibold group-hover:text-violet-300">
                           Live Interactive Demo
@@ -461,7 +461,7 @@ export const ProjectDetailPage: React.FC = () => {
                         href={project.website_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-800 transition flex items-center justify-between text-xs text-slate-200 group"
+                        className="p-3 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-800 transition flex items-center justify-between text-xs text-slate-200 group"
                       >
                         <span>Official Solution Overview</span>
                         <Globe className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
@@ -493,7 +493,7 @@ export const ProjectDetailPage: React.FC = () => {
 
                 {/* Screenshots & Media Preview */}
                 {project.images && project.images.length > 0 && (
-                  <div className="bg-[#110B2E] border border-slate-800/90 rounded-3xl p-6 shadow-xl space-y-4">
+                  <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-3xl p-6 shadow-xl space-y-4">
                     <h3 className="text-sm font-bold text-white uppercase tracking-wider text-teal-400 flex items-center gap-2">
                       <ImageIcon className="w-4 h-4" />
                       <span>Product Preview Gallery</span>
@@ -503,7 +503,7 @@ export const ProjectDetailPage: React.FC = () => {
                       {project.images.map((img, idx) => (
                         <div
                           key={idx}
-                          className="rounded-2xl bg-[#1A1040] border border-slate-800 p-3 space-y-2 overflow-hidden"
+                          className="rounded-2xl bg-[#2A1E4D] border border-slate-800 p-3 space-y-2 overflow-hidden"
                         >
                           <div className="h-32 rounded-xl bg-gradient-to-br from-violet-950/40 via-slate-900 to-indigo-950/40 flex items-center justify-center text-slate-500">
                             <Sparkles className="w-6 h-6 text-violet-400/50" />
@@ -527,7 +527,7 @@ export const ProjectDetailPage: React.FC = () => {
       {/* Toast Notification */}
       {toastMessage && (
         <div
-          className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#110B2E] border ${
+          className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#0E0B1D] border ${
             toastMessage.type === 'success'
               ? 'border-emerald-500/40 text-emerald-300'
               : 'border-rose-500/40 text-rose-300'
@@ -554,7 +554,7 @@ export const ProjectDetailPage: React.FC = () => {
       {/* Attach Google Slides Modal */}
       {showGslidesModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#110B2E] border border-violet-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
+          <div className="bg-[#0E0B1D] border border-violet-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white">Attach Google Slides Sharing Link</h3>
               <button
@@ -578,7 +578,7 @@ export const ProjectDetailPage: React.FC = () => {
                 value={gslidesInput}
                 onChange={(e) => setGslidesInput(e.target.value)}
                 placeholder="https://docs.google.com/presentation/d/..."
-                className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
               />
               <div className="flex items-center justify-end space-x-2 pt-2">
                 <button

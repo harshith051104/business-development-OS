@@ -144,7 +144,7 @@ export const LeadTrackerPage: React.FC = () => {
   }, [page, pageSize, total])
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-[1400px] mx-auto space-y-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
@@ -176,7 +176,7 @@ export const LeadTrackerPage: React.FC = () => {
             ))}
             <button
               onClick={() => setShowTeam((v) => !v)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#131127] border border-white/10 text-sm font-medium hover:bg-[#1a1733] transition"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0e0b1d] border border-white/10 text-sm font-medium hover:bg-[#0e0b1d] transition"
             >
               <Users className="w-4 h-4 text-violet-300" />
               Team Progress
@@ -185,7 +185,7 @@ export const LeadTrackerPage: React.FC = () => {
               onClick={syncNow}
               disabled={syncing}
               title="Pull edits made directly in the ELLY Lead Tracker Google Sheet"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#131127] border border-white/10 text-sm font-medium hover:bg-[#1a1733] transition disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0e0b1d] border border-white/10 text-sm font-medium hover:bg-[#0e0b1d] transition disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 text-emerald-300 ${syncing ? 'animate-spin' : ''}`} />
               {syncing ? 'Syncing...' : 'Sync Now'}
@@ -198,7 +198,7 @@ export const LeadTrackerPage: React.FC = () => {
         )}
 
         {showTeam && team && (
-          <div className="p-4 rounded-2xl bg-[#131127]/60 border border-white/5 overflow-x-auto">
+          <div className="p-4 rounded-2xl bg-[#0e0b1d]/60 border border-white/5 overflow-x-auto">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-gray-300">
                 Team Progress — {team.total_completed}/{team.total_leads} opportunities closed
@@ -240,7 +240,7 @@ export const LeadTrackerPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search name, email, or company..."
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#131127] border border-white/10 text-sm focus:outline-none focus:border-violet-500/50"
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0e0b1d] border border-white/10 text-sm focus:outline-none focus:border-violet-500/50"
             />
           </div>
           <button type="submit" className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-sm font-medium transition">
@@ -255,7 +255,7 @@ export const LeadTrackerPage: React.FC = () => {
           </div>
         )}
 
-        <div className="rounded-2xl border border-white/5 overflow-x-auto bg-[#0d0b1f]">
+        <div className="rounded-2xl border border-white/5 overflow-x-auto bg-[#0e0b1d]">
           {loading ? (
             <div className="flex items-center justify-center p-16">
               <Loader2 className="w-6 h-6 animate-spin text-violet-400" />
@@ -265,8 +265,8 @@ export const LeadTrackerPage: React.FC = () => {
           ) : (
             <table className="w-full text-xs min-w-[1300px]">
               <thead>
-                <tr className="text-gray-500 text-left border-b border-white/5 bg-[#0a0818]">
-                  <th className="py-2 px-3 sticky left-0 bg-[#0a0818]">Lead</th>
+                <tr className="text-gray-500 text-left border-b border-white/5 bg-[#0e0b1d]">
+                  <th className="py-2 px-3 sticky left-0 bg-[#0e0b1d]">Lead</th>
                   <th className="py-2 px-3">Campaign</th>
                   <th className="py-2 px-3 text-center" title="Email Sent / Opened / Replied">
                     Email
@@ -282,7 +282,7 @@ export const LeadTrackerPage: React.FC = () => {
               <tbody>
                 {rows.map((row) => (
                   <tr key={row.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                    <td className="py-2 px-3 sticky left-0 bg-[#0d0b1f]">
+                    <td className="py-2 px-3 sticky left-0 bg-[#0e0b1d]">
                       <div className="font-medium">{row.name || '—'}</div>
                       <div className="text-gray-500">{row.company || row.email || ''}</div>
                     </td>
@@ -327,7 +327,7 @@ export const LeadTrackerPage: React.FC = () => {
             <button
               onClick={() => goToPage(page - 1)}
               disabled={page <= 1}
-              className="p-2 rounded-lg bg-[#131127] border border-white/10 disabled:opacity-40"
+              className="p-2 rounded-lg bg-[#0e0b1d] border border-white/10 disabled:opacity-40"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -337,7 +337,7 @@ export const LeadTrackerPage: React.FC = () => {
             <button
               onClick={() => goToPage(page + 1)}
               disabled={page >= totalPages}
-              className="p-2 rounded-lg bg-[#131127] border border-white/10 disabled:opacity-40"
+              className="p-2 rounded-lg bg-[#0e0b1d] border border-white/10 disabled:opacity-40"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -347,7 +347,7 @@ export const LeadTrackerPage: React.FC = () => {
 
       {timelineFor && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="w-full max-w-md h-full bg-[#0F0A24] border-l border-violet-900/40 p-6 overflow-y-auto">
+          <div className="w-full max-w-md h-full bg-[#0E0B1D] border-l border-violet-900/40 p-6 overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">{timelineFor.name || 'Lead'} — Timeline</h2>
               <button onClick={() => setTimelineFor(null)} className="p-1.5 rounded-lg hover:bg-white/5">
@@ -363,7 +363,7 @@ export const LeadTrackerPage: React.FC = () => {
             ) : (
               <ul className="space-y-3">
                 {timeline.map((e) => (
-                  <li key={e.id} className="p-3 rounded-xl bg-[#131127]/60 border border-white/5">
+                  <li key={e.id} className="p-3 rounded-xl bg-[#0e0b1d]/60 border border-white/5">
                     <div className="text-sm font-medium">{e.description}</div>
                     <div className="text-[11px] text-gray-500 mt-1">
                       {new Date(e.created_at).toLocaleString()}

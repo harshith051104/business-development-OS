@@ -63,7 +63,7 @@ export const CommunicationDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-white flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <RotateCw className="w-8 h-8 animate-spin text-violet-400" />
@@ -74,10 +74,10 @@ export const CommunicationDetailPage: React.FC = () => {
 
   if (error || !communication) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-white flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-white flex flex-col">
         <Navbar />
         <div className="flex-1 p-6 flex items-center justify-center">
-          <div className="p-8 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3 max-w-md">
+          <div className="p-8 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3 max-w-md">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h3 className="text-base font-bold text-white">Record Not Found</h3>
             <p className="text-xs text-slate-400">{error || 'This communication record does not exist.'}</p>
@@ -94,15 +94,15 @@ export const CommunicationDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <Link
             to="/business-development/communications"
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -129,14 +129,14 @@ export const CommunicationDetailPage: React.FC = () => {
         <div className="flex items-center space-x-2.5">
           <Link
             to={`/business-development/communications/${communication.id}/edit`}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
             title="Edit Record"
           >
             <Edit className="w-4 h-4" />
           </Link>
           <button
             onClick={() => setIsDeleteModalOpen(true)}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition border border-slate-800 hover:border-rose-500/30"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition border border-slate-800 hover:border-rose-500/30"
             title="Delete Record"
           >
             <Trash2 className="w-4 h-4" />
@@ -151,7 +151,7 @@ export const CommunicationDetailPage: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Executive Summary */}
             {communication.summary && (
-              <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
+              <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-2">
                 <h3 className="text-xs font-bold text-violet-400 uppercase tracking-wider">
                   Executive Summary
                 </h3>
@@ -162,12 +162,12 @@ export const CommunicationDetailPage: React.FC = () => {
             )}
 
             {/* Content / Discussion Notes */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Communication Notes / Body Content
               </h3>
               {communication.content ? (
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
                   {communication.content}
                 </div>
               ) : (
@@ -181,7 +181,7 @@ export const CommunicationDetailPage: React.FC = () => {
           {/* Right Col: Metadata & References */}
           <div className="space-y-6">
             {/* Meta Card */}
-            <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3.5 text-xs">
+            <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3.5 text-xs">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Interaction Details
               </span>
@@ -205,7 +205,7 @@ export const CommunicationDetailPage: React.FC = () => {
             </div>
 
             {/* Target Organization */}
-            <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
+            <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-2">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-violet-400" />
                 <span>Target Organization</span>
@@ -221,7 +221,7 @@ export const CommunicationDetailPage: React.FC = () => {
 
             {/* Key Contact */}
             {communication.contact_name && (
-              <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
+              <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-2">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-teal-400" />
                   <span>Key Stakeholder</span>
@@ -241,7 +241,7 @@ export const CommunicationDetailPage: React.FC = () => {
 
             {/* Opportunity Reference */}
             {communication.opportunity_name && (
-              <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2">
+              <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-2">
                 <span className="text-[11px] font-bold text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Target className="w-3.5 h-3.5 text-violet-400" />
                   <span>Associated Opportunity</span>
@@ -262,7 +262,7 @@ export const CommunicationDetailPage: React.FC = () => {
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <div className="flex items-center space-x-3 text-rose-400">
               <ShieldAlert className="w-6 h-6" />
               <h3 className="text-sm font-bold text-white">Delete Communication Log</h3>

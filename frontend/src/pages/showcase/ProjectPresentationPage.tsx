@@ -121,7 +121,7 @@ export const ProjectPresentationPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#05040D] flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#0E0B1D] flex items-center justify-center text-white">
         <div className="text-center space-y-3">
           <RotateCw className="w-8 h-8 animate-spin text-violet-400 mx-auto" />
           <p className="text-xs text-slate-400 font-medium">Loading exact presentation deck...</p>
@@ -132,7 +132,7 @@ export const ProjectPresentationPage: React.FC = () => {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-[#05040D] flex items-center justify-center p-6 text-white">
+      <div className="min-h-screen bg-[#0E0B1D] flex items-center justify-center p-6 text-white">
         <div className="text-center space-y-4 max-w-md">
           <h2 className="text-lg font-bold text-white">Unable to launch presentation</h2>
           <p className="text-xs text-slate-400">{error || 'Project data unavailable.'}</p>
@@ -154,14 +154,14 @@ export const ProjectPresentationPage: React.FC = () => {
   const originalDownloadUrl = project.presentation_url || viewerUrl
 
   return (
-    <div className="h-screen w-screen bg-[#05040D] text-[#F0ECFF] flex flex-col justify-between select-none overflow-hidden">
+    <div className="h-screen w-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col justify-between select-none overflow-hidden">
       {/* ── Top Bar ── */}
-      <header className="px-5 py-3 flex items-center justify-between z-50 border-b border-slate-900/80 bg-[#080518]/95 backdrop-blur-md shrink-0">
+      <header className="px-5 py-3 flex items-center justify-between z-50 border-b border-slate-900/80 bg-[#0e0b1d]/95 backdrop-blur-md shrink-0">
         {/* Left: Exit & Project Info */}
         <div className="flex items-center space-x-3">
           <Link
             to={`/business-development/showcase/${project.id}`}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#110B2E] hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-slate-800 transition"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#0E0B1D] hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-slate-800 transition"
             title="Exit Presentation"
           >
             <X className="w-4 h-4" />
@@ -177,7 +177,7 @@ export const ProjectPresentationPage: React.FC = () => {
 
         {/* Center: File Badge */}
         {deckFileName && (
-          <div className="hidden md:flex items-center space-x-2 px-3 py-1 rounded-xl bg-[#110B2E] border border-slate-800 text-slate-300 text-xs font-mono">
+          <div className="hidden md:flex items-center space-x-2 px-3 py-1 rounded-xl bg-[#0E0B1D] border border-slate-800 text-slate-300 text-xs font-mono">
             <FileText className="w-3.5 h-3.5 text-violet-400" />
             <span className="truncate max-w-xs">{deckFileName}</span>
             {fileType && (
@@ -194,7 +194,7 @@ export const ProjectPresentationPage: React.FC = () => {
             <a
               href={originalDownloadUrl}
               download
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#110B2E] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-semibold transition"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#0E0B1D] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 text-xs font-semibold transition"
               title="Download original uploaded file"
             >
               <Download className="w-3.5 h-3.5 text-violet-400" />
@@ -207,7 +207,7 @@ export const ProjectPresentationPage: React.FC = () => {
               href={viewerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-xl bg-[#110B2E] hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition"
+              className="p-2 rounded-xl bg-[#0E0B1D] hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition"
               title="Open in new window"
             >
               <ExternalLink className="w-4 h-4" />
@@ -216,7 +216,7 @@ export const ProjectPresentationPage: React.FC = () => {
 
           <button
             onClick={toggleFullscreen}
-            className="p-2 rounded-xl bg-[#110B2E] hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition"
+            className="p-2 rounded-xl bg-[#0E0B1D] hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition"
             title="Toggle Fullscreen"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -225,7 +225,7 @@ export const ProjectPresentationPage: React.FC = () => {
       </header>
 
       {/* ── Main Viewport: EXACT Presentation Deck Display ── */}
-      <main className="flex-1 w-full h-full bg-[#05040D] flex items-center justify-center p-0 relative overflow-hidden">
+      <main className="flex-1 w-full h-full bg-[#0E0B1D] flex items-center justify-center p-0 relative overflow-hidden">
         {viewerUrl ? (
           /* EXACT Presentation Deck (Rendered 1:1 without separate template) */
           <div className="w-full h-full">
@@ -240,19 +240,19 @@ export const ProjectPresentationPage: React.FC = () => {
               <object
                 data={`${viewerUrl}#toolbar=1&navpanes=0`}
                 type="application/pdf"
-                className="w-full h-full border-0 bg-[#0B0520]"
+                className="w-full h-full border-0 bg-[#0E0B1D]"
               >
                 <iframe
                   src={`${viewerUrl}#toolbar=1&navpanes=0`}
                   title={`${project.name} Presentation Deck`}
-                  className="w-full h-full border-0 bg-[#0B0520]"
+                  className="w-full h-full border-0 bg-[#0E0B1D]"
                 />
               </object>
             )}
           </div>
         ) : (
           /* Empty State when no presentation is uploaded */
-          <div className="text-center max-w-lg mx-auto p-10 rounded-3xl bg-[#110B2E] border border-violet-500/30 shadow-2xl space-y-5 animate-fade-in">
+          <div className="text-center max-w-lg mx-auto p-10 rounded-3xl bg-[#0E0B1D] border border-violet-500/30 shadow-2xl space-y-5 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center mx-auto text-violet-400">
               <UploadCloud className="w-8 h-8" />
             </div>
@@ -279,14 +279,14 @@ export const ProjectPresentationPage: React.FC = () => {
 
               <button
                 onClick={() => setShowGslidesModal(true)}
-                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#1A1040] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 font-semibold text-xs transition flex items-center justify-center space-x-1.5"
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#2A1E4D] hover:bg-violet-900/40 border border-violet-500/40 text-violet-200 font-semibold text-xs transition flex items-center justify-center space-x-1.5"
               >
                 <span>Attach Google Slides</span>
               </button>
 
               <Link
                 to={`/business-development/showcase/${project.id}`}
-                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs transition flex items-center justify-center space-x-1.5"
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs transition flex items-center justify-center space-x-1.5"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Project</span>
@@ -299,7 +299,7 @@ export const ProjectPresentationPage: React.FC = () => {
       {/* Attach Google Slides Modal */}
       {showGslidesModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#110B2E] border border-violet-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
+          <div className="bg-[#0E0B1D] border border-violet-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white">Attach Google Slides Presentation</h3>
               <button
@@ -336,7 +336,7 @@ export const ProjectPresentationPage: React.FC = () => {
                 value={gslidesInput}
                 onChange={(e) => setGslidesInput(e.target.value)}
                 placeholder="https://docs.google.com/presentation/d/..."
-                className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700/80 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
               />
               <div className="flex items-center justify-end space-x-2 pt-2">
                 <button
@@ -371,7 +371,7 @@ export const ProjectPresentationPage: React.FC = () => {
       {/* Floating Toast Notification */}
       {toastMessage && (
         <div
-          className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#110B2E] border ${
+          className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-[#0E0B1D] border ${
             toastMessage.type === 'success'
               ? 'border-emerald-500/40 text-emerald-300'
               : 'border-rose-500/40 text-rose-300'

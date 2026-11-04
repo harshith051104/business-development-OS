@@ -93,7 +93,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <AdminNavbar />
 
       <main className="flex-1 p-6 max-w-4xl w-full mx-auto space-y-6">
@@ -106,7 +106,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
           <span className="text-slate-200 font-medium">New Project</span>
         </div>
 
-        <div className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
+        <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center space-x-4">
           <div className="p-3 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-600/30">
             <Sparkles className="w-6 h-6" />
           </div>
@@ -125,7 +125,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6 text-xs">
+        <form onSubmit={handleSubmit} className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6 text-xs">
           {/* Section 1: Overview */}
           <div className="space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
@@ -140,7 +140,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Enterprise Intelligence Suite"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-bold"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-bold"
               />
             </div>
 
@@ -150,7 +150,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="Healthcare">Healthcare</option>
                   <option value="Artificial Intelligence">Artificial Intelligence</option>
@@ -166,7 +166,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="Draft">Draft (Internal Only)</option>
                   <option value="Review">Review (Under Review)</option>
@@ -183,7 +183,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 value={shortDescription}
                 onChange={(e) => setShortDescription(e.target.value)}
                 placeholder="High-level value statement for preview cards..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -195,7 +195,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Full executive breakdown, architecture, and market positioning..."
-                className="w-full p-3.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -215,7 +215,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                   value={demoUrl}
                   onChange={(e) => setDemoUrl(e.target.value)}
                   placeholder="https://demo.company.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
 
@@ -235,7 +235,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                   value={thumbnailUrl}
                   onChange={(e) => setThumbnailUrl(e.target.value)}
                   placeholder="https://cdn.company.com/thumb.jpg"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
 
@@ -246,7 +246,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   placeholder="https://video.company.com/demo.mp4"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
             </div>
@@ -266,7 +266,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 value={featuresText}
                 onChange={(e) => setFeaturesText(e.target.value)}
                 placeholder="Enterprise EHR Integration&#10;Real-time Clinical Operations Intelligence&#10;Automated Compliance Verification"
-                className="w-full p-3.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -278,7 +278,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                   value={problemSolved}
                   onChange={(e) => setProblemSolved(e.target.value)}
                   placeholder="e.g. Reduces administrative scheduling overhead by 60%"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -289,7 +289,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value)}
                   placeholder="e.g. Chief Medical Officers, Company Administrators"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -301,7 +301,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
                 value={tagsText}
                 onChange={(e) => setTagsText(e.target.value)}
                 placeholder="Company, Analytics, Enterprise, Operations"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -309,7 +309,7 @@ export const AdminShowcaseNewPage: React.FC = () => {
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
             <Link
               to="/admin/showcase"
-              className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 font-semibold transition"
+              className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 font-semibold transition"
             >
               Cancel
             </Link>

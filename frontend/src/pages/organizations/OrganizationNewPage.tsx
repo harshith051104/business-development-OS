@@ -129,7 +129,7 @@ export const OrganizationNewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -168,7 +168,7 @@ export const OrganizationNewPage: React.FC = () => {
         {/* ── Form Card ── */}
         <form
           onSubmit={handleSubmit}
-          className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
+          className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
         >
           {/* Section 1: Basic Information */}
           <div className="space-y-4">
@@ -190,7 +190,7 @@ export const OrganizationNewPage: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="e.g. Apollo Companys Jubilee Hills"
-                    className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                    className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                   />
                   {checkingDuplicate && (
                     <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin absolute right-3 top-1/2 -translate-y-1/2" />
@@ -228,7 +228,7 @@ export const OrganizationNewPage: React.FC = () => {
                   name="organization_type"
                   value={formData.organization_type}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   {orgTypes.map((t) => (
                     <option key={t} value={t}>
@@ -247,7 +247,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.industry || ''}
                   onChange={handleChange}
                   placeholder="e.g. Company Network / Tertiary Healthcare"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -260,7 +260,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.website || ''}
                   onChange={handleChange}
                   placeholder="https://www.example.com"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -271,7 +271,7 @@ export const OrganizationNewPage: React.FC = () => {
                   name="size"
                   value={formData.size || '200-1000'}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="1-50">1-50 employees / beds</option>
                   <option value="50-200">50-200 employees / beds</option>
@@ -297,7 +297,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.email || ''}
                   onChange={handleChange}
                   placeholder="partnerships@hospital.org"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -309,7 +309,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.phone || ''}
                   onChange={handleChange}
                   placeholder="+91 40 1234 5678"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -321,7 +321,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.city || ''}
                   onChange={handleChange}
                   placeholder="e.g. Hyderabad"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -333,7 +333,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.state || ''}
                   onChange={handleChange}
                   placeholder="e.g. Telangana"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
 
@@ -345,7 +345,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.address || ''}
                   onChange={handleChange}
                   placeholder="Street address or campus details"
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                 />
               </div>
             </div>
@@ -366,7 +366,7 @@ export const OrganizationNewPage: React.FC = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   {statusStages.map((s) => (
                     <option key={s} value={s}>
@@ -384,7 +384,7 @@ export const OrganizationNewPage: React.FC = () => {
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   {priorityLevels.map((p) => (
                     <option key={p} value={p}>
@@ -404,7 +404,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.description || ''}
                   onChange={handleChange}
                   placeholder="Key background information about this organization..."
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none"
                 />
               </div>
 
@@ -418,7 +418,7 @@ export const OrganizationNewPage: React.FC = () => {
                   value={formData.notes || ''}
                   onChange={handleChange}
                   placeholder="Confidential team notes, meeting plans, or key decision maker insights..."
-                  className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none"
+                  className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none"
                 />
                 <p className="text-[11px] text-slate-500 mt-1">
                   Internal only. These notes are strictly private to the Business Development team.

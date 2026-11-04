@@ -106,7 +106,7 @@ export const OpportunityDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-white flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
@@ -120,10 +120,10 @@ export const OpportunityDetailPage: React.FC = () => {
 
   if (error || !opportunity) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-white flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-white flex flex-col">
         <Navbar />
         <div className="flex-1 p-6 flex items-center justify-center">
-          <div className="p-8 rounded-2xl bg-[#110B2E] border border-rose-500/20 text-center space-y-3 max-w-md">
+          <div className="p-8 rounded-2xl bg-[#0E0B1D] border border-rose-500/20 text-center space-y-3 max-w-md">
             <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
             <h3 className="text-base font-bold text-white">Opportunity Not Found</h3>
             <p className="text-xs text-slate-400">{error || 'This opportunity may have been removed.'}</p>
@@ -141,15 +141,15 @@ export const OpportunityDetailPage: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Subheader ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <Link
             to={`/business-development/organizations/${opportunity.organization_id}`}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -192,14 +192,14 @@ export const OpportunityDetailPage: React.FC = () => {
           </button>
           <Link
             to={`/business-development/opportunities/${opportunity.id}/edit`}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 transition border border-slate-800"
             title="Edit Opportunity"
           >
             <Edit className="w-4 h-4" />
           </Link>
           <button
             onClick={() => setIsDeleteModalOpen(true)}
-            className="p-2 rounded-xl bg-[#1A1040] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition border border-slate-800 hover:border-rose-500/30"
+            className="p-2 rounded-xl bg-[#2A1E4D] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition border border-slate-800 hover:border-rose-500/30"
             title="Delete Opportunity"
           >
             <Trash2 className="w-4 h-4" />
@@ -214,7 +214,7 @@ export const OpportunityDetailPage: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Financial & Probability Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-lg space-y-1">
+              <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-lg space-y-1">
                 <span className="text-[11px] text-slate-400 flex items-center gap-1">
                   <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Estimated Value</span>
@@ -226,7 +226,7 @@ export const OpportunityDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-lg space-y-1">
+              <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-lg space-y-1">
                 <span className="text-[11px] text-slate-400">Close Probability</span>
                 <div className="flex items-center space-x-2">
                   <div className="text-lg font-bold text-violet-300 font-mono">
@@ -243,7 +243,7 @@ export const OpportunityDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-lg space-y-1">
+              <div className="p-4 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-lg space-y-1">
                 <span className="text-[11px] text-slate-400 flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5 text-slate-500" />
                   <span>Expected Close</span>
@@ -261,7 +261,7 @@ export const OpportunityDetailPage: React.FC = () => {
             </div>
 
             {/* Immediate Next Action Banner */}
-            <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+            <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-2">
                   <Clock className="w-4 h-4" />
@@ -311,7 +311,7 @@ export const OpportunityDetailPage: React.FC = () => {
 
             {/* Description & Scope */}
             {opportunity.description && (
-              <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+              <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                   Opportunity Scope & Objective
                 </h3>
@@ -322,7 +322,7 @@ export const OpportunityDetailPage: React.FC = () => {
             )}
 
             {/* Internal Notes */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-violet-400" />
@@ -338,7 +338,7 @@ export const OpportunityDetailPage: React.FC = () => {
               </div>
 
               {opportunity.notes ? (
-                <div className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                <div className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
                   {opportunity.notes}
                 </div>
               ) : (
@@ -360,7 +360,7 @@ export const OpportunityDetailPage: React.FC = () => {
             />
 
             {/* Activity History Timeline */}
-            <div className="p-6 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-4">
+            <div className="p-6 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-4">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Opportunity Activity History
               </h3>
@@ -370,7 +370,7 @@ export const OpportunityDetailPage: React.FC = () => {
                   {opportunity.activities.map((act) => (
                     <div
                       key={act.id}
-                      className="p-3.5 rounded-xl bg-[#1A1040] border border-slate-800/80 text-xs space-y-1"
+                      className="p-3.5 rounded-xl bg-[#2A1E4D] border border-slate-800/80 text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between text-slate-400 text-[11px]">
                         <span className="font-semibold text-violet-300">{act.activity_type}</span>
@@ -396,7 +396,7 @@ export const OpportunityDetailPage: React.FC = () => {
           {/* ── Right Column: Related Entities ── */}
           <div className="space-y-6">
             {/* Organization Card */}
-            <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+            <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-violet-400" />
                 <span>Target Organization</span>
@@ -415,7 +415,7 @@ export const OpportunityDetailPage: React.FC = () => {
 
             {/* Primary Contact Card */}
             {opportunity.primary_contact_name && (
-              <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-3">
+              <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-3">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-teal-400" />
                   <span>Key Stakeholder</span>
@@ -439,7 +439,7 @@ export const OpportunityDetailPage: React.FC = () => {
 
             {/* Showcase Project Card */}
             {opportunity.project_title && (
-              <div className="p-5 rounded-2xl bg-[#110B2E] border border-violet-500/30 bg-violet-950/10 shadow-xl space-y-3">
+              <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-violet-500/30 bg-violet-950/10 shadow-xl space-y-3">
                 <span className="text-[11px] font-bold text-violet-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-violet-400" />
                   <span>Showcase Project In Scope</span>
@@ -458,7 +458,7 @@ export const OpportunityDetailPage: React.FC = () => {
             )}
 
             {/* Ownership & Metadata */}
-            <div className="p-5 rounded-2xl bg-[#110B2E] border border-slate-800 shadow-xl space-y-2.5 text-xs">
+            <div className="p-5 rounded-2xl bg-[#0E0B1D] border border-slate-800 shadow-xl space-y-2.5 text-xs">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Account Ownership
               </span>
@@ -491,7 +491,7 @@ export const OpportunityDetailPage: React.FC = () => {
       {/* Add Note Modal */}
       {isNoteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <h3 className="text-sm font-bold text-white">Add Internal Note</h3>
             <form onSubmit={handleAddNote} className="space-y-4">
               <textarea
@@ -500,7 +500,7 @@ export const OpportunityDetailPage: React.FC = () => {
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="Type your note here..."
-                className="w-full bg-[#1A1040] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+                className="w-full bg-[#2A1E4D] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
               />
               <div className="flex items-center justify-end space-x-2.5">
                 <button
@@ -526,7 +526,7 @@ export const OpportunityDetailPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <div className="flex items-center space-x-3 text-rose-400">
               <ShieldAlert className="w-6 h-6" />
               <h3 className="text-sm font-bold text-white">Delete Business Opportunity</h3>

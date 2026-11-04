@@ -220,7 +220,7 @@ export const CampaignDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+      <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
         <Navbar />
         <div className="p-12 text-center text-gray-400">Loading campaign details...</div>
       </div>
@@ -229,7 +229,7 @@ export const CampaignDetailPage: React.FC = () => {
 
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+      <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
         <Navbar />
         <div className="p-12 text-center text-gray-400">Campaign not found.</div>
       </div>
@@ -237,7 +237,7 @@ export const CampaignDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#080615] text-[#F8F7FF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0e0b1d] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
       <main className="p-8 max-w-7xl mx-auto space-y-6">
         {/* Header */}
@@ -285,7 +285,7 @@ export const CampaignDetailPage: React.FC = () => {
 
         {/* Commercial ROI & Full-Funnel Dashboard */}
         {roiFunnel && (
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-[#131127] via-[#100E26] to-[#0D0B1E] border border-purple-500/20 shadow-2xl space-y-4">
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0e0b1d] via-[#0E0B1D] to-[#0E0B1D] border border-purple-500/20 shadow-2xl space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-white/5">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-emerald-400" />
@@ -302,42 +302,42 @@ export const CampaignDetailPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">1. Leads</div>
                 <div className="text-base font-bold text-white mt-0.5">{roiFunnel.leads_enrolled}</div>
                 <div className="text-[9px] text-gray-500">Enrolled</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">2. Sent</div>
                 <div className="text-base font-bold text-emerald-400 mt-0.5">{roiFunnel.emails_sent}</div>
                 <div className="text-[9px] text-emerald-500/80">Gmail</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">3. Opened</div>
                 <div className="text-base font-bold text-blue-400 mt-0.5">{roiFunnel.emails_opened}</div>
                 <div className="text-[9px] text-blue-400/80">{roiFunnel.sent_to_open_pct}% open</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">4. Replies</div>
                 <div className="text-base font-bold text-amber-400 mt-0.5">{roiFunnel.replies_received}</div>
                 <div className="text-[9px] text-amber-400/80">{roiFunnel.open_to_reply_pct}% reply</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">5. Meetings</div>
                 <div className="text-base font-bold text-indigo-400 mt-0.5">{roiFunnel.meetings_scheduled}</div>
                 <div className="text-[9px] text-indigo-400/80">{roiFunnel.reply_to_meeting_pct}% meet</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">6. Opps</div>
                 <div className="text-base font-bold text-purple-400 mt-0.5">{roiFunnel.opportunities_created}</div>
                 <div className="text-[9px] text-purple-400/80">Commercial</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/5 text-center">
                 <div className="text-[10px] uppercase font-semibold text-gray-400">7. Proposals</div>
                 <div className="text-base font-bold text-cyan-400 mt-0.5">{roiFunnel.proposals_sent}</div>
                 <div className="text-[9px] text-cyan-400/80">Active</div>
               </div>
-              <div className="p-3 rounded-xl bg-[#0D0B1E] border border-emerald-500/30 bg-emerald-950/20 text-center">
+              <div className="p-3 rounded-xl bg-[#0E0B1D] border border-emerald-500/30 bg-emerald-950/20 text-center">
                 <div className="text-[10px] uppercase font-semibold text-emerald-300">8. Won Deals</div>
                 <div className="text-base font-bold text-emerald-300 mt-0.5">{roiFunnel.deals_won}</div>
                 <div className="text-[9px] text-emerald-400 font-bold">{roiFunnel.overall_lead_to_deal_pct}% close</div>
@@ -347,7 +347,7 @@ export const CampaignDetailPage: React.FC = () => {
         )}
 
         {/* Sequence Steps Timeline */}
-        <div className="p-5 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 space-y-3">
+        <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
               <Clock className="w-4 h-4 text-purple-400" />
@@ -393,7 +393,7 @@ export const CampaignDetailPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-3">
               {campaign.sequence_steps.map((s, idx) => (
                 <div key={s.id || idx} className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0D0B1E] border border-white/10 text-xs">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0E0B1D] border border-white/10 text-xs">
                     <span className="w-5 h-5 rounded-full bg-purple-600/30 text-purple-300 font-bold flex items-center justify-center text-[10px]">
                       {s.step_number}
                     </span>
@@ -408,7 +408,7 @@ export const CampaignDetailPage: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {editedSteps.map((step, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-[#0D0B1E] border border-white/10 space-y-3">
+                <div key={idx} className="p-4 rounded-xl bg-[#0E0B1D] border border-white/10 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">
@@ -419,7 +419,7 @@ export const CampaignDetailPage: React.FC = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1.5 bg-[#080615] px-3 py-1 rounded-lg border border-white/10">
+                      <div className="flex items-center gap-1.5 bg-[#0e0b1d] px-3 py-1 rounded-lg border border-white/10">
                         <span className="text-xs text-gray-400">Delay:</span>
                         <input
                           type="number"
@@ -446,7 +446,7 @@ export const CampaignDetailPage: React.FC = () => {
                       type="text"
                       value={step.subject_template || ''}
                       onChange={(e) => handleUpdateStep(idx, 'subject_template', e.target.value)}
-                      className="w-full bg-[#080615] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500"
+                      className="w-full bg-[#0e0b1d] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500"
                     />
                   </div>
                   <div>
@@ -455,7 +455,7 @@ export const CampaignDetailPage: React.FC = () => {
                       rows={4}
                       value={step.body_template || ''}
                       onChange={(e) => handleUpdateStep(idx, 'body_template', e.target.value)}
-                      className="w-full bg-[#080615] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-purple-500 leading-relaxed"
+                      className="w-full bg-[#0e0b1d] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-purple-500 leading-relaxed"
                     />
                   </div>
                 </div>
@@ -485,7 +485,7 @@ export const CampaignDetailPage: React.FC = () => {
                     className={`p-4 rounded-xl border cursor-pointer transition-all ${
                       isSelected
                         ? 'bg-purple-950/40 border-purple-500 shadow-md'
-                        : 'bg-[#131127] border-white/5 hover:border-white/20'
+                        : 'bg-[#0e0b1d] border-white/5 hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -540,7 +540,7 @@ export const CampaignDetailPage: React.FC = () => {
 
           {/* Right Column: Live AI Preview & Review Card */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="p-6 rounded-2xl bg-gradient-to-b from-[#131127] to-[#0D0B1E] border border-white/5 shadow-xl space-y-5">
+            <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e0b1d] to-[#0E0B1D] border border-white/5 shadow-xl space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-white/5">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-purple-400" />
@@ -587,7 +587,7 @@ export const CampaignDetailPage: React.FC = () => {
                   {/* Subject Line */}
                   <div>
                     <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Subject</label>
-                    <div className="p-3 rounded-xl bg-[#0D0B1E] border border-white/10 text-sm font-semibold text-white">
+                    <div className="p-3 rounded-xl bg-[#0E0B1D] border border-white/10 text-sm font-semibold text-white">
                       {preview.subject}
                     </div>
                   </div>
@@ -640,7 +640,7 @@ export const CampaignDetailPage: React.FC = () => {
         {/* HUMAN-IN-THE-LOOP REVIEW & SEND MODAL */}
         {sendModalOpen && preview && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-[#131127] border border-purple-500/30 rounded-2xl p-6 shadow-2xl space-y-5">
+            <div className="w-full max-w-2xl bg-[#0e0b1d] border border-purple-500/30 rounded-2xl p-6 shadow-2xl space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Send className="w-5 h-5 text-purple-400" />
@@ -661,7 +661,7 @@ export const CampaignDetailPage: React.FC = () => {
                     type="text"
                     value={editableSubject}
                     onChange={(e) => setEditableSubject(e.target.value)}
-                    className="w-full bg-[#0D0B1E] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#0E0B1D] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
                   />
                 </div>
 
@@ -671,7 +671,7 @@ export const CampaignDetailPage: React.FC = () => {
                     rows={8}
                     value={editableBodyHtml}
                     onChange={(e) => setEditableBodyHtml(e.target.value)}
-                    className="w-full bg-[#0D0B1E] font-mono text-xs border border-white/10 rounded-xl p-4 text-gray-200 focus:outline-none focus:border-purple-500 leading-relaxed"
+                    className="w-full bg-[#0E0B1D] font-mono text-xs border border-white/10 rounded-xl p-4 text-gray-200 focus:outline-none focus:border-purple-500 leading-relaxed"
                   />
                 </div>
               </div>

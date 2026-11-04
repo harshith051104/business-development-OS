@@ -128,7 +128,7 @@ export const OrganizationEditPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -157,7 +157,7 @@ export const OrganizationEditPage: React.FC = () => {
         </div>
 
         {initialLoading ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-16 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-16 text-center space-y-3">
             <RotateCw className="w-6 h-6 animate-spin text-violet-400 mx-auto" />
             <p className="text-xs text-slate-400">Loading organization details...</p>
           </div>
@@ -172,7 +172,7 @@ export const OrganizationEditPage: React.FC = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
+              className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
             >
               {/* Basic Information */}
               <div className="space-y-4">
@@ -191,7 +191,7 @@ export const OrganizationEditPage: React.FC = () => {
                       required
                       value={formData.name || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -203,7 +203,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="organization_type"
                       value={formData.organization_type || 'Company'}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     >
                       {orgTypes.map((t) => (
                         <option key={t} value={t}>
@@ -220,7 +220,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="industry"
                       value={formData.industry || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -231,7 +231,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="website"
                       value={formData.website || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -241,7 +241,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="size"
                       value={formData.size || '200-1000'}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     >
                       <option value="1-50">1-50 employees / beds</option>
                       <option value="50-200">50-200 employees / beds</option>
@@ -266,7 +266,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="email"
                       value={formData.email || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -277,7 +277,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="phone"
                       value={formData.phone || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -288,7 +288,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="city"
                       value={formData.city || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -299,7 +299,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="state"
                       value={formData.state || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
 
@@ -310,7 +310,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="address"
                       value={formData.address || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     >
                       {statusStages.map((s) => (
                         <option key={s} value={s}>
@@ -349,7 +349,7 @@ export const OrganizationEditPage: React.FC = () => {
                       name="priority"
                       value={formData.priority}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
                     >
                       {priorityLevels.map((p) => (
                         <option key={p} value={p}>
@@ -368,7 +368,7 @@ export const OrganizationEditPage: React.FC = () => {
                       rows={3}
                       value={formData.description || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500 resize-none"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500 resize-none"
                     />
                   </div>
 
@@ -381,7 +381,7 @@ export const OrganizationEditPage: React.FC = () => {
                       rows={4}
                       value={formData.notes || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500 resize-none"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500 resize-none"
                     />
                   </div>
                 </div>

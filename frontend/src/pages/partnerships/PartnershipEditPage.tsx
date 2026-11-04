@@ -134,7 +134,7 @@ export const PartnershipEditPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <RotateCw className="w-8 h-8 animate-spin text-violet-400" />
@@ -144,7 +144,7 @@ export const PartnershipEditPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       <main className="flex-1 p-6 max-w-4xl w-full mx-auto space-y-6">
@@ -168,7 +168,7 @@ export const PartnershipEditPage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-[#110B2E] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+        <form onSubmit={handleSubmit} className="bg-[#0E0B1D] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
           <div className="flex items-center space-x-3 pb-3 border-b border-slate-800/80">
             <div className="p-2.5 rounded-2xl bg-violet-600/20 text-violet-300 border border-violet-500/30">
               <Handshake className="w-5 h-5" />
@@ -191,7 +191,7 @@ export const PartnershipEditPage: React.FC = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 font-semibold"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500 font-semibold"
               />
             </div>
 
@@ -201,7 +201,7 @@ export const PartnershipEditPage: React.FC = () => {
                 <select
                   value={partnershipType}
                   onChange={(e) => setPartnershipType(e.target.value as PartnershipType)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 >
                   {PARTNERSHIP_TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -216,7 +216,7 @@ export const PartnershipEditPage: React.FC = () => {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as PartnershipStatus)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 >
                   <option value="Active">Active</option>
                   <option value="On Hold">On Hold</option>
@@ -230,7 +230,7 @@ export const PartnershipEditPage: React.FC = () => {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as PartnershipPriority)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 >
                   <option value="High">High Priority</option>
                   <option value="Medium">Medium Priority</option>
@@ -245,7 +245,7 @@ export const PartnershipEditPage: React.FC = () => {
                 <select
                   value={selectedContactId || ''}
                   onChange={(e) => setSelectedContactId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 >
                   <option value="">-- General Account (No Contact) --</option>
                   {contacts.map((c) => (
@@ -261,7 +261,7 @@ export const PartnershipEditPage: React.FC = () => {
                 <select
                   value={selectedProjectId || ''}
                   onChange={(e) => setSelectedProjectId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 >
                   <option value="">-- No Specific Project --</option>
                   {projects.map((proj) => (
@@ -280,7 +280,7 @@ export const PartnershipEditPage: React.FC = () => {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
               </div>
 
@@ -290,7 +290,7 @@ export const PartnershipEditPage: React.FC = () => {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
               </div>
             </div>
@@ -301,7 +301,7 @@ export const PartnershipEditPage: React.FC = () => {
                 rows={3}
                 value={objectives}
                 onChange={(e) => setObjectives(e.target.value)}
-                className="w-full p-3 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                className="w-full p-3 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
               />
             </div>
 
@@ -312,7 +312,7 @@ export const PartnershipEditPage: React.FC = () => {
                   type="text"
                   value={nextAction}
                   onChange={(e) => setNextAction(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
               </div>
 
@@ -322,7 +322,7 @@ export const PartnershipEditPage: React.FC = () => {
                   type="date"
                   value={nextActionDate}
                   onChange={(e) => setNextActionDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                 />
               </div>
             </div>
@@ -333,7 +333,7 @@ export const PartnershipEditPage: React.FC = () => {
                 rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full p-3 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none font-mono"
+                className="w-full p-3 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none font-mono"
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ export const PartnershipEditPage: React.FC = () => {
           <div className="pt-4 border-t border-slate-800/80 flex items-center justify-end space-x-3">
             <Link
               to={`/business-development/partnerships/${id}`}
-              className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
             >
               Cancel
             </Link>

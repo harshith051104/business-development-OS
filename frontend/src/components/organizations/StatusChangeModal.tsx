@@ -48,7 +48,7 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#110B2E] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
+      <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center space-x-2">
             <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -75,7 +75,7 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full px-3 py-2 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
+              className="w-full px-3 py-2 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-violet-500"
             >
               {statusOptions.map((st) => (
                 <option key={st} value={st}>
@@ -94,7 +94,7 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
               onChange={(e) => setNote(e.target.value)}
               rows={3}
               placeholder="e.g. Completed initial presentation with decision-maker; agreed to review proposal."
-              className="w-full px-3 py-2 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none"
+              className="w-full px-3 py-2 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none"
             />
           </div>
 

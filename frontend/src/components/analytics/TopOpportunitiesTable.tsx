@@ -13,7 +13,7 @@ export const TopOpportunitiesTable: React.FC<TopOpportunitiesTableProps> = ({
   opportunities,
 }) => {
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -50,7 +50,7 @@ export const TopOpportunitiesTable: React.FC<TopOpportunitiesTableProps> = ({
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {opportunities.map((opp) => (
-                <tr key={opp.id} className="hover:bg-[#1A1040]/40 transition">
+                <tr key={opp.id} className="hover:bg-[#2A1E4D]/40 transition">
                   <td className="py-3">
                     <div className="font-bold text-white">{opp.name}</div>
                     <div className="text-[11px] text-slate-400">{opp.organization_name}</div>
@@ -78,7 +78,7 @@ export const TopOpportunitiesTable: React.FC<TopOpportunitiesTableProps> = ({
                   <td className="py-3 text-right">
                     <Link
                       to={`/business-development/opportunities/${opp.id}`}
-                      className="p-1.5 rounded-lg bg-[#1A1040] hover:bg-slate-800 text-slate-300 hover:text-white inline-flex transition"
+                      className="p-1.5 rounded-lg bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 hover:text-white inline-flex transition"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </Link>

@@ -28,7 +28,7 @@ export const ConnectionPipelineView: React.FC<ConnectionPipelineViewProps> = ({
 }) => {
   if (compact) {
     return (
-      <div className="bg-[#110B2E]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl space-y-2.5">
+      <div className="bg-[#0E0B1D]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl space-y-2.5">
         <div className="flex items-center justify-between pb-2 border-b border-slate-800/60">
           <div className="flex items-center space-x-2">
             <div className="p-1.5 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -77,7 +77,7 @@ export const ConnectionPipelineView: React.FC<ConnectionPipelineViewProps> = ({
   }
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#0E0B1D] border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">

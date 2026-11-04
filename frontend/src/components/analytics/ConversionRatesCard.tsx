@@ -16,7 +16,7 @@ export const ConversionRatesCard: React.FC<ConversionRatesCardProps> = ({ conver
   ]
 
   return (
-    <div className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
+    <div className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-5">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -38,7 +38,7 @@ export const ConversionRatesCard: React.FC<ConversionRatesCardProps> = ({ conver
           return (
             <div
               key={idx}
-              className="p-4 rounded-xl bg-[#1A1040] border border-slate-800 flex flex-col justify-between space-y-3"
+              className="p-4 rounded-xl bg-[#2A1E4D] border border-slate-800 flex flex-col justify-between space-y-3"
             >
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <div className="flex items-center space-x-1.5 font-medium">

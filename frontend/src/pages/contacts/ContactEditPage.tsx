@@ -110,7 +110,7 @@ export const ContactEditPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] pb-24 md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] pb-24 md:pl-64">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -137,7 +137,7 @@ export const ContactEditPage: React.FC = () => {
         </div>
 
         {initialLoading ? (
-          <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-16 text-center space-y-3">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-16 text-center space-y-3">
             <RotateCw className="w-6 h-6 animate-spin text-teal-400 mx-auto" />
             <p className="text-xs text-slate-400">Loading contact details...</p>
           </div>
@@ -152,7 +152,7 @@ export const ContactEditPage: React.FC = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="bg-[#110B2E] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
+              className="bg-[#0E0B1D] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8"
             >
               {/* Personal & Organization Details */}
               <div className="space-y-4">
@@ -171,7 +171,7 @@ export const ContactEditPage: React.FC = () => {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, organization_id: Number(e.target.value) }))
                       }
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     >
                       {organizations.map((org) => (
                         <option key={org.id} value={org.id}>
@@ -191,7 +191,7 @@ export const ContactEditPage: React.FC = () => {
                       required
                       value={formData.first_name || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -202,7 +202,7 @@ export const ContactEditPage: React.FC = () => {
                       name="last_name"
                       value={formData.last_name || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -216,7 +216,7 @@ export const ContactEditPage: React.FC = () => {
                       list="designation-role-options"
                       value={formData.designation || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                     <datalist id="designation-role-options">
                       {(dropdowns?.roles ?? []).filter((r) => r !== 'Other').map((r) => <option key={r} value={r} />)}
@@ -232,7 +232,7 @@ export const ContactEditPage: React.FC = () => {
                       name="department"
                       value={formData.department || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
                 </div>
@@ -252,7 +252,7 @@ export const ContactEditPage: React.FC = () => {
                       name="email"
                       value={formData.email || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -263,7 +263,7 @@ export const ContactEditPage: React.FC = () => {
                       name="phone"
                       value={formData.phone || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -276,7 +276,7 @@ export const ContactEditPage: React.FC = () => {
                       name="linkedin_url"
                       value={formData.linkedin_url || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -287,7 +287,7 @@ export const ContactEditPage: React.FC = () => {
                       name="location"
                       value={formData.location || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     />
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export const ContactEditPage: React.FC = () => {
                       name="connection_status"
                       value={formData.connection_status || 'Not Contacted'}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500"
                     >
                       {contactStatuses.map((st) => (
                         <option key={st} value={st}>
@@ -325,7 +325,7 @@ export const ContactEditPage: React.FC = () => {
                         name="is_decision_maker"
                         checked={formData.is_decision_maker}
                         onChange={handleChange}
-                        className="w-4 h-4 rounded border-slate-700 bg-[#1A1040] text-teal-600 focus:ring-0"
+                        className="w-4 h-4 rounded border-slate-700 bg-[#2A1E4D] text-teal-600 focus:ring-0"
                       />
                       <span className="font-semibold">Key Decision Maker</span>
                     </label>
@@ -336,7 +336,7 @@ export const ContactEditPage: React.FC = () => {
                         name="is_primary_contact"
                         checked={formData.is_primary_contact}
                         onChange={handleChange}
-                        className="w-4 h-4 rounded border-slate-700 bg-[#1A1040] text-teal-600 focus:ring-0"
+                        className="w-4 h-4 rounded border-slate-700 bg-[#2A1E4D] text-teal-600 focus:ring-0"
                       />
                       <span className="font-semibold">Primary Contact for Organization</span>
                     </label>
@@ -351,7 +351,7 @@ export const ContactEditPage: React.FC = () => {
                       rows={3}
                       value={formData.notes || ''}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-[#1A1040] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500 resize-none"
+                      className="w-full px-3.5 py-2.5 bg-[#2A1E4D] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-teal-500 resize-none"
                     />
                   </div>
                 </div>

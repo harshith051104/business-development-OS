@@ -3,11 +3,12 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import { Link } from 'react-router-dom'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MapPin, Globe, Plus, Users, Check, Sparkles, ExternalLink, RefreshCw } from 'lucide-react'
+import { MapPin, Globe, Plus, Users, Check, Sparkles, ExternalLink, RefreshCw, Box, Map as MapIcon } from 'lucide-react'
 import { geocodingService } from '../../services/geocoding'
 import type { MapData } from '../../services/geocoding'
 import type { DiscoveredOrganization } from '../../types/discovery'
 import { resolveCoordinates } from '../../utils/cityCoordinates'
+import OrgGlobe from './OrgGlobe'
 
 // Fix default marker icon asset paths with bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -34,6 +35,7 @@ export interface MappedEntity {
   contactsCount: number
   originalItem?: DiscoveredOrganization
   location_precision?: string | null
+  isSuggested?: boolean
 }
 
 function getMarkerColor(score: number, priority: string): { bg: string; glow: string; border: string } {
@@ -52,9 +54,9 @@ function getMarkerColor(score: number, priority: string): { bg: string; glow: st
     }
   }
   return {
-    bg: '#8b5cf6',
-    glow: 'rgba(139, 92, 246, 0.45)',
-    border: '#a78bfa',
+    bg: '#8b7cc7',
+    glow: 'rgba(139, 124, 199, 0.45)',
+    border: '#8b7cc7',
   }
 }
 
@@ -90,9 +92,9 @@ function createGlowingMarker(org: MappedEntity) {
           height: 26px;
           border-radius: 50%;
           background: ${isApproximate ? 'transparent' : bg};
-          border: 2px solid ${isApproximate ? '#6366f1' : border};
+          border: 2px solid ${isApproximate ? '#8b7cc7' : border};
           ${isApproximate ? 'border-style: dashed;' : ''}
-          box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+          box-shadow: 0 4px 12px rgba(14, 11, 29,0.6);
           color: white;
           font-weight: 700;
           font-size: 11px;
@@ -167,6 +169,7 @@ export default function OrgMap({
   const [search, setSearch] = useState('')
 
   const [mapTheme, setMapTheme] = useState<'dark' | 'standard'>('dark')
+  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d')
 
   // Map discovered items if provided; otherwise fetch CRM map data
   const mappedFromItems: MappedEntity[] = useMemo(() => {
@@ -253,7 +256,7 @@ export default function OrgMap({
   if (loading) {
     return (
       <div
-        className="flex items-center justify-center bg-[#110B2E] rounded-2xl border border-violet-900/30"
+        className="flex items-center justify-center bg-[#0E0B1D] rounded-2xl border border-violet-900/30"
         style={{ height }}
       >
         <div className="flex items-center space-x-2 text-violet-400">
@@ -265,9 +268,9 @@ export default function OrgMap({
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-violet-900/40 bg-[#0B0520] shadow-2xl relative flex flex-col">
+    <div className="rounded-2xl overflow-hidden border border-violet-900/40 bg-[#0E0B1D] shadow-2xl relative flex flex-col">
       {/* Top Map Control Bar */}
-      <div className="bg-[#110B2E]/95 backdrop-blur-md px-4 py-3 flex flex-wrap gap-3 items-center justify-between border-b border-violet-900/40 z-10">
+      <div className="bg-[#0E0B1D]/95 backdrop-blur-md px-4 py-3 flex flex-wrap gap-3 items-center justify-between border-b border-violet-900/40 z-10">
         <div className="flex items-center space-x-3 flex-1 min-w-[240px]">
           <div className="relative flex-1 max-w-xs">
             <input
@@ -275,13 +278,13 @@ export default function OrgMap({
               placeholder="Search mapped leads..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-[#1A1040] text-white placeholder-slate-400 text-xs px-3 py-2 rounded-xl border border-violet-800/40 focus:outline-none focus:border-violet-500"
+              className="w-full bg-[#2A1E4D] text-white placeholder-slate-400 text-xs px-3 py-2 rounded-xl border border-violet-800/40 focus:outline-none focus:border-violet-500"
             />
           </div>
           <select
             value={filter}
             onChange={e => setFilter(e.target.value)}
-            className="bg-[#1A1040] text-slate-200 text-xs px-3 py-2 rounded-xl border border-violet-800/40 focus:outline-none focus:border-violet-500"
+            className="bg-[#2A1E4D] text-slate-200 text-xs px-3 py-2 rounded-xl border border-violet-800/40 focus:outline-none focus:border-violet-500"
           >
             <option value="All">All ICP Tiers</option>
             <option value="High">High Fit (80%+)</option>
@@ -311,12 +314,23 @@ export default function OrgMap({
           </div>
 
           <button
-            onClick={() => setMapTheme(t => (t === 'dark' ? 'standard' : 'dark'))}
-            className="flex items-center space-x-1.5 text-xs px-2.5 py-1 rounded-xl bg-[#1A1040] hover:bg-[#251755] text-slate-300 hover:text-white border border-violet-800/40 transition font-medium"
-            title="Toggle between dark mode filter and standard OpenStreetMap colors"
+            onClick={() => setViewMode(v => (v === '2d' ? '3d' : '2d'))}
+            className="flex items-center space-x-1.5 text-xs px-2.5 py-1 rounded-xl bg-[#2A1E4D] hover:bg-[#2a1e4d] text-slate-300 hover:text-white border border-violet-800/40 transition font-medium"
+            title="Toggle between flat 2D map and 3D globe"
           >
-            <span>{mapTheme === 'dark' ? '🌙 Dark Mode' : '🗺️ Standard OSM'}</span>
+            {viewMode === '2d' ? <Box className="w-3.5 h-3.5" /> : <MapIcon className="w-3.5 h-3.5" />}
+            <span>{viewMode === '2d' ? '3D Globe' : '2D Map'}</span>
           </button>
+
+          {viewMode === '2d' && (
+            <button
+              onClick={() => setMapTheme(t => (t === 'dark' ? 'standard' : 'dark'))}
+              className="flex items-center space-x-1.5 text-xs px-2.5 py-1 rounded-xl bg-[#2A1E4D] hover:bg-[#2a1e4d] text-slate-300 hover:text-white border border-violet-800/40 transition font-medium"
+              title="Toggle between dark mode filter and standard OpenStreetMap colors"
+            >
+              <span>{mapTheme === 'dark' ? '🌙 Dark Mode' : '🗺️ Standard OSM'}</span>
+            </button>
+          )}
 
           <span className="text-xs px-2.5 py-1 rounded-full bg-violet-950/80 border border-violet-800/50 text-violet-300 font-semibold font-mono">
             {filtered.length} leads mapped
@@ -325,6 +339,9 @@ export default function OrgMap({
       </div>
 
       {/* Map Container */}
+      {viewMode === '3d' ? (
+        <OrgGlobe orgs={filtered} height={height} onAdd={onAdd} />
+      ) : (
       <div className={mapTheme === 'dark' ? 'osm-dark-tiles' : 'osm-standard-tiles'} style={{ height, width: '100%', position: 'relative' }}>
         <MapContainer
           center={defaultCenter}
@@ -335,7 +352,7 @@ export default function OrgMap({
             [85, 180],
           ]}
           maxBoundsViscosity={1.0}
-          style={{ height: '100%', width: '100%', backgroundColor: '#0B0520' }}
+          style={{ height: '100%', width: '100%', backgroundColor: '#0E0B1D' }}
           scrollWheelZoom={true}
         >
           {/* 100% Free & Open Source OpenStreetMap (No API Key Required) */}
@@ -356,7 +373,7 @@ export default function OrgMap({
               icon={createGlowingMarker(org)}
             >
               <Popup className="dark-map-popup" minWidth={260} maxWidth={320}>
-                <div className="p-3.5 space-y-2.5 text-[#F0ECFF]">
+                <div className="p-3.5 space-y-2.5 text-[#C9C2E3]">
                   {/* Header */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -377,7 +394,7 @@ export default function OrgMap({
                   </div>
 
                   {/* Physical Address */}
-                  <div className="flex items-start space-x-1.5 text-xs text-slate-300 font-medium bg-[#1A1040]/80 px-2.5 py-1.5 rounded-lg border border-violet-800/30">
+                  <div className="flex items-start space-x-1.5 text-xs text-slate-300 font-medium bg-[#2A1E4D]/80 px-2.5 py-1.5 rounded-lg border border-violet-800/30">
                     <MapPin className="w-3.5 h-3.5 text-violet-400 shrink-0 mt-0.5" />
                     <span className="leading-snug">
                       {org.address || [org.city, org.country].filter(Boolean).join(', ') || 'Global Headquarters'}
@@ -394,7 +411,7 @@ export default function OrgMap({
 
                   {/* Description snippet */}
                   {org.description && (
-                    <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed bg-[#1A1040]/60 p-2 rounded-lg border border-violet-900/30">
+                    <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed bg-[#2A1E4D]/60 p-2 rounded-lg border border-violet-900/30">
                       {org.description}
                     </p>
                   )}
@@ -417,7 +434,7 @@ export default function OrgMap({
                   <div className="pt-2 border-t border-violet-900/40 flex items-center justify-between gap-2">
                     <Link
                       to={`/business-development/discover/${org.id}`}
-                      className="text-xs py-1.5 px-2.5 rounded-lg bg-[#1A1040] hover:bg-[#251755] text-slate-200 hover:text-white font-semibold flex items-center space-x-1 transition border border-violet-800/40"
+                      className="text-xs py-1.5 px-2.5 rounded-lg bg-[#2A1E4D] hover:bg-[#2a1e4d] text-slate-200 hover:text-white font-semibold flex items-center space-x-1 transition border border-violet-800/40"
                     >
                       <Users className="w-3 h-3 text-violet-400" />
                       <span>{org.contactsCount ? `${org.contactsCount} Contacts` : 'View Lead'}</span>
@@ -439,6 +456,7 @@ export default function OrgMap({
           ))}
         </MapContainer>
       </div>
+      )}
 
       <style>{`
         @keyframes pulse-ring {

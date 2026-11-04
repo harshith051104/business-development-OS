@@ -457,11 +457,11 @@ export const OutreachWorkspacePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A071B] text-[#F0ECFF] flex flex-col md:pl-64">
+    <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col md:pl-64">
       <Navbar />
 
       {/* ── Header ── */}
-      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#110B2E] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="px-6 py-4 border-b border-slate-800/80 bg-[#0E0B1D] relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-600/30">
             <Send className="w-5 h-5" />
@@ -496,7 +496,7 @@ export const OutreachWorkspacePage: React.FC = () => {
 
           <Link
             to="/business-development/outreach/drafts"
-            className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition"
+            className="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition"
           >
             <Bookmark className="w-3.5 h-3.5 text-violet-400" />
             <span>View Saved Drafts</span>
@@ -527,7 +527,7 @@ export const OutreachWorkspacePage: React.FC = () => {
           {/* ── Left Column: Target Context Selectors (4 cols) ── */}
           <div className="lg:col-span-4 space-y-5">
             {/* 1. Target Organization */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                 <Building2 className="w-4 h-4 text-violet-400" />
                 <span>1. Select Organization</span>
@@ -536,7 +536,7 @@ export const OutreachWorkspacePage: React.FC = () => {
               <select
                 value={selectedOrgId || ''}
                 onChange={(e) => setSelectedOrgId(e.target.value ? Number(e.target.value) : null)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs font-semibold focus:outline-none focus:border-violet-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs font-semibold focus:outline-none focus:border-violet-500"
               >
                 <option value="">-- Choose Target Organization --</option>
                 {organizations.map((org) => (
@@ -547,7 +547,7 @@ export const OutreachWorkspacePage: React.FC = () => {
               </select>
 
               {selectedOrg && (
-                <div className="p-3 rounded-xl bg-[#1A1040]/70 border border-slate-800 space-y-1.5 text-xs">
+                <div className="p-3 rounded-xl bg-[#2A1E4D]/70 border border-slate-800 space-y-1.5 text-xs">
                   <div className="flex items-center justify-between">
                     <OrganizationTypeBadge type={selectedOrg.organization_type} size="sm" />
                     <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-mono">
@@ -564,7 +564,7 @@ export const OutreachWorkspacePage: React.FC = () => {
             </div>
 
             {/* 2. Target Contact */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                   <Users className="w-4 h-4 text-indigo-400" />
@@ -590,7 +590,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                 <select
                   value={selectedContactId || ''}
                   onChange={(e) => setSelectedContactId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs font-semibold focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs font-semibold focus:outline-none focus:border-violet-500"
                 >
                   <option value="">-- Choose Contact --</option>
                   {contacts.map((c) => (
@@ -602,7 +602,7 @@ export const OutreachWorkspacePage: React.FC = () => {
               )}
 
               {selectedContact && (
-                <div className="p-3 rounded-xl bg-[#1A1040]/70 border border-slate-800 space-y-1 text-xs">
+                <div className="p-3 rounded-xl bg-[#2A1E4D]/70 border border-slate-800 space-y-1 text-xs">
                   <div className="font-bold text-white">{selectedContact.full_name}</div>
                   {selectedContact.designation && (
                     <div className="text-slate-400 text-[11px]">{selectedContact.designation}</div>
@@ -622,7 +622,7 @@ export const OutreachWorkspacePage: React.FC = () => {
             </div>
 
             {/* 3. Opportunity & Project Context */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
                 <Target className="w-4 h-4 text-emerald-400" />
                 <span>3. Business Context</span>
@@ -634,7 +634,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                 <select
                   value={selectedOppId || ''}
                   onChange={(e) => setSelectedOppId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="">-- No Specific Opportunity --</option>
                   {opportunities.map((opp) => (
@@ -663,7 +663,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                 <select
                   value={selectedProjectId || ''}
                   onChange={(e) => setSelectedProjectId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 >
                   <option value="">-- Select Showcase Project --</option>
                   {projects.map((proj) => (
@@ -679,7 +679,7 @@ export const OutreachWorkspacePage: React.FC = () => {
           {/* ── Right Column: Outreach Editor & Channels (8 cols) ── */}
           <div className="lg:col-span-8 space-y-5">
             {/* Mode Switcher: Manual vs AI Generated */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-3 shadow-xl flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-3 shadow-xl flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
@@ -728,7 +728,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                     onChange={(e) => {
                       if (e.target.value) handleApplyTemplate(Number(e.target.value))
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none"
+                    className="px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none"
                   >
                     <option value="">-- Use Approved Template --</option>
                     {templates.map((t) => (
@@ -742,7 +742,7 @@ export const OutreachWorkspacePage: React.FC = () => {
             </div>
 
             {/* Channel Tabs */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-4 shadow-xl flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 {CHANNELS.map((ch) => {
                   const Icon = ch.icon
@@ -754,7 +754,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       className={`py-2 px-3.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 border ${
                         active
                           ? 'bg-violet-600 border-violet-500 text-white shadow-lg shadow-violet-600/30'
-                          : 'bg-[#1A1040] border-slate-800 text-slate-400 hover:text-white'
+                          : 'bg-[#2A1E4D] border-slate-800 text-slate-400 hover:text-white'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -766,7 +766,7 @@ export const OutreachWorkspacePage: React.FC = () => {
             </div>
 
             {/* Main Message Editor Box */}
-            <div className="bg-[#110B2E] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div className="bg-[#0E0B1D] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               {/* Channel specific metadata headers */}
               {channel === 'Email' && (
                 <div className="space-y-3">
@@ -776,7 +776,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       type="text"
                       disabled
                       value={selectedContact?.email || 'No contact email available'}
-                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 font-mono text-xs"
+                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 font-mono text-xs"
                     />
                   </div>
 
@@ -787,7 +787,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder="Outreach subject line..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white font-medium text-xs focus:outline-none focus:border-violet-500"
+                      className="flex-1 px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white font-medium text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
                 </div>
@@ -801,7 +801,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       type="text"
                       disabled
                       value={selectedContact?.phone || 'No phone number available'}
-                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 font-mono text-xs"
+                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 font-mono text-xs"
                     />
                   </div>
 
@@ -812,7 +812,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       value={callPurpose}
                       onChange={(e) => setCallPurpose(e.target.value)}
                       placeholder="e.g. Discovery call on workflow integration..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white font-medium text-xs focus:outline-none focus:border-violet-500"
+                      className="flex-1 px-3 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white font-medium text-xs focus:outline-none focus:border-violet-500"
                     />
                   </div>
                 </div>
@@ -826,7 +826,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       type="text"
                       disabled
                       value={selectedContact?.linkedin_url || 'No LinkedIn URL on file'}
-                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 font-mono text-xs"
+                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 font-mono text-xs"
                     />
                   </div>
                 </div>
@@ -840,7 +840,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       type="text"
                       disabled
                       value={selectedContact?.phone || 'No phone number available'}
-                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#1A1040] border border-slate-800 text-slate-300 font-mono text-xs"
+                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#2A1E4D] border border-slate-800 text-slate-300 font-mono text-xs"
                     />
                   </div>
                 </div>
@@ -863,7 +863,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       ? 'Record talking points, client feedback, or discussion summary...'
                       : 'Type your message or select an approved template above...'
                   }
-                  className="w-full p-4 rounded-2xl bg-[#1A1040] border border-slate-700 text-white text-xs leading-relaxed focus:outline-none focus:border-violet-500 font-mono"
+                  className="w-full p-4 rounded-2xl bg-[#2A1E4D] border border-slate-700 text-white text-xs leading-relaxed focus:outline-none focus:border-violet-500 font-mono"
                 />
               </div>
 
@@ -874,7 +874,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                     type="button"
                     onClick={handleSaveDraft}
                     disabled={savingDraft || !selectedOrgId}
-                    className="py-2 px-4 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition flex items-center space-x-1.5 disabled:opacity-50"
+                    className="py-2 px-4 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition flex items-center space-x-1.5 disabled:opacity-50"
                   >
                     {savingDraft ? <RotateCw className="w-3.5 h-3.5 animate-spin" /> : <Bookmark className="w-3.5 h-3.5" />}
                     <span>Save Draft</span>
@@ -897,7 +897,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                         type="button"
                         onClick={handleOpenClient}
                         disabled={!selectedOrgId}
-                        className="py-2 px-4 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 disabled:opacity-50"
+                        className="py-2 px-4 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 disabled:opacity-50"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         <span>Open Email Client</span>
@@ -908,7 +908,7 @@ export const OutreachWorkspacePage: React.FC = () => {
                       type="button"
                       onClick={handleOpenClient}
                       disabled={!selectedOrgId}
-                      className="py-2 px-4 rounded-xl bg-[#1A1040] hover:bg-slate-800 border border-slate-700 text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 disabled:opacity-50"
+                      className="py-2 px-4 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 border border-slate-700 text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 disabled:opacity-50"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                       <span>
@@ -942,7 +942,7 @@ export const OutreachWorkspacePage: React.FC = () => {
       {/* ── Record Outreach & Status Transition Modal ── */}
       {isRecordModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#110B2E] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+          <div className="bg-[#0E0B1D] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5">
             <div className="flex items-center space-x-3 pb-3 border-b border-slate-800/80">
               <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <CheckCircle2 className="w-5 h-5" />
@@ -962,12 +962,12 @@ export const OutreachWorkspacePage: React.FC = () => {
                   type="text"
                   value={recordSummary}
                   onChange={(e) => setRecordSummary(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#1A1040] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-[#2A1E4D] border border-slate-700 text-white text-xs focus:outline-none focus:border-violet-500"
                 />
               </div>
 
               {/* Status Bump Option */}
-              <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-2">
+              <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-2">
                 <label className="flex items-center space-x-2 text-slate-300 font-semibold cursor-pointer">
                   <input
                     type="checkbox"
@@ -996,7 +996,7 @@ export const OutreachWorkspacePage: React.FC = () => {
               </div>
 
               {/* Follow-up Creation Option */}
-              <div className="p-3.5 rounded-2xl bg-[#1A1040] border border-slate-800 space-y-2">
+              <div className="p-3.5 rounded-2xl bg-[#2A1E4D] border border-slate-800 space-y-2">
                 <label className="flex items-center space-x-2 text-slate-300 font-semibold cursor-pointer">
                   <input
                     type="checkbox"
@@ -1054,7 +1054,7 @@ export const OutreachWorkspacePage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsRecordModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#1A1040] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-[#2A1E4D] hover:bg-slate-800 text-slate-300 text-xs font-semibold"
               >
                 Cancel
               </button>

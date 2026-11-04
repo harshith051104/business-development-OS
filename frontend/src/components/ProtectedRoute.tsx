@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex flex-col items-center justify-center p-4">
         <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-4" />
         <p className="text-sm text-slate-400">Verifying session and authorization...</p>
       </div>
@@ -28,8 +28,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // 2. Authenticated but lacks BUSINESS_DEVELOPMENT role -> Access Denied (403)
   if (!isBDUser) {
     return (
-      <div className="min-h-screen bg-[#0B0520] text-[#F0ECFF] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-[#110B2E] border border-red-500/20 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+      <div className="min-h-screen bg-[#0E0B1D] text-[#C9C2E3] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[#0E0B1D] border border-red-500/20 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
           {/* Subtle background glow */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
           
@@ -47,7 +47,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             <p>
               This portal is strictly restricted to the internal <strong className="text-white">Business Development</strong> team.
             </p>
-            <div className="p-4 bg-[#1A1040] border border-slate-800 rounded-xl space-y-2 text-xs">
+            <div className="p-4 bg-[#2A1E4D] border border-slate-800 rounded-xl space-y-2 text-xs">
               <div className="flex justify-between items-center text-slate-400">
                 <span>Authenticated User:</span>
                 <span className="font-semibold text-white">{user.name}</span>

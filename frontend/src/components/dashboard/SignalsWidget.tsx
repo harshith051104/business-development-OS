@@ -27,7 +27,7 @@ export const SignalsWidget: React.FC = () => {
   if (loading || signals.length === 0) return null;
 
   return (
-    <div className="bg-[#110B2E]/90 border border-amber-500/20 rounded-2xl p-4 shadow-xl">
+    <div className="bg-[#0E0B1D]/90 border border-amber-500/20 rounded-2xl p-4 shadow-xl">
       <div className="flex items-center space-x-2 mb-3">
         <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
           <Zap className="w-3.5 h-3.5" />
@@ -39,7 +39,7 @@ export const SignalsWidget: React.FC = () => {
         {signals.map((s) => (
           <div
             key={s.id}
-            className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#1A1040]/70 border border-slate-800/80 text-xs"
+            className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#2A1E4D]/70 border border-slate-800/80 text-xs"
           >
             <span className="text-slate-300 truncate">{s.description}</span>
             <div className="flex items-center gap-2 shrink-0">
