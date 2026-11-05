@@ -16,6 +16,7 @@ from app.models.organization import (
     ConnectionStatus,
     PriorityLevel,
 )
+from app.models.organization_financials import OrganizationFinancials
 from app.schemas.organization import (
     OrganizationCreate,
     OrganizationUpdate,
@@ -27,8 +28,78 @@ from app.schemas.organization import (
     PaginatedOrganizationsOut,
     DuplicateCheckResponse,
 )
+from app.schemas.organization_financials import (
+    LinkFinancialsRequest,
+    OrganizationFinancialsOut,
+    OrganizationFinancialsDataOut,
+    FinancialHealthOut,
+)
+from app.services import sec_edgar_service
 
 router = APIRouter(prefix="/api/business-development/organizations", tags=["Organizations"])
+
+
+def _build_financials_out(fin: Optional[OrganizationFinancials]) -> OrganizationFinancialsOut:
+    """Translate a stored OrganizationFinancials row (or None) into the API shape."""
+    if fin is None:
+        return OrganizationFinancialsOut(
+            linked=False,
+            health=FinancialHealthOut(label="insufficient_data", reasons=["No company linked yet."]),
+        )
+
+    data = None
+    if fin.fetch_status == "ok" and fin.metrics:
+        cik_num = int(fin.cik) if fin.cik and fin.cik.isdigit() else 0
+        data = OrganizationFinancialsDataOut(
+            entity_name=fin.entity_name,
+            currency=fin.currency or "USD",
+            dataset_url=f"https://data.sec.gov/api/xbrl/companyfacts/CIK{fin.cik}.json",
+            company_url=f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik_num}&type=10-K",
+            metrics=fin.metrics or {},
+        )
+
+    return OrganizationFinancialsOut(
+        linked=True,
+        source="sec_edgar",
+        cik=fin.cik,
+        entity_name=fin.entity_name,
+        fetched_at=fin.fetched_at.isoformat() if fin.fetched_at else None,
+        fetch_status=fin.fetch_status,
+        fetch_error=fin.fetch_error,
+        data=data,
+        health=FinancialHealthOut(
+            label=fin.health_label or "insufficient_data",
+            reasons=fin.health_reasons or [],
+            revenue_growth=fin.revenue_growth,
+            net_margin=fin.net_margin,
+            period_end=fin.health_period_end,
+        ),
+    )
+
+
+async def _refresh_financials(fin: OrganizationFinancials) -> None:
+    """Fetch latest SEC EDGAR data for `fin.cik` and update the row in place (no commit)."""
+    try:
+        result = await sec_edgar_service.fetch_financials_for_cik(fin.cik)
+    except Exception as exc:
+        fin.fetch_status = "error"
+        fin.fetch_error = str(exc)
+        fin.fetched_at = datetime.now(timezone.utc)
+        return
+
+    fin.cik = result["cik"]
+    fin.entity_name = result["entity_name"]
+    fin.currency = result["currency"]
+    fin.metrics = result["metrics"]
+    health = result["health"]
+    fin.health_label = health["label"]
+    fin.health_reasons = health["reasons"]
+    fin.revenue_growth = health["revenue_growth"]
+    fin.net_margin = health["net_margin"]
+    fin.health_period_end = health["period_end"]
+    fin.fetch_status = "ok"
+    fin.fetch_error = None
+    fin.fetched_at = datetime.now(timezone.utc)
 
 
 @router.get("", response_model=PaginatedOrganizationsOut)
@@ -417,3 +488,106 @@ def delete_organization(
     )
 
     return {"status": "success", "message": f"Organization '{org.name}' successfully deleted."}
+
+
+def _get_org_or_404(id: int, db: Session) -> Organization:
+    org = db.query(Organization).filter(Organization.id == id, Organization.is_deleted.is_(False)).first()
+    if not org:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Organization with ID {id} not found.",
+        )
+    return org
+
+
+@router.get("/{id}/financials", response_model=OrganizationFinancialsOut)
+def get_organization_financials(
+    id: int,
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Retrieve SEC EDGAR-sourced financials linked to an organization, if any."""
+    _get_org_or_404(id, db)
+    fin = db.query(OrganizationFinancials).filter(OrganizationFinancials.organization_id == id).first()
+    return _build_financials_out(fin)
+
+
+@router.put("/{id}/financials", response_model=OrganizationFinancialsOut)
+async def link_organization_financials(
+    id: int,
+    payload: LinkFinancialsRequest,
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Link an organization to a public company by SEC CIK and fetch its filed financials."""
+    org = _get_org_or_404(id, db)
+
+    fin = db.query(OrganizationFinancials).filter(OrganizationFinancials.organization_id == id).first()
+    if fin is None:
+        fin = OrganizationFinancials(organization_id=id, cik=payload.cik.strip())
+        db.add(fin)
+    else:
+        fin.cik = payload.cik.strip()
+
+    await _refresh_financials(fin)
+    db.commit()
+    db.refresh(fin)
+
+    log_audit_event(
+        db=db,
+        action="ORGANIZATION_FINANCIALS_LINKED",
+        resource_type="Organization",
+        resource_id=org.id,
+        user=current_user,
+        metadata={"cik": fin.cik},
+    )
+
+    return _build_financials_out(fin)
+
+
+@router.post("/{id}/financials/refresh", response_model=OrganizationFinancialsOut)
+async def refresh_organization_financials(
+    id: int,
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Re-fetch the latest SEC EDGAR data for an already-linked organization."""
+    _get_org_or_404(id, db)
+
+    fin = db.query(OrganizationFinancials).filter(OrganizationFinancials.organization_id == id).first()
+    if fin is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No SEC CIK linked to this organization yet.",
+        )
+
+    await _refresh_financials(fin)
+    db.commit()
+    db.refresh(fin)
+    return _build_financials_out(fin)
+
+
+@router.delete("/{id}/financials", response_model=OrganizationFinancialsOut)
+def unlink_organization_financials(
+    id: int,
+    current_user: User = Depends(require_business_development),
+    db: Session = Depends(get_db),
+):
+    """Remove the SEC CIK link (and cached financials) from an organization."""
+    org = _get_org_or_404(id, db)
+
+    fin = db.query(OrganizationFinancials).filter(OrganizationFinancials.organization_id == id).first()
+    if fin is not None:
+        db.delete(fin)
+        db.commit()
+
+    log_audit_event(
+        db=db,
+        action="ORGANIZATION_FINANCIALS_UNLINKED",
+        resource_type="Organization",
+        resource_id=org.id,
+        user=current_user,
+        metadata={},
+    )
+
+    return _build_financials_out(None)

@@ -5,6 +5,7 @@ from app.models.organization import (
     ConnectionStatus,
     PriorityLevel,
 )
+from app.models.organization_financials import OrganizationFinancials
 from app.models.contact import Contact, ContactRelationshipStatus
 from app.models.activity import ContactActivity
 from app.models.project import Project, ProjectCategory, ProjectStatus
@@ -65,6 +66,7 @@ __all__ = [
     "OrganizationType",
     "ConnectionStatus",
     "PriorityLevel",
+    "OrganizationFinancials",
     "Contact",
     "ContactRelationshipStatus",
     "ContactActivity",

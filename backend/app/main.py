@@ -46,9 +46,11 @@ from app.routers.knowledge_base import router as knowledge_base_router
 from app.routers.whatsapp_automation import router as whatsapp_automation_router
 from app.routers.linkedin_automation import router as linkedin_automation_router
 from app.routers.reports import router as reports_router
+from app.routers.insights import router as insights_router
 
 import app.models.user  # noqa: F401
 import app.models.organization  # noqa: F401
+import app.models.organization_financials  # noqa: F401
 import app.models.contact  # noqa: F401
 import app.models.activity  # noqa: F401
 import app.models.project  # noqa: F401
@@ -402,6 +404,7 @@ app.include_router(knowledge_base_router)
 app.include_router(whatsapp_automation_router)
 app.include_router(linkedin_automation_router)
 app.include_router(reports_router)
+app.include_router(insights_router)
 
 # Background job scheduler (in-process, no Celery/Redis needed at this scale)
 from apscheduler.triggers.cron import CronTrigger
